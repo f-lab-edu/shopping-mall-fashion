@@ -21,7 +21,7 @@ pipeline {
 
     stage('Build') {
       steps {
-           sh './gradlew clean build --exclude-task test --exclude-task asciidoctor'
+           sh './gradlew clean build --exclude-task test'
            echo 'build success'
       }
     }
