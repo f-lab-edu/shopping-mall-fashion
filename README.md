@@ -1,1 +1,16 @@
-# f-lab-springboot-jpa-project-template
+## 프로젝트 목표
+* 무신사와 같은 의류 쇼핑몰 구현
+* TDD와 OOP에 입각한 개발
+* Scale out을 고려한 설계: 확장과 그로 인해 발생 가능한 이슈를 고려한 개발
+* 성능 최적화: 성능 테스트 및 캐싱, 비동기 처리 등 성능 최적화 방법 활용
+* 대용량 데이터 처리: 대용량의 테스트 데이터를 이용한 성능 테스트 및 성능 개선방법 모색
+* 동시성 이슈를 고려한 설계
+* CI/CD
+
+## 사용기술
+* Jenkins
+* Docker
+* Springboot
+* Nginx
+* Redis
+* MySQL

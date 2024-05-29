@@ -1,0 +1,12 @@
+HELP.md
+.gradle/
+build/
+lib/*
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+src/main/resources/*.json
