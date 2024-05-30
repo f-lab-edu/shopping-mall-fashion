@@ -14,3 +14,13 @@
 * Nginx
 * Redis
 * MySQL
+
+## 도메인
+<img width="1036" alt="image" src="https://github.com/f-lab-edu/shopping-mall-fashion/assets/76721027/5e5efb8c-c13d-4a51-8986-cf60f8b96077">
+
+## ERD
+<img width="1259" alt="image" src="https://github.com/f-lab-edu/shopping-mall-fashion/assets/76721027/42189e7f-69de-4334-b82b-cd402a8f0c48">
+
+
+## 기능 요구사항
+https://github.com/f-lab-edu/shopping-mall-fashion/wiki/%EA%B8%B0%EB%8A%A5-%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD
