@@ -2,10 +2,10 @@ package com.example.flab.soft.shoppingmallfashion.user.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpDto;
+import com.example.flab.soft.shoppingmallfashion.exception.UserException;
+import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpInfo;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
-import com.example.flab.soft.shoppingmallfashion.user.service.exception.badField.SignUpBadFieldException;
-import com.example.flab.soft.shoppingmallfashion.user.service.exception.fieldConflict.SignUpFieldConflictException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,78 +16,87 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 class UserServiceTest {
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @Autowired
     public UserServiceTest(UserService userService, UserRepository userRepository) {
         this.userService = userService;
-        this.userRepository = userRepository;
-    }
-    @DisplayName("아이디 형식이 맞지 않으면 예외 발생")
-    @Test
-    public void badField() {
-        assertThrows(SignUpBadFieldException.class, () -> userService.signUp(
-                new UserSignUpDto(
-                        "test-1",
-                        "bad",
-                        "correctName",
-                        "correct@gmail.com",
-                        "01012345678",
-                        "correctNickname"
-                        )
-        ));
-        assertFalse(userRepository.existsByUserSigninInfo_SigninId("test-1"));
-        assertFalse(userRepository.existsByEmail("correct@gmail.com"));
-
-        assertDoesNotThrow(() -> {
-            userService.signUp(
-                    new UserSignUpDto(
-                            "test-1",
-                            "Correct1#",
-                            "correctName",
-                            "correct@gmail.com",
-                            "01012345678",
-                            "correctNickname"
-                    )
-            );
-        });
     }
 
-    @DisplayName("필드 중복시 예외 발생")
-    @Test
-    public void cannotSignUpWithExistingField() {
-        assertDoesNotThrow(() -> userService.signUp(
-                new UserSignUpDto(
-                        "test-2",
+    @BeforeEach
+    void beforeEach() {
+        userService.signUp(
+                new UserSignUpInfo(
+                        "duplicated",
                         "Correct1#",
                         "correctName",
-                        "correct@gmail.com",
+                        "duplicated@gmail.com",
                         "01012345678",
-                        "correctNickname"
-                )
-        ));
+                        "duplicated"
+                ));
+    }
 
+    @DisplayName("로그인 아이디 중복시 예외 발생")
+    @Test
+    @Transactional
+    public void cannotSignUpWithExistingUsername() {
         //로그인 아이디 중복
-        assertThrows(SignUpFieldConflictException.class, () -> userService.signUp(
-                new UserSignUpDto(
-                        "test-2",
+        assertThrows(UserException.class, () -> userService.signUp(
+                new UserSignUpInfo(
+                        "duplicated",
                         "Correct1#",
                         "correctName",
-                        "correct@gmail.com",
-                        "01012345678",
-                        "correctNickname2"
+                        "notDuplicated@gmail.com",
+                        "01011111111",
+                        "notDuplicated"
                 )
         ));
+    }
 
+    @DisplayName("이메일 중복시 예외 발생")
+    @Test
+    @Transactional
+    public void cannotSignUpWithExistingEmail() {
         //닉네임 중복
-        assertThrows(SignUpFieldConflictException.class, () -> userService.signUp(
-                new UserSignUpDto(
-                        "test-3",
+        assertThrows(UserException.class, () -> userService.signUp(
+                new UserSignUpInfo(
+                        "notDuplicated",
                         "Correct1#",
                         "correctName",
-                        "correct@gmail.com",
+                        "duplicated@gmail.com",
+                        "01011111111",
+                        "notDuplicated"
+                )
+        ));
+    }
+
+    @DisplayName("휴대폰 번호 중복시 예외 발생")
+    @Test
+    @Transactional
+    public void cannotSignUpWithExistingCellphoneNumber() {
+        assertThrows(UserException.class, () -> userService.signUp(
+                new UserSignUpInfo(
+                        "notDuplicated",
+                        "Correct1#",
+                        "correctName",
+                        "notDuplicated@gmail.com",
                         "01012345678",
-                        "correctNickname"
+                        "notDuplicated"
+                )
+        ));
+    }
+
+    @DisplayName("닉네임 중복시 예외 발생")
+    @Test
+    @Transactional
+    public void cannotSignUpWithExistingNickname() {
+        assertThrows(UserException.class, () -> userService.signUp(
+                new UserSignUpInfo(
+                        "notDuplicated",
+                        "Correct1#",
+                        "correctName",
+                        "notDuplicated@gmail.com",
+                        "01011111111",
+                        "duplicated"
                 )
         ));
     }

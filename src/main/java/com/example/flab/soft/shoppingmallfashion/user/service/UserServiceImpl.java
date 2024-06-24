@@ -1,58 +1,61 @@
 package com.example.flab.soft.shoppingmallfashion.user.service;
 
-import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpDto;
-import com.example.flab.soft.shoppingmallfashion.user.domain.UserEntity;
+import com.example.flab.soft.shoppingmallfashion.exception.UserException;
+import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpInfo;
+import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
-import com.example.flab.soft.shoppingmallfashion.user.service.exception.fieldConflict.SignUpCellphoneNumberConflictException;
-import com.example.flab.soft.shoppingmallfashion.user.service.exception.fieldConflict.SignUpEmailConflictException;
-import com.example.flab.soft.shoppingmallfashion.user.service.exception.fieldConflict.SignUpIdConflictException;
-import com.example.flab.soft.shoppingmallfashion.user.service.exception.fieldConflict.SignUpNicknameConflictException;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void signUp(UserSignUpDto userSignUpDto) {
-        checkFieldTypes(userSignUpDto);
-        checkDuplication(userSignUpDto);
+    public void signUp(UserSignUpInfo userSignUpInfo) {
+        checkDuplication(userSignUpInfo);
+        saveUser(userSignUpInfo);
+    }
+
+    private void saveUser(UserSignUpInfo userSignUpInfo) {
         userRepository.save(
-                UserEntity.builder()
-                        .signinId(userSignUpDto.getSigninId())
-                        .password(userSignUpDto.getPassword())
-                        .name(userSignUpDto.getName())
-                        .email(userSignUpDto.getEmail())
-                        .cellphoneNumber(userSignUpDto.getCellphoneNumber())
-                        .nickname(userSignUpDto.getNickname())
+                User.builder()
+                        .username(userSignUpInfo.getUsername())
+                        .password(passwordEncoder.encode(userSignUpInfo.getPassword()))
+                        .realName(userSignUpInfo.getRealName())
+                        .email(userSignUpInfo.getEmail())
+                        .cellphoneNumber(userSignUpInfo.getCellphoneNumber())
+                        .nickname(userSignUpInfo.getNickname())
                         .createdAt(LocalDate.now())
                         .build()
         );
     }
 
-    private void checkFieldTypes(UserSignUpDto userSignUpDto) {
-        UserFieldType.ID.check(userSignUpDto.getSigninId());
-        UserFieldType.PASSWORD.check(userSignUpDto.getPassword());
-        UserFieldType.EMAIL.check(userSignUpDto.getEmail());
-        UserFieldType.CELLPHONE.check(userSignUpDto.getCellphoneNumber());
-        UserFieldType.NICKNAME.check(userSignUpDto.getNickname());
+    private void checkDuplication(UserSignUpInfo userSignUpInfo) {
+        if (userRepository.existsByUsername(userSignUpInfo.getUsername())) {
+            throw new UserException("이미 등록된 아이디입니다.");
+        }
+        if (userRepository.existsByEmail(userSignUpInfo.getEmail())) {
+            throw new UserException("이미 등록된 이메일입니다.");
+        }
+        if (userRepository.existsByCellphoneNumber(userSignUpInfo.getCellphoneNumber())) {
+            throw new UserException("이미 등록된 전화번호입니다");
+        }
+        if (userRepository.existsByNickname(userSignUpInfo.getNickname())) {
+            throw new UserException("이미 등록된 닉네임입니다");
+        }
     }
 
-    private void checkDuplication(UserSignUpDto userSignUpDto) {
-        if (userRepository.existsByUserSigninInfo_SigninId(userSignUpDto.getSigninId())) {
-            throw new SignUpIdConflictException();
-        }
-        if (userRepository.existsByEmail(userSignUpDto.getEmail())) {
-            throw new SignUpEmailConflictException();
-        }
-        if (userRepository.existsByCellphoneNumber(userSignUpDto.getSigninId())) {
-            throw new SignUpCellphoneNumberConflictException();
-        }
-        if (userRepository.existsByNickname(userSignUpDto.getSigninId())) {
-            throw new SignUpNicknameConflictException();
-        }
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException((username)));
     }
 }

@@ -1,7 +1,7 @@
 package com.example.flab.soft.shoppingmallfashion.user.service;
 
-import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpDto;
+import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpInfo;
 
 public interface UserService {
-    void signUp(UserSignUpDto userSignUpDto);
+    void signUp(UserSignUpInfo userSignUpInfo);
 }

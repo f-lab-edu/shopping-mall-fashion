@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 @AutoConfigureMockMvc
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 class UserIntegrationTest {
     @Autowired
     private MockMvc mvc;
@@ -32,9 +32,9 @@ class UserIntegrationTest {
         mvc.perform(
                         post("/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "signinId", "bad",
+                                        "username", "bad",
                                         "password", "Correct1#",
-                                        "name", "correct",
+                                        "realName", "correct",
                                         "email", "correct@gmail.com",
                                         "cellphoneNumber", "01012345678",
                                         "nickname", "correct"
@@ -43,72 +43,12 @@ class UserIntegrationTest {
                 )
                 .andExpect(status().is(400));
 
-        // bad password
         mvc.perform(
                         post("/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "signinId", "correct",
-                                        "password", "bad",
-                                        "name", "correct",
-                                        "email", "correct@gmail.com",
-                                        "cellphoneNumber", "01012345678",
-                                        "nickname", "correct"
-                                )))
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(400));
-
-        // bad email
-        mvc.perform(
-                        post("/users/signup")
-                                .content(mapper.writeValueAsString(Map.of(
-                                        "signinId", "correct",
+                                        "username", "correct",
                                         "password", "Correct1#",
-                                        "name", "correct",
-                                        "email", "bad",
-                                        "cellphoneNumber", "01012345678",
-                                        "nickname", "correct"
-                                )))
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(400));
-
-        // bad cellphone number
-        mvc.perform(
-                        post("/users/signup")
-                                .content(mapper.writeValueAsString(Map.of(
-                                        "signinId", "correct",
-                                        "password", "Correct1#",
-                                        "name", "correct",
-                                        "email", "correct@gmail.com",
-                                        "cellphoneNumber", "bad",
-                                        "nickname", "correct"
-                                )))
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(400));
-
-        // bad nickname
-        mvc.perform(
-                        post("/users/signup")
-                                .content(mapper.writeValueAsString(Map.of(
-                                        "signinId", "correct",
-                                        "password", "Correct1#",
-                                        "name", "correct",
-                                        "email", "correct@gmail.com",
-                                        "cellphoneNumber", "01012345678",
-                                        "nickname", "b"
-                                )))
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(400));
-
-        mvc.perform(
-                        post("/users/signup")
-                                .content(mapper.writeValueAsString(Map.of(
-                                        "signinId", "correct",
-                                        "password", "Correct1#",
-                                        "name", "correct",
+                                        "realName", "correct",
                                         "email", "correct@gmail.com",
                                         "cellphoneNumber", "01012345678",
                                         "nickname", "correct"
@@ -124,9 +64,9 @@ class UserIntegrationTest {
         mvc.perform(
                         post("/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "signinId", "correct",
+                                        "username", "correct",
                                         "password", "Correct1#",
-                                        "name", "correct",
+                                        "realName", "correct",
                                         "email", "correct@gmail.com",
                                         "cellphoneNumber", "01012345678",
                                         "nickname", "correct"
@@ -138,9 +78,9 @@ class UserIntegrationTest {
         mvc.perform(
                         post("/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "signinId", "correct",
+                                        "username", "correct",
                                         "password", "Correct1#",
-                                        "name", "correct",
+                                        "realName", "correct",
                                         "email", "correct@gmail.com",
                                         "cellphoneNumber", "01012345678",
                                         "nickname", "correct"
