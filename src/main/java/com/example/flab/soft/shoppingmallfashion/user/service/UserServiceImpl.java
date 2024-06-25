@@ -1,6 +1,7 @@
 package com.example.flab.soft.shoppingmallfashion.user.service;
 
-import com.example.flab.soft.shoppingmallfashion.exception.UserException;
+import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
+import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpInfo;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
@@ -40,16 +41,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private void checkDuplication(UserSignUpInfo userSignUpInfo) {
         if (userRepository.existsByUsername(userSignUpInfo.getUsername())) {
-            throw new UserException("이미 등록된 아이디입니다.");
+            throw new ApiException(ErrorEnum.USERNAME_DUPLICATED);
         }
         if (userRepository.existsByEmail(userSignUpInfo.getEmail())) {
-            throw new UserException("이미 등록된 이메일입니다.");
+            throw new ApiException(ErrorEnum.EMAIL_DUPLICATED);
         }
         if (userRepository.existsByCellphoneNumber(userSignUpInfo.getCellphoneNumber())) {
-            throw new UserException("이미 등록된 전화번호입니다");
+            throw new ApiException(ErrorEnum.CELLPHONE_DUPLICATED);
         }
         if (userRepository.existsByNickname(userSignUpInfo.getNickname())) {
-            throw new UserException("이미 등록된 닉네임입니다");
+            throw new ApiException(ErrorEnum.NICKNAME_DUPLICATED);
         }
     }
 

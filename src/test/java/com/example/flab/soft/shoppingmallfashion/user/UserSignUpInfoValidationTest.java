@@ -10,6 +10,7 @@ import jakarta.validation.ValidatorFactory;
 
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class UserSignUpInfoValidationTest {
@@ -22,6 +23,7 @@ class UserSignUpInfoValidationTest {
     }
 
     @Test
+    @DisplayName("올바른 형식 제공시 에러가 발생하지 않는다.")
     public void testValidUserSignUpInfo() {
         UserSignUpInfo user = UserSignUpInfo.builder()
                 .username("valid")
@@ -37,9 +39,10 @@ class UserSignUpInfoValidationTest {
     }
 
     @Test
+    @DisplayName("허용되지 않는 아이디 형식 제공시 에러 발생")
     public void testInvalidSignInId() {
         UserSignUpInfo user = UserSignUpInfo.builder()
-                .username("12345") // Invalid ID
+                .username("12345")
                 .password("Valid1#Password")
                 .realName("John Doe")
                 .email("john.doe@example.com")
@@ -53,6 +56,7 @@ class UserSignUpInfoValidationTest {
     }
 
     @Test
+    @DisplayName("허용되지 않는 비밀번호 형식 제공시 에러 발생")
     public void testInvalidPassword() {
         UserSignUpInfo user = UserSignUpInfo.builder()
                 .username("valid")
@@ -69,6 +73,7 @@ class UserSignUpInfoValidationTest {
     }
 
     @Test
+    @DisplayName("허용되지 않는 이메일 형식 제공시 에러 발생")
     public void testInvalidEmail() {
         UserSignUpInfo user = UserSignUpInfo.builder()
                 .username("valid")
@@ -85,6 +90,7 @@ class UserSignUpInfoValidationTest {
     }
 
     @Test
+    @DisplayName("허용되지 않는 전화번호 형식 제공시 에러 발생")
     public void testInvalidCellphoneNumber() {
         UserSignUpInfo user = UserSignUpInfo.builder()
                 .username("valid")
@@ -101,6 +107,7 @@ class UserSignUpInfoValidationTest {
     }
 
     @Test
+    @DisplayName("허용되지 않는 닉네임 형식 제공시 에러 발생")
     public void testInvalidNickname() {
         UserSignUpInfo user = UserSignUpInfo.builder()
                 .username("valid")

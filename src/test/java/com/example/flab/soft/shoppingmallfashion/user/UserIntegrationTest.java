@@ -30,7 +30,7 @@ class UserIntegrationTest {
     void whenSignUpWithBadField_thenReturn400() throws Exception {
         // bad username
         mvc.perform(
-                        post("/users/signup")
+                        post("/api/v1/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
                                         "username", "bad",
                                         "password", "Correct1#",
@@ -44,7 +44,7 @@ class UserIntegrationTest {
                 .andExpect(status().is(400));
 
         mvc.perform(
-                        post("/users/signup")
+                        post("/api/v1/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
                                         "username", "correct",
                                         "password", "Correct1#",
@@ -62,7 +62,7 @@ class UserIntegrationTest {
     @Test
     void whenSignUpWithExistingValue_thenReturn409() throws Exception {
         mvc.perform(
-                        post("/users/signup")
+                        post("/api/v1/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
                                         "username", "correct",
                                         "password", "Correct1#",
@@ -76,7 +76,7 @@ class UserIntegrationTest {
                 .andExpect(status().is(200));
 
         mvc.perform(
-                        post("/users/signup")
+                        post("/api/v1/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
                                         "username", "correct",
                                         "password", "Correct1#",
