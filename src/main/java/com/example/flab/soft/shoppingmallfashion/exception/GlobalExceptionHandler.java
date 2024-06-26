@@ -31,9 +31,6 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResult> toErrorResponseEntity(ErrorEnum error) {
         return ResponseEntity
                 .status(error.getStatus())
-                .body(ErrorResult.builder()
-                        .code(error.getCode())
-                        .message(error.getMessage())
-                        .build());
+                .body(new ErrorResult(error));
     }
 }
