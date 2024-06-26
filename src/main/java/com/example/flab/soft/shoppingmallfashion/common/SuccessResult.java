@@ -5,12 +5,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SuccessResult {
+public class SuccessResult<T> {
     private final String code = "SUCCESS";
     private final String message = "";
-    private Object response;
+    private T response;
 
-    public SuccessResult(Object response) {
+    public SuccessResult(T response) {
         this.response = response;
     }
 }
