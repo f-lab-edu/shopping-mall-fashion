@@ -19,6 +19,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 class UserIntegrationTest {
+    static final String CORRECT_FORM = "correct@gmail.com";
+    static final String WRONG_FORM = "@@gmail.com";
+    static final String DUPLICATED_FIELD = "correct@gmail.com";
     @Autowired
     private MockMvc mvc;
 
@@ -32,30 +35,28 @@ class UserIntegrationTest {
         mvc.perform(
                         post("/api/v1/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "username", "bad",
+                                        "email", CORRECT_FORM,
                                         "password", "Correct1#",
                                         "realName", "correct",
-                                        "email", "correct@gmail.com",
-                                        "cellphoneNumber", "01012345678",
-                                        "nickname", "correct"
-                                )))
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(400));
-
-        mvc.perform(
-                        post("/api/v1/users/signup")
-                                .content(mapper.writeValueAsString(Map.of(
-                                        "username", "correct",
-                                        "password", "Correct1#",
-                                        "realName", "correct",
-                                        "email", "correct@gmail.com",
                                         "cellphoneNumber", "01012345678",
                                         "nickname", "correct"
                                 )))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is(200));
+
+        mvc.perform(
+                        post("/api/v1/users/signup")
+                                .content(mapper.writeValueAsString(Map.of(
+                                        "email", WRONG_FORM,
+                                        "password", "Correct1#",
+                                        "realName", "correct",
+                                        "cellphoneNumber", "01012345678",
+                                        "nickname", "correct"
+                                )))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is(400));
     }
 
     @DisplayName("필드 충돌시 409 에러")
@@ -64,10 +65,9 @@ class UserIntegrationTest {
         mvc.perform(
                         post("/api/v1/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "username", "correct",
+                                        "email", "correct@gmail.com",
                                         "password", "Correct1#",
                                         "realName", "correct",
-                                        "email", "correct@gmail.com",
                                         "cellphoneNumber", "01012345678",
                                         "nickname", "correct"
                                 )))
@@ -78,10 +78,9 @@ class UserIntegrationTest {
         mvc.perform(
                         post("/api/v1/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "username", "correct",
+                                        "email", DUPLICATED_FIELD,
                                         "password", "Correct1#",
                                         "realName", "correct",
-                                        "email", "correct@gmail.com",
                                         "cellphoneNumber", "01012345678",
                                         "nickname", "correct"
                                 )))
