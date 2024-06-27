@@ -3,14 +3,11 @@ package com.example.flab.soft.shoppingmallfashion.user.controller;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-@Builder
-@AllArgsConstructor
 @Getter
 public class UserSignUpRequest {
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$", message = "허용되지 않는 이메일 형식입니다.")
@@ -26,4 +23,13 @@ public class UserSignUpRequest {
     @Pattern(regexp = "^(?=.*[a-zA-Z0-9가-힣])[a-zA-Z0-9가-힣]*$", message = "허용되지 않는 닉네임 형식입니다.")
     @Size(min = 2, max = 16, message = "닉네임의 길이는 2자 이상 16자 이하입니다.")
     private String nickname;
+
+    @Builder
+    public UserSignUpRequest(String email, String password, String realName, String cellphoneNumber, String nickname) {
+        this.email = email;
+        this.password = password;
+        this.realName = realName;
+        this.cellphoneNumber = cellphoneNumber;
+        this.nickname = nickname;
+    }
 }
