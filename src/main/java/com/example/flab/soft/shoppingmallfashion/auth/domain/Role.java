@@ -1,6 +1,8 @@
-package com.example.flab.soft.shoppingmallfashion.auth;
+package com.example.flab.soft.shoppingmallfashion.auth.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,10 +18,11 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = 0L;
-    private String authority;
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
 
     @Builder
-    public Role(Long id, String authority) {
+    public Role(Long id, Authority authority) {
         this.id = id;
         this.authority = authority;
     }

@@ -7,10 +7,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.example.flab.soft.shoppingmallfashion.auth.Role;
-import com.example.flab.soft.shoppingmallfashion.auth.RoleRepository;
-import com.example.flab.soft.shoppingmallfashion.auth.UserRole;
-import com.example.flab.soft.shoppingmallfashion.auth.UserRoleRepository;
+import com.example.flab.soft.shoppingmallfashion.auth.domain.Authority;
+import com.example.flab.soft.shoppingmallfashion.auth.service.RoleService;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpRequest;
@@ -32,9 +30,7 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private UserRoleRepository userRoleRepository;
-    @Mock
-    private RoleRepository roleRepository;
+    private RoleService roleService;
     @Mock
     private PasswordEncoder passwordEncoder;
     @InjectMocks
@@ -52,12 +48,13 @@ class UserServiceTest {
                 .build();
     }
 
+    @DisplayName("올바른 정보 입력시 유저 저장")
     @Test
     void whenSignUpWithValidInfo_thenUserIsSaved() {
         User user = User.builder()
                 .id(1L)
-                .email("test@example.com")
-                .password("password")
+                .email("valid.email@example.com")
+                .password("ValidPass1#")
                 .build();
 
         when(userRepository.save(any())).thenReturn(user);
@@ -66,8 +63,14 @@ class UserServiceTest {
         userService.signUp(validUserSignUpRequest);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        ArgumentCaptor<Authority> authorityCaptor = ArgumentCaptor.forClass(Authority.class);
+
         verify(userRepository).save(userCaptor.capture());
         User savedUser = userCaptor.getValue();
+
+        verify(roleService).save(userCaptor.capture(), authorityCaptor.capture());
+        User passedUser = userCaptor.getValue();
+        Authority passedAuthority = authorityCaptor.getValue();
 
         assertThat(savedUser.getEmail()).isEqualTo(validUserSignUpRequest.getEmail());
         assertThat(savedUser.getPassword()).isEqualTo("encodedPassword");
@@ -75,6 +78,10 @@ class UserServiceTest {
         assertThat(savedUser.getCellphoneNumber()).isEqualTo(validUserSignUpRequest.getCellphoneNumber());
         assertThat(savedUser.getNickname()).isEqualTo(validUserSignUpRequest.getNickname());
         assertThat(savedUser.getCreatedAt()).isEqualTo(LocalDate.now());
+
+        assertThat(savedUser.getEmail()).isEqualTo("valid.email@example.com");
+        assertThat(passedUser.getId()).isEqualTo(1L);
+        assertThat(passedAuthority).isEqualTo(Authority.ROLE_USER);
     }
 
     @DisplayName("이메일 중복시 예외 발생")
@@ -111,33 +118,5 @@ class UserServiceTest {
         });
 
         assertThat(exception.getError()).isEqualTo(ErrorEnum.NICKNAME_DUPLICATED);
-    }
-
-    @DisplayName("회원가입시 유저 role 저장")
-    @Test
-    void whenSignUpWithValidInfo_thenUserRoleIsSaved() {
-        User user = User.builder()
-                .id(1L)
-                .email("test@example.com")
-                .password("password")
-                .build();
-
-        Role userRole = Role.builder()
-                .id(1L)
-                .authority("ROLE_USER")
-                .build();
-
-        when(userRepository.save(any())).thenReturn(user);
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(roleRepository.findByAuthority("ROLE_USER")).thenReturn(userRole);
-
-        userService.signUp(validUserSignUpRequest);
-
-        ArgumentCaptor<UserRole> userRoleCaptor = ArgumentCaptor.forClass(UserRole.class);
-        verify(userRoleRepository).save(userRoleCaptor.capture());
-        UserRole savedUserRole = userRoleCaptor.getValue();
-
-        assertThat(savedUserRole.getRole()).isEqualTo(userRole);
-        assertThat(savedUserRole.getUserId()).isEqualTo(1L);
     }
 }

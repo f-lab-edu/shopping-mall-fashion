@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.auth;
+package com.example.flab.soft.shoppingmallfashion.auth.domain;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,6 +28,7 @@ public class AuthUser implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
                 .map(Role::getAuthority)
+                .map(Authority::name)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }

@@ -1,5 +1,10 @@
 package com.example.flab.soft.shoppingmallfashion.auth;
 
+import com.example.flab.soft.shoppingmallfashion.auth.domain.Authority;
+import com.example.flab.soft.shoppingmallfashion.auth.domain.Role;
+import com.example.flab.soft.shoppingmallfashion.auth.domain.UserRole;
+import com.example.flab.soft.shoppingmallfashion.auth.repository.UserRoleRepository;
+import com.example.flab.soft.shoppingmallfashion.auth.service.AuthService;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +44,7 @@ class AuthServiceTest {
 
         role = Role.builder()
                 .id(1L)
-                .authority("ROLE_USER")
+                .authority(Authority.ROLE_USER)
                 .build();
 
         userRole = UserRole.builder()

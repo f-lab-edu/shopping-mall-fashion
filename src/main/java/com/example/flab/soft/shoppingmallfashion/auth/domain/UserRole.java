@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.auth;
+package com.example.flab.soft.shoppingmallfashion.auth.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
