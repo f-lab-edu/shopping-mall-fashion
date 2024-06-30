@@ -9,4 +9,4 @@ lib/*
 *.iml
 *.ipr
 
-src/main/resources/*.json
+src/main/resources/*.sql
