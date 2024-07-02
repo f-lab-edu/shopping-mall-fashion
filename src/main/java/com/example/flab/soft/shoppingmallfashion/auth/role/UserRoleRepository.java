@@ -1,6 +1,6 @@
-package com.example.flab.soft.shoppingmallfashion.auth.repository;
+package com.example.flab.soft.shoppingmallfashion.auth.role;
 
-import com.example.flab.soft.shoppingmallfashion.auth.domain.UserRole;
+import com.example.flab.soft.shoppingmallfashion.auth.role.UserRole;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 

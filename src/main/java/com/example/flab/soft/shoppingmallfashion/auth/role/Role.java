@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.auth.domain;
+package com.example.flab.soft.shoppingmallfashion.auth.role;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

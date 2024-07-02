@@ -1,10 +1,9 @@
 package com.example.flab.soft.shoppingmallfashion.auth;
 
-import com.example.flab.soft.shoppingmallfashion.auth.domain.Authority;
-import com.example.flab.soft.shoppingmallfashion.auth.domain.Role;
-import com.example.flab.soft.shoppingmallfashion.auth.domain.UserRole;
-import com.example.flab.soft.shoppingmallfashion.auth.repository.UserRoleRepository;
-import com.example.flab.soft.shoppingmallfashion.auth.service.AuthService;
+import com.example.flab.soft.shoppingmallfashion.auth.role.Authority;
+import com.example.flab.soft.shoppingmallfashion.auth.role.Role;
+import com.example.flab.soft.shoppingmallfashion.auth.role.UserRole;
+import com.example.flab.soft.shoppingmallfashion.auth.role.UserRoleRepository;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
