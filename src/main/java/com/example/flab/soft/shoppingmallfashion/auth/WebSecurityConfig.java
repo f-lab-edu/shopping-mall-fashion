@@ -73,7 +73,7 @@ public class WebSecurityConfig {
     @Bean
     public UsernamePasswordAuthenticationFilter jwtAuthenticationFilter()
             throws Exception {
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(refreshTokenService, tokenProvider, objectMapper);
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(refreshTokenService, objectMapper);
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return jwtAuthenticationFilter;
     }

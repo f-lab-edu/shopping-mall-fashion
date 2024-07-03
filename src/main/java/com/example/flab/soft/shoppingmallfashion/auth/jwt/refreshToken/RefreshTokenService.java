@@ -1,7 +1,10 @@
 package com.example.flab.soft.shoppingmallfashion.auth.jwt.refreshToken;
 
+import com.example.flab.soft.shoppingmallfashion.auth.AuthService;
 import com.example.flab.soft.shoppingmallfashion.auth.AuthUser;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenBuildDto;
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.TokenProvider;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokensDto;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import java.time.Instant;
@@ -12,26 +15,41 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RefreshTokenService {
+    private final AuthService authService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenProvider tokenProvider;
     private final Long EXPIRATION_TIME;
 
-    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, TokenProvider tokenProvider,
+    public RefreshTokenService(AuthService authService, RefreshTokenRepository refreshTokenRepository, TokenProvider tokenProvider,
                                @Value("${jwt.refresh-token-validation-time}") Long refreshExpirationTime) {
+        this.authService = authService;
         this.refreshTokenRepository = refreshTokenRepository;
         this.tokenProvider = tokenProvider;
         this.EXPIRATION_TIME = refreshExpirationTime;
     }
 
     @Transactional(noRollbackFor = ApiException.class)
-    public void validate(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
+    public TokensDto renew(String token) {
+        if (token == null || !tokenProvider.validateToken(token)) {
+            throw new ApiException(ErrorEnum.INVALID_TOKEN);
+        }
+
+        String username = tokenProvider.getSubjectFromToken(token);
+        AuthUser authUser = (AuthUser) authService.loadUserByUsername(username);
+
+        RefreshToken oldToken = refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_TOKEN));
 
-        if (isExpired(refreshToken)) {
-            refreshTokenRepository.delete(refreshToken);
+        if (isExpired(oldToken)) {
+            refreshTokenRepository.delete(oldToken);
             throw new ApiException(ErrorEnum.TOKEN_EXPIRED);
         }
+
+        TokenBuildDto tokenBuildDto = extractTokenBuildData(authUser);
+        RefreshToken newToken = buildNewToken(tokenBuildDto, authUser.getId());
+        refreshTokenRepository.save(newToken);
+
+        return buildTokensDto(tokenBuildDto, newToken);
     }
 
     private boolean isExpired(RefreshToken token) {
@@ -39,23 +57,36 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public String getNewToken(AuthUser authUser) {
-        Optional<RefreshToken> token = refreshTokenRepository.findByUserId(authUser.getId());
+    public TokensDto getNewToken(TokenBuildDto tokenBuildDto) {
+        Long userId = Long.valueOf(tokenBuildDto.getClaim("id"));
+        Optional<RefreshToken> token = refreshTokenRepository.findByUserId(userId);
         token.ifPresent(refreshTokenRepository::delete);
 
-        RefreshToken refreshToken = RefreshToken.builder()
-                .token(tokenProvider.createRefreshToken(authUser))
-                .expiration(Instant.now().plusMillis(EXPIRATION_TIME))
-                .userId(authUser.getId())
-                .build();
-        refreshTokenRepository.save(refreshToken);
+        RefreshToken newToken = buildNewToken(tokenBuildDto, userId);
+        refreshTokenRepository.save(newToken);
 
-        return refreshToken.getToken();
+        return buildTokensDto(tokenBuildDto, newToken);
     }
 
-    public void delete(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_TOKEN));
-        refreshTokenRepository.delete(refreshToken);
+    private TokensDto buildTokensDto(TokenBuildDto tokenBuildDto, RefreshToken newToken) {
+        return TokensDto.builder()
+                .accessToken(tokenProvider.createAccessToken(tokenBuildDto))
+                .refreshToken(newToken.getToken())
+                .build();
+    }
+
+    private RefreshToken buildNewToken(TokenBuildDto tokenBuildDto, Long userId) {
+        return RefreshToken.builder()
+                .token(tokenProvider.createRefreshToken(tokenBuildDto))
+                .expiration(Instant.now().plusMillis(EXPIRATION_TIME))
+                .userId(userId)
+                .build();
+    }
+
+    private TokenBuildDto extractTokenBuildData(AuthUser authUser) {
+        return TokenBuildDto.builder()
+                .subject(authUser.getEmail())
+                .claim("id", authUser.getId())
+                .build();
     }
 }

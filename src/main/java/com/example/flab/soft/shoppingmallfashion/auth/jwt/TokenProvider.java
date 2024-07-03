@@ -1,6 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.auth.jwt;
 
-import com.example.flab.soft.shoppingmallfashion.auth.AuthUser;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenBuildDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -33,21 +33,21 @@ public class TokenProvider {
         this.refreshExpirationTime = refreshExpirationTime;
     }
 
-    public String createAccessToken(AuthUser authUser) {
-        return createToken(authUser, accessExpirationTime);
+    public String createAccessToken(TokenBuildDto tokenBuildDto) {
+        return createToken(tokenBuildDto, accessExpirationTime);
     }
 
-    public String createRefreshToken(AuthUser authUser) {
-        return createToken(authUser, refreshExpirationTime);
+    public String createRefreshToken(TokenBuildDto tokenBuildDto) {
+        return createToken(tokenBuildDto, refreshExpirationTime);
     }
 
-    private String createToken(AuthUser authUser, Long expirationTime) {
+    private String createToken(TokenBuildDto tokenBuildDto, Long expirationTime) {
         long now = (new Date()).getTime();
         Date expiration = new Date(now + expirationTime);
 
         return Jwts.builder()
-                .setSubject(authUser.getUsername())
-                .claim("id", authUser.getId())
+                .setSubject(tokenBuildDto.getSubject())
+                .claim("id", tokenBuildDto.getClaim("id"))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(expiration)
                 .compact();

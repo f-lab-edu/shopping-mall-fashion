@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id = 0L;
-    String token;
-    Instant expiration;
-    Long userId;
+    private Long id = 0L;
+    private String token;
+    private Instant expiration;
+    private Long userId;
 
     @Builder
     public RefreshToken(String token, Instant expiration, Long userId) {

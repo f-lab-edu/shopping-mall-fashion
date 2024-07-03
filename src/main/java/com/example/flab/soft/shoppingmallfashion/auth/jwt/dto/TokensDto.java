@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.auth.jwt;
+package com.example.flab.soft.shoppingmallfashion.auth.jwt.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -8,4 +8,5 @@ import lombok.Getter;
 public class TokensDto {
     private String accessToken;
     private String refreshToken;
+    private final String type = "Bearer";
 }
