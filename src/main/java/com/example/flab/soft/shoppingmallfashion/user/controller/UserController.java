@@ -20,8 +20,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<SuccessResult> signup(@RequestBody @Validated UserSignUpRequest userSignUpRequest) {
+    public SuccessResult<Void> signup(@RequestBody @Validated UserSignUpRequest userSignUpRequest) {
         userService.signUp(userSignUpRequest);
-        return new ResponseEntity<>(SuccessResult.builder().build(), HttpStatus.OK);
+        return SuccessResult.<Void>builder().build();
     }
 }

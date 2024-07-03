@@ -8,8 +8,6 @@ import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +22,7 @@ public class RefreshTokenController {
     private final TokenProvider tokenProvider;
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<SuccessResult> refreshToken(@RequestBody TokenRefreshRequest request) {
+    public SuccessResult<TokensDto> refreshToken(@RequestBody TokenRefreshRequest request) {
         String oldToken = parseToken(request);
         if (oldToken == null || !tokenProvider.validateToken(oldToken)) {
             throw new ApiException(ErrorEnum.INVALID_TOKEN);
@@ -36,8 +34,8 @@ public class RefreshTokenController {
         refreshTokenService.delete(oldToken);
 
         TokensDto newTokens = createNewTokens(authUser);
-        return new ResponseEntity<>(SuccessResult.builder()
-                .response(newTokens).build(), HttpStatus.OK);
+        return SuccessResult.<TokensDto>builder()
+                .response(newTokens).build();
     }
 
     private static String parseToken(TokenRefreshRequest request) {
