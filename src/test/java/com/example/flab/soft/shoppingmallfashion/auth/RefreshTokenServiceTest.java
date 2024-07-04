@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +37,7 @@ class RefreshTokenServiceTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(refreshTokenService, "EXPIRATION_TIME", 86400000L);
+        ReflectionTestUtils.setField(refreshTokenService, "EXPIRATION_TIME_MILLIS", 86400000L);
     }
 
     @Test

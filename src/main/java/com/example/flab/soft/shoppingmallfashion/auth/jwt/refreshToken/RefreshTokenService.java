@@ -8,6 +8,7 @@ import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokensDto;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,14 +20,14 @@ public class RefreshTokenService {
     private final AuthService authService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenProvider tokenProvider;
-    private final Long EXPIRATION_TIME;
+    private final Long EXPIRATION_TIME_MILLIS;
 
     public RefreshTokenService(AuthService authService, RefreshTokenRepository refreshTokenRepository, TokenProvider tokenProvider,
                                @Value("${jwt.refresh-token-validation-time}") Long refreshExpirationTime) {
         this.authService = authService;
         this.refreshTokenRepository = refreshTokenRepository;
         this.tokenProvider = tokenProvider;
-        this.EXPIRATION_TIME = refreshExpirationTime;
+        this.EXPIRATION_TIME_MILLIS = refreshExpirationTime;
     }
 
     @Transactional
@@ -85,7 +86,7 @@ public class RefreshTokenService {
     private RefreshToken buildNewToken(TokenBuildDto tokenBuildDto, Long userId) {
         return RefreshToken.builder()
                 .token(tokenProvider.createRefreshToken(tokenBuildDto))
-                .expiration(LocalDateTime.now().plusSeconds(EXPIRATION_TIME))
+                .expiration(LocalDateTime.now().plus(EXPIRATION_TIME_MILLIS, ChronoUnit.MILLIS))
                 .userId(userId)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
