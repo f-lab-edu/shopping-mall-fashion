@@ -51,7 +51,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         TokenResponse tokenResponse = buildTokenResponse(tokensDto);
         String successResult = objectMapper.writeValueAsString(
                 SuccessResult.builder().response(tokenResponse).build());
-
         response.getWriter().write(successResult);
     }
 

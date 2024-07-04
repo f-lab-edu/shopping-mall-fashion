@@ -1,10 +1,18 @@
 package com.example.flab.soft.shoppingmallfashion.auth.jwt.refreshToken;
 
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class TokenRefreshRequest {
-    @Pattern(regexp = "^Bearer .+$", message = "인증 토큰은 'Bearer '로 시작해야 합니다.")
+    @NotBlank
     private String refreshToken;
+
+    @Builder
+    public TokenRefreshRequest(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }

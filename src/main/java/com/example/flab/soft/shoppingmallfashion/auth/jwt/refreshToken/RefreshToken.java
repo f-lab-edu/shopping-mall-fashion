@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,13 +18,18 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = 0L;
     private String token;
-    private Instant expiration;
+    private LocalDateTime expiration;
     private Long userId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @Builder
-    public RefreshToken(String token, Instant expiration, Long userId) {
+    public RefreshToken(String token, LocalDateTime expiration, Long userId, LocalDateTime createdAt,
+                        LocalDateTime updatedAt) {
         this.token = token;
         this.expiration = expiration;
         this.userId = userId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }

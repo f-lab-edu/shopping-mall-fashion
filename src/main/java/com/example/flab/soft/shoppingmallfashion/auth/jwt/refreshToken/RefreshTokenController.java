@@ -16,13 +16,9 @@ public class RefreshTokenController {
 
     @PostMapping("/refresh-token")
     public SuccessResult<TokensDto> refreshToken(@RequestBody TokenRefreshRequest request) {
-        String oldToken = parseToken(request);
+        String oldToken = request.getRefreshToken();
         TokensDto newTokens = refreshTokenService.renew(oldToken);
         return SuccessResult.<TokensDto>builder()
                 .response(newTokens).build();
-    }
-
-    private String parseToken(TokenRefreshRequest request) {
-        return request.getRefreshToken().split(" ")[1];
     }
 }

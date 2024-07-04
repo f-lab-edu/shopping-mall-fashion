@@ -7,9 +7,10 @@ import com.example.flab.soft.shoppingmallfashion.auth.jwt.TokenProvider;
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokensDto;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,20 +29,26 @@ public class RefreshTokenService {
         this.EXPIRATION_TIME = refreshExpirationTime;
     }
 
-    @Transactional(noRollbackFor = ApiException.class)
+    @Transactional
     public TokensDto renew(String token) {
         if (token == null || !tokenProvider.validateToken(token)) {
+            System.out.println(!tokenProvider.validateToken(token));
             throw new ApiException(ErrorEnum.INVALID_TOKEN);
         }
 
         String username = tokenProvider.getSubjectFromToken(token);
-        AuthUser authUser = (AuthUser) authService.loadUserByUsername(username);
+
+        AuthUser authUser;
+        try {
+            authUser = (AuthUser) authService.loadUserByUsername(username);
+        } catch (UsernameNotFoundException e) {
+            throw new ApiException(ErrorEnum.INVALID_TOKEN);
+        }
 
         RefreshToken oldToken = refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_TOKEN));
 
         if (isExpired(oldToken)) {
-            refreshTokenRepository.delete(oldToken);
             throw new ApiException(ErrorEnum.TOKEN_EXPIRED);
         }
 
@@ -53,7 +60,7 @@ public class RefreshTokenService {
     }
 
     private boolean isExpired(RefreshToken token) {
-        return token.getExpiration().isBefore(Instant.now());
+        return token.getExpiration().isBefore(LocalDateTime.now());
     }
 
     @Transactional
@@ -78,8 +85,10 @@ public class RefreshTokenService {
     private RefreshToken buildNewToken(TokenBuildDto tokenBuildDto, Long userId) {
         return RefreshToken.builder()
                 .token(tokenProvider.createRefreshToken(tokenBuildDto))
-                .expiration(Instant.now().plusMillis(EXPIRATION_TIME))
+                .expiration(LocalDateTime.now().plusSeconds(EXPIRATION_TIME))
                 .userId(userId)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 
