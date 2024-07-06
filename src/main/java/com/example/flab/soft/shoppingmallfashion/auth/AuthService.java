@@ -1,9 +1,8 @@
-package com.example.flab.soft.shoppingmallfashion.auth.service;
+package com.example.flab.soft.shoppingmallfashion.auth;
 
-import com.example.flab.soft.shoppingmallfashion.auth.domain.AuthUser;
-import com.example.flab.soft.shoppingmallfashion.auth.domain.Role;
-import com.example.flab.soft.shoppingmallfashion.auth.domain.UserRole;
-import com.example.flab.soft.shoppingmallfashion.auth.repository.UserRoleRepository;
+import com.example.flab.soft.shoppingmallfashion.auth.role.Role;
+import com.example.flab.soft.shoppingmallfashion.auth.role.UserRole;
+import com.example.flab.soft.shoppingmallfashion.auth.role.UserRoleRepository;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import java.util.List;

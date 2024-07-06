@@ -5,7 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
+@NoArgsConstructor
 public class SuccessResult<T> {
     private T response;
+
+    @Builder
+    public SuccessResult(T response) {
+        this.response = response;
+    }
 }

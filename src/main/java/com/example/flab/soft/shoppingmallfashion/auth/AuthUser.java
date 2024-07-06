@@ -1,5 +1,7 @@
-package com.example.flab.soft.shoppingmallfashion.auth.domain;
+package com.example.flab.soft.shoppingmallfashion.auth;
 
+import com.example.flab.soft.shoppingmallfashion.auth.role.Authority;
+import com.example.flab.soft.shoppingmallfashion.auth.role.Role;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,21 +47,21 @@ public class AuthUser implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

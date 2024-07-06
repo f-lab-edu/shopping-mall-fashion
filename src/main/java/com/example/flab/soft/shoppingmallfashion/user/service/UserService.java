@@ -1,7 +1,7 @@
 package com.example.flab.soft.shoppingmallfashion.user.service;
 
-import com.example.flab.soft.shoppingmallfashion.auth.domain.Authority;
-import com.example.flab.soft.shoppingmallfashion.auth.service.RoleService;
+import com.example.flab.soft.shoppingmallfashion.auth.role.Authority;
+import com.example.flab.soft.shoppingmallfashion.auth.role.RoleService;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpRequest;

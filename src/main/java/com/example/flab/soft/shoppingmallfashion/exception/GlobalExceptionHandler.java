@@ -2,6 +2,7 @@ package com.example.flab.soft.shoppingmallfashion.exception;
 
 import java.util.EnumSet;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,9 +32,6 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResult> toErrorResponseEntity(ErrorEnum error) {
         return ResponseEntity
                 .status(error.getStatus())
-                .body(ErrorResult.builder()
-                        .code(error.getCode())
-                        .message(error.getMessage())
-                        .build());
+                .body(new ErrorResult(error));
     }
 }
