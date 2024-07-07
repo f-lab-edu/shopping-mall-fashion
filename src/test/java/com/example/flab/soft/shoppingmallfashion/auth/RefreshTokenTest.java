@@ -54,10 +54,10 @@ public class RefreshTokenTest {
             .claim("id", 2L)
             .build();
     private RefreshToken refreshToken;
+    private User user;
     @BeforeEach
     void beforeEach() {
-        userRepository.save(User.builder()
-                .id(1L)
+        user = userRepository.save(User.builder()
                 .email("testUser@gmail.com")
                 .password("TestUser1#")
                 .realName("testUser")
@@ -73,7 +73,7 @@ public class RefreshTokenTest {
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(tokenProvider.createRefreshToken(TOKEN_BUILD_DTO))
                 .expiration(LocalDateTime.now().plusSeconds(TOKEN_EXPIRATION))
-                .userId(1L)
+                .userId(user.getId())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -104,7 +104,7 @@ public class RefreshTokenTest {
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(tokenProvider.createRefreshToken(TOKEN_BUILD_DTO))
                 .expiration(LocalDateTime.now().plusSeconds(TOKEN_EXPIRATION))
-                .userId(1L)
+                .userId(user.getId())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -130,7 +130,7 @@ public class RefreshTokenTest {
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(tokenProvider.createRefreshToken(TOKEN_BUILD_DTO))
                 .expiration(LocalDateTime.now())
-                .userId(1L)
+                .userId(user.getId())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
