@@ -76,4 +76,10 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow();
         return user.changeRealName(realName);
     }
+
+    @Transactional
+    public UserDto updateCellphone(Long id, String cellphoneNumber) {
+        User user = userRepository.findById(id).orElseThrow();
+        return user.changeCellphone(cellphoneNumber);
+    }
 }

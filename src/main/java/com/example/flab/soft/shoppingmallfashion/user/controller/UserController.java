@@ -49,4 +49,12 @@ public class UserController {
         UserDto userDto = userService.updateRealName(user.getId(), realNameUpdateRequest.getRealName());
         return SuccessResult.<UserDto>builder().response(userDto).build();
     }
+
+    @PatchMapping("/me/cellphone")
+    public SuccessResult<UserDto> updateCellphone(
+            @AuthenticationPrincipal AuthUser user,
+            @RequestBody @Validated CellphoneUpdateRequest cellphoneUpdateRequest) {
+        UserDto userDto = userService.updateCellphone(user.getId(), cellphoneUpdateRequest.getCellphoneNumber());
+        return SuccessResult.<UserDto>builder().response(userDto).build();
+    }
 }

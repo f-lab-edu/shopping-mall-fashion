@@ -52,6 +52,12 @@ public class User {
         return toUserDto();
     }
 
+    public UserDto changeCellphone(String cellphoneNumber) {
+        this.cellphoneNumber = cellphoneNumber;
+        renewUpdatedAt();
+        return toUserDto();
+    }
+
     private void renewUpdatedAt() {
         updatedAt = LocalDateTime.now();
     }
