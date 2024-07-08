@@ -41,6 +41,7 @@ class UserIntegrationTest {
     static final String UPDATED_EMAIL = "user4@example.com";
     static final String UPDATED_NAME = "User Four";
     static final String UPDATED_CELLPHONE = "01033333333";
+    static final String UPDATED_NICKNAME = "userfour";
 
     @DisplayName("필드 형식이 잘못된 경우 400 에러")
     @Test
@@ -158,5 +159,20 @@ class UserIntegrationTest {
                 )
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.response.cellphoneNumber").value(UPDATED_CELLPHONE));
+    }
+
+    @DisplayName("닉네임 수정")
+    @Test
+    void update_nickname() throws Exception {
+        mvc.perform(
+                        patch("/api/v1/users/me/nickname")
+                                .header("Authorization", accessToken)
+                                .content(mapper.writeValueAsString(Map.of(
+                                        "nickname", UPDATED_NICKNAME
+                                )))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.response.nickname").value(UPDATED_NICKNAME));
     }
 }
