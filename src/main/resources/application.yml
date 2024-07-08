@@ -24,6 +24,3 @@ jwt:
   secret: b8fa78bd08382b806cca62e7fb9e6331a850009acdb69c564a6c0a5f82b053bc0f03976b7cd908d89dfecd840471692633c65736b5d7bfce93f8eb8a5f98e590
   access-token-validation-time: 3600000
   refresh-token-validation-time: 86400000
-
-  logging.level.org.springframework.transaction.interceptor: trace
-  출처: https://rudaks.tistory.com/entry/스프링-트랜잭션-로그-찍기 [[루닥스 블로그] 연습만이 살길이다:티스토리]
