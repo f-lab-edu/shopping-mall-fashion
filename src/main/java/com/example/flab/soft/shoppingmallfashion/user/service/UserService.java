@@ -36,6 +36,7 @@ public class UserService {
                         .nickname(userSignUpRequest.getNickname())
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
+                        .withdrawal(false)
                         .build()
         );
 
@@ -95,5 +96,11 @@ public class UserService {
     public UserDto updateNickname(Long id, String nickname) {
         User user = userRepository.findById(id).orElseThrow();
         return user.changeNickname(nickname);
+    }
+
+    @Transactional
+    public void withdraw(Long id) {
+        User user = userRepository.findById(id).orElseThrow();
+        user.withdraw();
     }
 }

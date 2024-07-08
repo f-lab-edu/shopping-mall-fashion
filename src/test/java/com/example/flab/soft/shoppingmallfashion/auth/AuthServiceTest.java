@@ -39,6 +39,7 @@ class AuthServiceTest {
                 .id(1L)
                 .email("test@example.com")
                 .password("password")
+                .withdrawal(false)
                 .build();
 
         role = Role.builder()

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,5 +74,11 @@ public class UserController {
             @RequestBody @Validated NicknameUpdateRequest nicknameUpdateRequest) {
         UserDto userDto = userService.updateNickname(user.getId(), nicknameUpdateRequest.getNickname());
         return SuccessResult.<UserDto>builder().response(userDto).build();
+    }
+
+    @DeleteMapping("/me")
+    public SuccessResult<Void> withdraw(@AuthenticationPrincipal AuthUser user) {
+        userService.withdraw(user.getId());
+        return SuccessResult.<Void>builder().build();
     }
 }

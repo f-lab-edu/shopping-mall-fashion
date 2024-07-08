@@ -53,6 +53,7 @@ public class LoginTest {
                 .nickname("testUser")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .withdrawal(false)
                 .build());
     }
 

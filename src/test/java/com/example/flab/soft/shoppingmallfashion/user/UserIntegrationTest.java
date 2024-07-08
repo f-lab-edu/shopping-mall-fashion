@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -194,5 +195,21 @@ class UserIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is(200));
+    }
+
+    @DisplayName("회원 탈퇴")
+    @Test
+    void withdraw_member() throws Exception {
+        mvc.perform(
+                        delete("/api/v1/users/me")
+                                .header("Authorization", accessToken)
+                )
+                .andExpect(status().is(200));
+
+        mvc.perform(
+                        get("/api/v1/users/me")
+                                .header("Authorization", accessToken)
+                )
+                .andExpect(status().is(401));
     }
 }

@@ -25,10 +25,11 @@ public class User {
     private String nickname;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Boolean withdrawal;
 
     @Builder
     public User(Long id, String email, String password, String realName, String cellphoneNumber, String nickname,
-                LocalDateTime createdAt, LocalDateTime updatedAt) {
+                LocalDateTime createdAt, LocalDateTime updatedAt, Boolean withdrawal) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -37,7 +38,9 @@ public class User {
         this.nickname = nickname;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.withdrawal = withdrawal;
     }
+
 
     public void changePassword(String password) {
         this.password = password;
@@ -66,6 +69,14 @@ public class User {
         this.nickname = nickname;
         renewUpdatedAt();
         return toUserDto();
+    }
+
+    public void withdraw() {
+        withdrawal = true;
+    }
+
+    public boolean isInactivated(){
+        return withdrawal;
     }
 
     private void renewUpdatedAt() {

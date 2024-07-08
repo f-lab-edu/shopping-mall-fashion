@@ -65,6 +65,7 @@ public class RefreshTokenTest {
                 .nickname("testUser")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .withdrawal(false)
                 .build());
     }
 
