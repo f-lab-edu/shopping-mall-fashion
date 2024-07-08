@@ -34,6 +34,15 @@ public class UserController {
         return SuccessResult.<UserDto>builder().response(userDto).build();
     }
 
+    @PatchMapping("/me/password")
+    public SuccessResult<Void> updatePassword(
+            @AuthenticationPrincipal AuthUser user,
+            @RequestBody @Validated PasswordUpdateRequest passwordUpdateRequest) {
+        userService.changePassword(
+                user.getId(), passwordUpdateRequest.getCurrentPassword(), passwordUpdateRequest.getNewPassword());
+        return SuccessResult.<Void>builder().build();
+    }
+
     @PatchMapping("/me/email")
     public SuccessResult<UserDto> updateEmail(
             @AuthenticationPrincipal AuthUser user,

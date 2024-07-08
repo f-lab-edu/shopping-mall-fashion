@@ -15,6 +15,7 @@ public enum ErrorEnum {
     EMAIL_DUPLICATED(HttpStatus.CONFLICT, "이미 등록된 이메일입니다."),
     CELLPHONE_DUPLICATED(HttpStatus.CONFLICT, "이미 등록된 전화번호입니다."),
     NICKNAME_DUPLICATED(HttpStatus.CONFLICT, "이미 등록된 닉네임입니다."),
+    WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     // Authentication Exception
     AUTHENTICATION_FAILED(HttpStatus.BAD_REQUEST, "아이디 또는 비밀번호가 잘못되었습니다."),
     UNAUTHENTICATED(HttpStatus.UNAUTHORIZED, "인증되지 않은 접근입니다."),

@@ -39,6 +39,10 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    public void changePassword(String password) {
+        this.password = password;
+        renewUpdatedAt();
+    }
 
     public UserDto changeEmail(String email) {
         this.email = email;

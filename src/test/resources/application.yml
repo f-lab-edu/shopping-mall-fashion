@@ -20,6 +20,8 @@ authorization:
   user:
     token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMkBleGFtcGxlLmNvbSIsImlkIjoiMiIsImV4cCI6MTcyMDQ0MTg0OH0.6-H2yXute1zfHHqqvaLnVuWF2PriD0FaLUwbttkW9IslSNaE1X1bBvonJYAWto46QJQXYERlcW7kXiH6eGve9Q
     email: user2@example.com
+    encoded-password: $2a$10$hY/4fC.tyDKjJxTtVsHG8.MD2D3Zl5Jhdwn792xVjpODvCz6flOCC
+    raw-password: Password1#
 
 jwt:
   secret: b8fa78bd08382b806cca62e7fb9e6331a850009acdb69c564a6c0a5f82b053bc0f03976b7cd908d89dfecd840471692633c65736b5d7bfce93f8eb8a5f98e590
