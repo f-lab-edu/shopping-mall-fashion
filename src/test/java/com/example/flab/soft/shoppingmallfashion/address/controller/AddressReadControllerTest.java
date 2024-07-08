@@ -12,6 +12,7 @@ import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,6 +60,7 @@ class AddressReadControllerTest {
                 .zipcode(12345)
                 .recipientCellphone("01012345678")
                 .userId(savedUser.getId())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         savedAddress = addressRepository.save(address);

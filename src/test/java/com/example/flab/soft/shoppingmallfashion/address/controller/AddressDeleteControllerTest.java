@@ -13,6 +13,7 @@ import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,22 +41,6 @@ class AddressDeleteControllerTest {
     String accessToken;
     Address savedAddress;
     Address savedAddressOfOtherUser;
-
-    static final AddressAddRequest BAD_ADDRESS_ADD_REQUEST = AddressAddRequest.builder()
-            .recipientName("홍길동")
-            .roadAddress("대한로111")
-            .addressDetail("101동 101호")
-            .zipcode(0)
-            .recipientCellphone("01012345678")
-            .build();
-
-    static final AddressAddRequest ADDRESS_ADD_REQUEST = AddressAddRequest.builder()
-            .recipientName("홍길동")
-            .roadAddress("대한로111")
-            .addressDetail("101동 101호")
-            .zipcode(12345)
-            .recipientCellphone("01012345678")
-            .build();
 
     @BeforeEach
     void setUp() {
@@ -86,6 +71,7 @@ class AddressDeleteControllerTest {
                 .zipcode(12345)
                 .recipientCellphone("01012345678")
                 .userId(savedUser.getId())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         Address addressOfOtherUser = Address.builder()
@@ -95,6 +81,7 @@ class AddressDeleteControllerTest {
                 .zipcode(12346)
                 .recipientCellphone("01012345678")
                 .userId(savedUser2.getId())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         savedAddress = addressRepository.save(address);

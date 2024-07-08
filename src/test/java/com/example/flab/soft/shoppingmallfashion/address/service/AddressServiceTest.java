@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import com.example.flab.soft.shoppingmallfashion.address.repository.Address;
 import com.example.flab.soft.shoppingmallfashion.address.repository.AddressRepository;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ class AddressServiceTest {
             .zipcode(12345)
             .recipientCellphone("01012345678")
             .userId(1L)
+            .createdAt(LocalDateTime.now())
             .build();
 
     @Test
