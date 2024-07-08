@@ -63,7 +63,8 @@ public class RefreshTokenTest {
                 .realName("testUser")
                 .cellphoneNumber("01012345678")
                 .nickname("testUser")
-                .createdAt(LocalDate.now())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build());
     }
 

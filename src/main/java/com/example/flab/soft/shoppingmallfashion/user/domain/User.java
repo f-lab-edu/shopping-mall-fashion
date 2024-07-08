@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,11 +23,12 @@ public class User {
     private String realName;
     private String cellphoneNumber;
     private String nickname;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @Builder
     public User(Long id, String email, String password, String realName, String cellphoneNumber, String nickname,
-                LocalDate createdAt) {
+                LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -34,5 +36,6 @@ public class User {
         this.cellphoneNumber = cellphoneNumber;
         this.nickname = nickname;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }

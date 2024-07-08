@@ -7,8 +7,7 @@ import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpRequest;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
-import java.time.LocalDate;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,8 @@ public class UserService {
                         .realName(userSignUpRequest.getRealName())
                         .cellphoneNumber(userSignUpRequest.getCellphoneNumber())
                         .nickname(userSignUpRequest.getNickname())
-                        .createdAt(LocalDate.now())
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
                         .build()
         );
 

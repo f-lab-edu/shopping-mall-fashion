@@ -1,6 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.user.service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,10 +10,10 @@ public class UserDto {
     private String realName;
     private String cellphoneNumber;
     private String nickname;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @Builder
-    public UserDto(String email, String realName, String cellphoneNumber, String nickname, LocalDate createdAt) {
+    public UserDto(String email, String realName, String cellphoneNumber, String nickname, LocalDateTime createdAt) {
         this.email = email;
         this.realName = realName;
         this.cellphoneNumber = cellphoneNumber;
