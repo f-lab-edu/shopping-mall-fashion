@@ -6,6 +6,8 @@ import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,12 @@ public class AddressController {
     @PostMapping
     public SuccessResult<Void> addAddress(@RequestBody @Validated AddressAddRequest request, @AuthenticationPrincipal AuthUser user){
         addressService.add(request, user.getId());
+        return SuccessResult.<Void>builder().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public SuccessResult<Void> deleteAddress(@PathVariable Long id, @AuthenticationPrincipal AuthUser user){
+        addressService.delete(id, user.getId());
         return SuccessResult.<Void>builder().build();
     }
 }
