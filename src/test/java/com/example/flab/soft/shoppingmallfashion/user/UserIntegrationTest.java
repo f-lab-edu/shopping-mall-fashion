@@ -14,6 +14,7 @@ import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,6 +37,8 @@ class UserIntegrationTest {
 
     @Value("${authorization.user.email}")
     String userEmail;
+
+    static final String UPDATED_EMAIL = "user4@example.com";
 
     @DisplayName("필드 형식이 잘못된 경우 400 에러")
     @Test
@@ -108,5 +111,20 @@ class UserIntegrationTest {
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.response.email").value(userEmail));
 
+    }
+
+    @DisplayName("이메일 수정")
+    @Test
+    void update_info() throws Exception {
+        mvc.perform(
+                        patch("/api/v1/users/me/email")
+                                .header("Authorization", accessToken)
+                                .content(mapper.writeValueAsString(Map.of(
+                                        "email", UPDATED_EMAIL
+                                )))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.response.email").value(UPDATED_EMAIL));
     }
 }

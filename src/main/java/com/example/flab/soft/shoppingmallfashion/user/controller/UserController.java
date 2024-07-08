@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,14 @@ public class UserController {
     @GetMapping("/me")
     public SuccessResult<UserDto> me(@AuthenticationPrincipal AuthUser user) {
         UserDto userDto = userService.findUser(user.getId());
+        return SuccessResult.<UserDto>builder().response(userDto).build();
+    }
+
+    @PatchMapping("/me/email")
+    public SuccessResult<UserDto> updateEmail(
+            @AuthenticationPrincipal AuthUser user,
+            @RequestBody @Validated EmailUpdateRequest emailUpdateRequest) {
+        UserDto userDto = userService.updateEmail(user.getId(), emailUpdateRequest.getEmail());
         return SuccessResult.<UserDto>builder().response(userDto).build();
     }
 }
