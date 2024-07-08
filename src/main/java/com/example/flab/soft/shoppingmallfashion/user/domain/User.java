@@ -1,10 +1,10 @@
 package com.example.flab.soft.shoppingmallfashion.user.domain;
 
+import com.example.flab.soft.shoppingmallfashion.user.service.UserDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -37,5 +37,26 @@ public class User {
         this.nickname = nickname;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+
+    public UserDto changeEmail(String email) {
+        this.email = email;
+        renewUpdatedAt();
+        return toUserDto();
+    }
+
+    private void renewUpdatedAt() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    private UserDto toUserDto() {
+        return UserDto.builder()
+                .email(email)
+                .realName(realName)
+                .cellphoneNumber(cellphoneNumber)
+                .nickname(nickname)
+                .createdAt(createdAt)
+                .build();
     }
 }

@@ -64,4 +64,10 @@ public class UserService {
                 .createdAt(user.getCreatedAt())
                 .build();
     }
+
+    @Transactional
+    public UserDto updateEmail(Long id, String email) {
+        User user = userRepository.findById(id).orElseThrow();
+        return user.changeEmail(email);
+    }
 }

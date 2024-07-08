@@ -15,10 +15,10 @@ spring:
 #2024-12-31까지 유효
 authorization:
   admin:
-    token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMUBleGFtcGxlLmNvbSIsImlkIjoiMSIsImV4cCI6MTcyMDQzNjE3Nn0.InNPEZWacRClhJ1ACHYZG4rOMsqOAPFsbGYvfUAqeGU1D8bGKMYz2T3fveTlzkjBffM7QF-GqfKXOX3GNsLyIA
+    token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMUBleGFtcGxlLmNvbSIsImlkIjoiMSIsImV4cCI6MTcyMDQ1MzQ3OX0.YeBbEeLzzom9sfTows7iD1kdWVHd2MaGkc424chw-wjUpSZe5CKcbi2WYYXb86iJSQCLLwCovA1iW-ILymK0Rw
     email: user1@example.com
   user:
-    token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMkBleGFtcGxlLmNvbSIsImlkIjoiMiIsImV4cCI6MTcyMDQzNjE5Nn0.vbJXgqR4q_WGXVTJFWWL89gq4Wv73kA-Ji_VVsXi87t1TA_XCTT-IElIh5LLQYj_crJxJL1V1Gi586FaiIcxUw
+    token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMkBleGFtcGxlLmNvbSIsImlkIjoiMiIsImV4cCI6MTcyMDQ0MTg0OH0.6-H2yXute1zfHHqqvaLnVuWF2PriD0FaLUwbttkW9IslSNaE1X1bBvonJYAWto46QJQXYERlcW7kXiH6eGve9Q
     email: user2@example.com
 
 jwt:
