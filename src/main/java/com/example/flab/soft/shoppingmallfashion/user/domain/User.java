@@ -58,6 +58,12 @@ public class User {
         return toUserDto();
     }
 
+    public UserDto changeNickname(String nickname) {
+        this.nickname = nickname;
+        renewUpdatedAt();
+        return toUserDto();
+    }
+
     private void renewUpdatedAt() {
         updatedAt = LocalDateTime.now();
     }

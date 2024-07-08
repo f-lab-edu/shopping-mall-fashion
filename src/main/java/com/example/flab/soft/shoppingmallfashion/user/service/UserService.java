@@ -82,4 +82,10 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow();
         return user.changeCellphone(cellphoneNumber);
     }
+
+    @Transactional
+    public UserDto updateNickname(Long id, String nickname) {
+        User user = userRepository.findById(id).orElseThrow();
+        return user.changeNickname(nickname);
+    }
 }

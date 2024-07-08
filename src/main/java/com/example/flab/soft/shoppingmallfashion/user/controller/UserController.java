@@ -57,4 +57,12 @@ public class UserController {
         UserDto userDto = userService.updateCellphone(user.getId(), cellphoneUpdateRequest.getCellphoneNumber());
         return SuccessResult.<UserDto>builder().response(userDto).build();
     }
+
+    @PatchMapping("/me/nickname")
+    public SuccessResult<UserDto> updateNickname(
+            @AuthenticationPrincipal AuthUser user,
+            @RequestBody @Validated NicknameUpdateRequest nicknameUpdateRequest) {
+        UserDto userDto = userService.updateNickname(user.getId(), nicknameUpdateRequest.getNickname());
+        return SuccessResult.<UserDto>builder().response(userDto).build();
+    }
 }
