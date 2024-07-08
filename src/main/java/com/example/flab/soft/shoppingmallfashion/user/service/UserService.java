@@ -65,6 +65,14 @@ public class UserService {
                 .build();
     }
 
+    public void changePassword(Long id, String currentPassword, String newPassword) {
+        User user = userRepository.findById(id).orElseThrow();
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new ApiException(ErrorEnum.WRONG_PASSWORD);
+        }
+        user.changePassword(passwordEncoder.encode(newPassword));
+    }
+
     @Transactional
     public UserDto updateEmail(Long id, String email) {
         User user = userRepository.findById(id).orElseThrow();

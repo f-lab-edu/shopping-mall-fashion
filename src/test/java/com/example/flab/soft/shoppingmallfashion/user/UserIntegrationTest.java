@@ -38,10 +38,15 @@ class UserIntegrationTest {
     @Value("${authorization.user.email}")
     String userEmail;
 
+    @Value("${authorization.user.raw-password}")
+    String userPassword = null;
+
     static final String UPDATED_EMAIL = "user4@example.com";
     static final String UPDATED_NAME = "User Four";
     static final String UPDATED_CELLPHONE = "01033333333";
     static final String UPDATED_NICKNAME = "userfour";
+    static final String UPDATED_PASSWORD = "Testuser4#";
+
 
     @DisplayName("필드 형식이 잘못된 경우 400 에러")
     @Test
@@ -174,5 +179,20 @@ class UserIntegrationTest {
                 )
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.response.nickname").value(UPDATED_NICKNAME));
+    }
+
+    @DisplayName("비밀번호 변경")
+    @Test
+    void change_password() throws Exception {
+        mvc.perform(
+                        patch("/api/v1/users/me/password")
+                                .header("Authorization", accessToken)
+                                .content(mapper.writeValueAsString(Map.of(
+                                        "currentPassword", userPassword,
+                                        "newPassword", UPDATED_PASSWORD
+                                )))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is(200));
     }
 }

@@ -14,8 +14,7 @@ import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpRequest;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -118,5 +117,18 @@ class UserServiceTest {
         });
 
         assertThat(exception.getError()).isEqualTo(ErrorEnum.NICKNAME_DUPLICATED);
+    }
+
+    @DisplayName("현재 비밀번호 잘못 입력 예외 발생")
+    @Test
+    void whenChangePasswordWithWrongCurrentPassword_thenThrowsException() {
+        when(userRepository.findById(any())).thenReturn(
+                Optional.ofNullable(User.builder().password("Testuser1#").build()));
+        when(passwordEncoder.matches(any(), any())).thenReturn(false);
+
+        ApiException exception = assertThrows(ApiException.class, () -> {
+            userService.changePassword(1L, "CurrentPassword", "NewPassword");
+        });
+        assertThat(exception.getError()).isEqualTo(ErrorEnum.WRONG_PASSWORD);
     }
 }
