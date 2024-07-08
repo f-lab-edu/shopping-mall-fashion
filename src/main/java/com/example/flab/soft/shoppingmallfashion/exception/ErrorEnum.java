@@ -11,6 +11,7 @@ public enum ErrorEnum {
     FAILED_INTERNAL_SYSTEM_PROCESSING(HttpStatus.INTERNAL_SERVER_ERROR, "내부 시스템 처리 작업이 실패했습니다. 잠시 후 다시 시도해주세요."),
     NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 정보 입니다."),
     // User Exception
+    INACTIVATED_USER(HttpStatus.UNAUTHORIZED, "비활성화된 계정입니다."),
     USERNAME_DUPLICATED(HttpStatus.CONFLICT, "이미 등록된 아이디입니다."),
     EMAIL_DUPLICATED(HttpStatus.CONFLICT, "이미 등록된 이메일입니다."),
     CELLPHONE_DUPLICATED(HttpStatus.CONFLICT, "이미 등록된 전화번호입니다."),

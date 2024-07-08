@@ -82,7 +82,7 @@ public class WebSecurityConfig {
     public BasicAuthenticationFilter jwtAuthorizationFilter()
             throws Exception {
         return new JwtAuthorizationFilter(
-                authenticationManager(authenticationConfiguration), authService, tokenProvider);
+                authenticationManager(authenticationConfiguration), authService, tokenProvider, objectMapper);
     }
 
     @Bean
