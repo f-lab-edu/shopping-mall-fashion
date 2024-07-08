@@ -5,6 +5,7 @@ import com.example.flab.soft.shoppingmallfashion.address.repository.Address;
 import com.example.flab.soft.shoppingmallfashion.address.repository.AddressRepository;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,11 @@ public class AddressService {
             throw new ApiException(ErrorEnum.FORBIDDEN_ADDRESS_REQUEST);
         }
         addressRepository.delete(address);
+    }
+
+    public Addresses getAddresses(Long userId) {
+        List<Address> addresses = addressRepository.findAllByUserId(userId);
+        return Addresses.builder().addresses(addresses).build();
     }
 
     private Address toAddressEntity(AddressAddRequest request, Long userId) {
