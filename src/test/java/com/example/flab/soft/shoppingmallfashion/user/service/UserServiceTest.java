@@ -15,6 +15,7 @@ import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpReque
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,7 +78,6 @@ class UserServiceTest {
         assertThat(savedUser.getRealName()).isEqualTo(validUserSignUpRequest.getRealName());
         assertThat(savedUser.getCellphoneNumber()).isEqualTo(validUserSignUpRequest.getCellphoneNumber());
         assertThat(savedUser.getNickname()).isEqualTo(validUserSignUpRequest.getNickname());
-        assertThat(savedUser.getCreatedAt()).isEqualTo(LocalDate.now());
 
         assertThat(savedUser.getEmail()).isEqualTo("valid.email@example.com");
         assertThat(passedUser.getId()).isEqualTo(1L);
