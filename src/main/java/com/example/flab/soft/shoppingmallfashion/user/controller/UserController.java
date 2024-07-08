@@ -41,4 +41,12 @@ public class UserController {
         UserDto userDto = userService.updateEmail(user.getId(), emailUpdateRequest.getEmail());
         return SuccessResult.<UserDto>builder().response(userDto).build();
     }
+
+    @PatchMapping("/me/realName")
+    public SuccessResult<UserDto> updateRealName(
+            @AuthenticationPrincipal AuthUser user,
+            @RequestBody @Validated RealNameUpdateRequest realNameUpdateRequest) {
+        UserDto userDto = userService.updateRealName(user.getId(), realNameUpdateRequest.getRealName());
+        return SuccessResult.<UserDto>builder().response(userDto).build();
+    }
 }

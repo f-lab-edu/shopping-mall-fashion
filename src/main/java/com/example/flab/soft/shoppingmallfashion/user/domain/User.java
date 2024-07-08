@@ -46,6 +46,12 @@ public class User {
         return toUserDto();
     }
 
+    public UserDto changeRealName(String realName) {
+        this.realName = realName;
+        renewUpdatedAt();
+        return toUserDto();
+    }
+
     private void renewUpdatedAt() {
         updatedAt = LocalDateTime.now();
     }
