@@ -70,4 +70,10 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow();
         return user.changeEmail(email);
     }
+
+    @Transactional
+    public UserDto updateRealName(Long id, String realName) {
+        User user = userRepository.findById(id).orElseThrow();
+        return user.changeRealName(realName);
+    }
 }
