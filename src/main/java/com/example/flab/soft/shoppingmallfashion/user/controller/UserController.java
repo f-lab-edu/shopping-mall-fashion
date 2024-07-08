@@ -1,9 +1,12 @@
 package com.example.flab.soft.shoppingmallfashion.user.controller;
 
+import com.example.flab.soft.shoppingmallfashion.auth.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
+import com.example.flab.soft.shoppingmallfashion.user.service.UserDto;
 import com.example.flab.soft.shoppingmallfashion.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,9 +28,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public SuccessResult<Void> me() {
-        //TODO
-        //로그인 검증
-        return SuccessResult.<Void>builder().build();
+    public SuccessResult<UserDto> me(@AuthenticationPrincipal AuthUser user) {
+        UserDto userDto = userService.findUser(user.getId());
+        return SuccessResult.<UserDto>builder().response(userDto).build();
     }
 }
