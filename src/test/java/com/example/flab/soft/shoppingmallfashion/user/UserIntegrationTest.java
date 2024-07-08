@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -12,7 +13,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
@@ -27,6 +30,12 @@ class UserIntegrationTest {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Value("${authorization.user.token}")
+    String accessToken;
+
+    @Value("${authorization.user.email}")
+    String userEmail;
 
     @DisplayName("필드 형식이 잘못된 경우 400 에러")
     @Test
@@ -87,5 +96,17 @@ class UserIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is(409));
+    }
+
+    @DisplayName("내 정보 조회")
+    @Test
+    void my_info() throws Exception {
+        mvc.perform(
+                        get("/api/v1/users/me")
+                                .header("Authorization", accessToken)
+                )
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.response.email").value(userEmail));
+
     }
 }

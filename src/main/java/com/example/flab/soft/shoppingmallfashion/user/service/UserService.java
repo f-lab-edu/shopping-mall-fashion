@@ -8,6 +8,7 @@ import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpReque
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import java.time.LocalDate;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,5 +52,16 @@ public class UserService {
         if (userRepository.existsByNickname(userSignUpRequest.getNickname())) {
             throw new ApiException(ErrorEnum.NICKNAME_DUPLICATED);
         }
+    }
+
+    public UserDto findUser(Long id) {
+        User user = userRepository.findById(id).orElseThrow();
+        return UserDto.builder()
+                .email(user.getEmail())
+                .realName(user.getRealName())
+                .cellphoneNumber(user.getCellphoneNumber())
+                .nickname(user.getNickname())
+                .createdAt(user.getCreatedAt())
+                .build();
     }
 }
