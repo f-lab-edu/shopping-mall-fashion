@@ -25,7 +25,9 @@ public enum ErrorEnum {
     TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "유효 기간이 만료된 토큰입니다."),
     // Address
     NO_SUCH_ADDRESS(HttpStatus.BAD_REQUEST, "존재하지 않는 주소입니다."),
-    FORBIDDEN_ADDRESS_REQUEST(HttpStatus.FORBIDDEN, "허용되지 않는 주소 요청입니다.");
+    FORBIDDEN_ADDRESS_REQUEST(HttpStatus.FORBIDDEN, "허용되지 않는 주소 요청입니다."),
+    // Store
+    STORE_NAME_DUPLICATED(HttpStatus.CONFLICT, "이미 등록된 브랜드입니다.");
 
     private final HttpStatus status;
     private final String code;
