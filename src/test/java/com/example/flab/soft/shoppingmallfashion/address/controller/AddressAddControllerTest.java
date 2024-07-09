@@ -10,7 +10,7 @@ import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,7 +60,6 @@ class AddressAddControllerTest {
                 .realName("testUser")
                 .cellphoneNumber("01012345678")
                 .nickname("testUser")
-                .createdAt(LocalDate.now())
                 .build());
 
         initToken(saved);

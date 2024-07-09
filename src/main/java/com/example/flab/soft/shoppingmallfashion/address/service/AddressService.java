@@ -5,7 +5,6 @@ import com.example.flab.soft.shoppingmallfashion.address.repository.Address;
 import com.example.flab.soft.shoppingmallfashion.address.repository.AddressRepository;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,7 +43,6 @@ public class AddressService {
                 .zipcode(request.getZipcode())
                 .recipientCellphone(request.getRecipientCellphone())
                 .userId(userId)
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 }

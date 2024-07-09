@@ -7,7 +7,6 @@ import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpRequest;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,7 +33,6 @@ public class UserService {
                         .realName(userSignUpRequest.getRealName())
                         .cellphoneNumber(userSignUpRequest.getCellphoneNumber())
                         .nickname(userSignUpRequest.getNickname())
-                        .createdAt(LocalDate.now())
                         .build()
         );
 
@@ -51,5 +49,36 @@ public class UserService {
         if (userRepository.existsByNickname(userSignUpRequest.getNickname())) {
             throw new ApiException(ErrorEnum.NICKNAME_DUPLICATED);
         }
+    }
+
+    public UserDto findUser(Long id) {
+        User user = userRepository.findById(id).orElseThrow();
+        return UserDto.builder()
+                .email(user.getEmail())
+                .realName(user.getRealName())
+                .cellphoneNumber(user.getCellphoneNumber())
+                .nickname(user.getNickname())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
+
+    public void changePassword(Long id, String currentPassword, String newPassword) {
+        User user = userRepository.findById(id).orElseThrow();
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new ApiException(ErrorEnum.WRONG_PASSWORD);
+        }
+        user.changePassword(passwordEncoder.encode(newPassword));
+    }
+
+    @Transactional
+    public UserDto updateField(Long id, String fieldName, String updatedValue) {
+        User user = userRepository.findById(id).orElseThrow();
+        return user.update(fieldName, updatedValue);
+    }
+
+    @Transactional
+    public void withdraw(Long id) {
+        User user = userRepository.findById(id).orElseThrow();
+        user.withdraw();
     }
 }

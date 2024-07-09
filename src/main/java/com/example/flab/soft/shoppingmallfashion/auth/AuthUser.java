@@ -17,13 +17,15 @@ public class AuthUser implements UserDetails {
     private String email;
     private String password;
     private List<Role> roles;
+    private boolean enabled;
 
     @Builder
-    public AuthUser(Long id, String email, String password, List<Role> roles) {
+    public AuthUser(Long id, String email, String password, List<Role> roles, Boolean enabled) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.roles = roles;
+        this.enabled = enabled;
     }
 
     @Override
@@ -62,6 +64,6 @@ public class AuthUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

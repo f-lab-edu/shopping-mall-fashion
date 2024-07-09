@@ -1,5 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.auth.role;
 
+import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "roles")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Role {
+public class Role extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = 0L;
