@@ -7,7 +7,6 @@ import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpRequest;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,9 +33,6 @@ public class UserService {
                         .realName(userSignUpRequest.getRealName())
                         .cellphoneNumber(userSignUpRequest.getCellphoneNumber())
                         .nickname(userSignUpRequest.getNickname())
-                        .createdAt(LocalDateTime.now())
-                        .updatedAt(LocalDateTime.now())
-                        .withdrawal(false)
                         .build()
         );
 
@@ -75,27 +71,9 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto updateEmail(Long id, String email) {
+    public UserDto updateField(Long id, String fieldName, String updatedValue) {
         User user = userRepository.findById(id).orElseThrow();
-        return user.changeEmail(email);
-    }
-
-    @Transactional
-    public UserDto updateRealName(Long id, String realName) {
-        User user = userRepository.findById(id).orElseThrow();
-        return user.changeRealName(realName);
-    }
-
-    @Transactional
-    public UserDto updateCellphone(Long id, String cellphoneNumber) {
-        User user = userRepository.findById(id).orElseThrow();
-        return user.changeCellphone(cellphoneNumber);
-    }
-
-    @Transactional
-    public UserDto updateNickname(Long id, String nickname) {
-        User user = userRepository.findById(id).orElseThrow();
-        return user.changeNickname(nickname);
+        return user.update(fieldName, updatedValue);
     }
 
     @Transactional

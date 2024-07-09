@@ -36,10 +36,8 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         user = User.builder()
-                .id(1L)
                 .email("test@example.com")
                 .password("password")
-                .withdrawal(false)
                 .build();
 
         role = Role.builder()
@@ -57,7 +55,7 @@ class AuthServiceTest {
     @Test
     void loadUserByUsername_userExists_returnsUserDetails() {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
-        when(userRoleRepository.findAllByUserId(1L)).thenReturn(List.of(userRole));
+        when(userRoleRepository.findAllByUserId(user.getId())).thenReturn(List.of(userRole));
 
         UserDetails userDetails = authService.loadUserByUsername("test@example.com");
 
@@ -68,7 +66,7 @@ class AuthServiceTest {
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_USER")));
 
         verify(userRepository).findByEmail("test@example.com");
-        verify(userRoleRepository).findAllByUserId(1L);
+        verify(userRoleRepository).findAllByUserId(user.getId());
     }
 
     @Test

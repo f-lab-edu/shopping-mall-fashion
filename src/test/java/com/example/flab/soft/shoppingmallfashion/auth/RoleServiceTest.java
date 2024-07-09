@@ -33,13 +33,11 @@ class RoleServiceTest {
     @Test
     void userRoleIsSaved() {
         User user = User.builder()
-                .id(1L)
                 .email("test@example.com")
                 .password("password")
                 .build();
 
         Role role = Role.builder()
-                .id(1L)
                 .authority(Authority.ROLE_USER)
                 .build();
 
@@ -52,6 +50,6 @@ class RoleServiceTest {
         UserRole savedUserRole = userRoleCaptor.getValue();
 
         assertThat(savedUserRole.getRole()).isEqualTo(role);
-        assertThat(savedUserRole.getUserId()).isEqualTo(1L);
+        assertThat(savedUserRole.getUserId()).isEqualTo(user.getId());
     }
 }

@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity(name = "addresses")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,18 +24,17 @@ public class Address {
     private int zipcode;
     private String recipientCellphone;
     private Long userId;
-    private LocalDateTime createdAt;
+    @CreationTimestamp
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Builder
-    public Address(String recipientName, String roadAddress, String addressDetail, int zipcode,
-                   String recipientCellphone,
-                   Long userId, LocalDateTime createdAt) {
+    public Address(String recipientName, String roadAddress, String addressDetail,
+                   int zipcode, String recipientCellphone, Long userId) {
         this.recipientName = recipientName;
         this.roadAddress = roadAddress;
         this.addressDetail = addressDetail;
         this.zipcode = zipcode;
         this.recipientCellphone = recipientCellphone;
         this.userId = userId;
-        this.createdAt = createdAt;
     }
 }

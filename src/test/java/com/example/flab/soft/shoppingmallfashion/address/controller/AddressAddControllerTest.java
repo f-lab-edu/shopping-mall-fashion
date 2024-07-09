@@ -60,9 +60,6 @@ class AddressAddControllerTest {
                 .realName("testUser")
                 .cellphoneNumber("01012345678")
                 .nickname("testUser")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .withdrawal(false)
                 .build());
 
         initToken(saved);

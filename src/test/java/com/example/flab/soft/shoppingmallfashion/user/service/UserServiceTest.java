@@ -52,7 +52,6 @@ class UserServiceTest {
     @Test
     void whenSignUpWithValidInfo_thenUserIsSaved() {
         User user = User.builder()
-                .id(1L)
                 .email("valid.email@example.com")
                 .password("ValidPass1#")
                 .build();
@@ -79,7 +78,7 @@ class UserServiceTest {
         assertThat(savedUser.getNickname()).isEqualTo(validUserSignUpRequest.getNickname());
 
         assertThat(savedUser.getEmail()).isEqualTo("valid.email@example.com");
-        assertThat(passedUser.getId()).isEqualTo(1L);
+        assertThat(passedUser.getId()).isEqualTo(user.getId());
         assertThat(passedAuthority).isEqualTo(Authority.ROLE_USER);
     }
 

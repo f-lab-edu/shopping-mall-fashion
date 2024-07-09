@@ -126,10 +126,10 @@ class UserIntegrationTest {
     @Test
     void update_email() throws Exception {
         mvc.perform(
-                        patch("/api/v1/users/me/email")
+                        patch("/api/v1/users/me?type=email")
                                 .header("Authorization", accessToken)
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "email", UPDATED_EMAIL
+                                        "value", UPDATED_EMAIL
                                 )))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -141,10 +141,10 @@ class UserIntegrationTest {
     @Test
     void update_real_name() throws Exception {
         mvc.perform(
-                        patch("/api/v1/users/me/realName")
+                        patch("/api/v1/users/me?type=realName")
                                 .header("Authorization", accessToken)
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "realName", UPDATED_NAME
+                                        "value", UPDATED_NAME
                                 )))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -156,10 +156,10 @@ class UserIntegrationTest {
     @Test
     void update_cellphone_number() throws Exception {
         mvc.perform(
-                        patch("/api/v1/users/me/cellphone")
+                        patch("/api/v1/users/me?type=cellphone")
                                 .header("Authorization", accessToken)
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "cellphoneNumber", UPDATED_CELLPHONE
+                                        "value", UPDATED_CELLPHONE
                                 )))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -171,10 +171,10 @@ class UserIntegrationTest {
     @Test
     void update_nickname() throws Exception {
         mvc.perform(
-                        patch("/api/v1/users/me/nickname")
+                        patch("/api/v1/users/me?type=nickname")
                                 .header("Authorization", accessToken)
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "nickname", UPDATED_NICKNAME
+                                        "value", UPDATED_NICKNAME
                                 )))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )

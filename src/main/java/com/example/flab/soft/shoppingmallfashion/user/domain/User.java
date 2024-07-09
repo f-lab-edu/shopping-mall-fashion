@@ -6,10 +6,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity(name = "users")
 @Getter
@@ -23,51 +29,39 @@ public class User {
     private String realName;
     private String cellphoneNumber;
     private String nickname;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private Boolean withdrawal;
+    @CreationTimestamp
+    private LocalDateTime createdAt = LocalDateTime.now();
+    @UpdateTimestamp
+    private LocalDateTime updatedAt  = LocalDateTime.now();;
+    private Boolean withdrawal = false;
 
     @Builder
-    public User(Long id, String email, String password, String realName, String cellphoneNumber, String nickname,
-                LocalDateTime createdAt, LocalDateTime updatedAt, Boolean withdrawal) {
-        this.id = id;
+    public User(String email, String password, String realName, String cellphoneNumber, String nickname) {
         this.email = email;
         this.password = password;
         this.realName = realName;
         this.cellphoneNumber = cellphoneNumber;
         this.nickname = nickname;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.withdrawal = withdrawal;
     }
 
 
     public void changePassword(String password) {
         this.password = password;
-        renewUpdatedAt();
     }
 
-    public UserDto changeEmail(String email) {
-        this.email = email;
-        renewUpdatedAt();
-        return toUserDto();
-    }
-
-    public UserDto changeRealName(String realName) {
-        this.realName = realName;
-        renewUpdatedAt();
-        return toUserDto();
-    }
-
-    public UserDto changeCellphone(String cellphoneNumber) {
-        this.cellphoneNumber = cellphoneNumber;
-        renewUpdatedAt();
-        return toUserDto();
-    }
-
-    public UserDto changeNickname(String nickname) {
-        this.nickname = nickname;
-        renewUpdatedAt();
+    public UserDto update(String fieldName, String value) {
+        if (Objects.equals(fieldName, "email")) {
+            email = value;
+        }
+        if (Objects.equals(fieldName, "realName")) {
+            realName = value;
+        }
+        if (Objects.equals(fieldName, "cellphone")) {
+            cellphoneNumber = value;
+        }
+        if (Objects.equals(fieldName, "nickname")) {
+            nickname = value;
+        }
         return toUserDto();
     }
 
@@ -77,10 +71,6 @@ public class User {
 
     public boolean isInactivated(){
         return withdrawal;
-    }
-
-    private void renewUpdatedAt() {
-        updatedAt = LocalDateTime.now();
     }
 
     private UserDto toUserDto() {
