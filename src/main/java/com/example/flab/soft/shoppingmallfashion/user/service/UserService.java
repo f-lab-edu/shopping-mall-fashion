@@ -36,7 +36,7 @@ public class UserService {
                         .build()
         );
 
-        roleService.save(user, Authority.ROLE_USER);
+        roleService.save(user.getId(), Authority.ROLE_USER);
     }
 
     private void checkDuplication(UserSignUpRequest userSignUpRequest) {

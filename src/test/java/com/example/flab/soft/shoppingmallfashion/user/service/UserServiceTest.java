@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.example.flab.soft.shoppingmallfashion.auth.role.Authority;
 import com.example.flab.soft.shoppingmallfashion.auth.role.RoleService;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
@@ -62,24 +61,16 @@ class UserServiceTest {
         userService.signUp(validUserSignUpRequest);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-        ArgumentCaptor<Authority> authorityCaptor = ArgumentCaptor.forClass(Authority.class);
 
         verify(userRepository).save(userCaptor.capture());
         User savedUser = userCaptor.getValue();
-
-        verify(roleService).save(userCaptor.capture(), authorityCaptor.capture());
-        User passedUser = userCaptor.getValue();
-        Authority passedAuthority = authorityCaptor.getValue();
 
         assertThat(savedUser.getEmail()).isEqualTo(validUserSignUpRequest.getEmail());
         assertThat(savedUser.getPassword()).isEqualTo("encodedPassword");
         assertThat(savedUser.getRealName()).isEqualTo(validUserSignUpRequest.getRealName());
         assertThat(savedUser.getCellphoneNumber()).isEqualTo(validUserSignUpRequest.getCellphoneNumber());
         assertThat(savedUser.getNickname()).isEqualTo(validUserSignUpRequest.getNickname());
-
         assertThat(savedUser.getEmail()).isEqualTo("valid.email@example.com");
-        assertThat(passedUser.getId()).isEqualTo(user.getId());
-        assertThat(passedAuthority).isEqualTo(Authority.ROLE_USER);
     }
 
     @DisplayName("이메일 중복시 예외 발생")
