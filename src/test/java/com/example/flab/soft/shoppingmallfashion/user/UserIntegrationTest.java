@@ -40,7 +40,7 @@ class UserIntegrationTest {
     String userEmail;
 
     @Value("${authorization.user.raw-password}")
-    String userPassword = null;
+    String userPassword;
 
     static final String UPDATED_EMAIL = "user4@example.com";
     static final String UPDATED_NAME = "User Four";

@@ -33,7 +33,6 @@ public class RefreshTokenService {
     @Transactional
     public TokensDto renew(String token) {
         if (token == null || !tokenProvider.validateToken(token)) {
-            System.out.println(!tokenProvider.validateToken(token));
             throw new ApiException(ErrorEnum.INVALID_TOKEN);
         }
 

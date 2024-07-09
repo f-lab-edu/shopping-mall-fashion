@@ -1,6 +1,8 @@
 package com.example.flab.soft.shoppingmallfashion.auth.jwt;
 
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenBuildDto;
+import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
+import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -71,6 +73,7 @@ public class TokenProvider {
             log.info("잘못된 JWT 서명입니다: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다: {}", e.getMessage());
+            throw new ApiException(ErrorEnum.TOKEN_EXPIRED);
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
