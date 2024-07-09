@@ -1,5 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.user.domain;
 
+import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import com.example.flab.soft.shoppingmallfashion.user.service.UserDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +21,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Entity(name = "users")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = 0L;
@@ -29,10 +30,6 @@ public class User {
     private String realName;
     private String cellphoneNumber;
     private String nickname;
-    @CreationTimestamp
-    private LocalDateTime createdAt = LocalDateTime.now();
-    @UpdateTimestamp
-    private LocalDateTime updatedAt  = LocalDateTime.now();;
     private Boolean withdrawal = false;
 
     @Builder
@@ -79,7 +76,7 @@ public class User {
                 .realName(realName)
                 .cellphoneNumber(cellphoneNumber)
                 .nickname(nickname)
-                .createdAt(createdAt)
+                .createdAt(super.getCreatedAt())
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.address.repository;
 
+import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,7 +15,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @Entity(name = "addresses")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Address {
+public class Address extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id = 0L;
@@ -24,8 +25,6 @@ public class Address {
     private int zipcode;
     private String recipientCellphone;
     private Long userId;
-    @CreationTimestamp
-    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Builder
     public Address(String recipientName, String roadAddress, String addressDetail,
