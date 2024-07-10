@@ -46,6 +46,14 @@ public class StoreService {
         return buildStoreDto(store);
     }
 
+    @Transactional
+    public StoreDto stoppage(Long userId) {
+        Store store = storeRepository.findByManagerId(userId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.STORE_NOT_FOUND));
+        store.beOnStoppage();
+        return buildStoreDto(store);
+    }
+
     private StoreDto buildStoreDto(Store store) {
         return StoreDto.builder()
                 .id(store.getId())
@@ -53,6 +61,7 @@ public class StoreService {
                 .logo(store.getLogo())
                 .description(store.getDescription())
                 .businessRegistrationNumber(store.getBusinessRegistrationNumber())
+                .saleState(store.getSaleState().name())
                 .build();
     }
 }

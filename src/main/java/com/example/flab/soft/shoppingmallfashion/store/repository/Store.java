@@ -2,9 +2,12 @@ package com.example.flab.soft.shoppingmallfashion.store.repository;
 
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +24,8 @@ public class Store extends BaseEntity {
     private String description;
     private String businessRegistrationNumber;
     private Long managerId;
+    @Enumerated(EnumType.STRING)
+    private StoreState saleState = StoreState.PREPARING;
 
     @Builder
     public Store(String name, String logo, String description, String businessRegistrationNumber, Long managerId) {
@@ -41,5 +46,9 @@ public class Store extends BaseEntity {
         else if (Objects.equals(type, "description")) {
             logo = description;
         }
+    }
+
+    public void beOnStoppage() {
+        saleState = StoreState.ON_STOPPAGE;
     }
 }

@@ -95,6 +95,6 @@ public class StoreIntegrationTest {
                         patch("/api/v1/store/myStore/stoppage")
                                 .header("Authorization", managerToken))
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$.response.state").value("ON_STOPPAGE"));
+                .andExpect(jsonPath("$.response.saleState").value("ON_STOPPAGE"));
     }
 }
