@@ -2,14 +2,12 @@ package com.example.flab.soft.shoppingmallfashion.store.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.flab.soft.shoppingmallfashion.WithMockCustomUser;
-import com.example.flab.soft.shoppingmallfashion.auth.role.Authority;
 import com.example.flab.soft.shoppingmallfashion.auth.role.RoleService;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
@@ -34,6 +32,8 @@ class StoreControllerTest {
     private ObjectMapper mapper;
     @MockBean
     private StoreService storeService;
+    @MockBean
+    private RoleService roleService;
 
     @Value("${authorization.user.token}")
     String accessToken;

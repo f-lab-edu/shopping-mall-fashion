@@ -1,12 +1,14 @@
 package com.example.flab.soft.shoppingmallfashion.store.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.store.controller.AddStoreRequest;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,5 +35,12 @@ class StoreServiceTest {
     void whenRegisterWithDuplicatedName_throwsException() {
         when(storeRepository.existsByName(anyString())).thenReturn(true);
         assertThrows(ApiException.class, () -> storeService.addStore(addStoreRequest, 1L));
+    }
+
+    @Test
+    @DisplayName("등록된 상점 없이 내 상점 정보 조회시 예외")
+    void whenGetMyStoreDataWithNotRegisteredStore_throwsException() {
+        when(storeRepository.findByManagerId(anyLong())).thenReturn(Optional.empty());
+        assertThrows(ApiException.class, () -> storeService.getUserStore( 1L));
     }
 }

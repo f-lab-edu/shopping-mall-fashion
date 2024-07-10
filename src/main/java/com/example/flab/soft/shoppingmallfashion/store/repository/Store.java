@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 public class Store extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id = 0L;
-    String name;
-    String logo;
-    String description;
-    String businessRegistrationNumber;
-    Long managerId;
+    private Long id = 0L;
+    private String name;
+    private String logo;
+    private String description;
+    private String businessRegistrationNumber;
+    private Long managerId;
 
     @Builder
     public Store(String name, String logo, String description, String businessRegistrationNumber, Long managerId) {

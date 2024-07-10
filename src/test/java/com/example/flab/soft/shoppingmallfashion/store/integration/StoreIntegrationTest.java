@@ -2,6 +2,7 @@ package com.example.flab.soft.shoppingmallfashion.store.integration;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.flab.soft.shoppingmallfashion.store.controller.AddStoreRequest;
@@ -24,7 +25,9 @@ public class StoreIntegrationTest {
     private ObjectMapper mapper;
 
     @Value("${authorization.user.token}")
-    String accessToken;
+    String userToken;
+    @Value("${authorization.admin.token}")
+    String managerToken;
     static final AddStoreRequest ADD_STORE_REQUEST = AddStoreRequest.builder()
             .name("store")
             .logo("logo")
@@ -37,14 +40,24 @@ public class StoreIntegrationTest {
     void whenRegisterWithDuplicatedName_thenReturn409() throws Exception {
         mvc.perform(
                         post("/api/v1/store/register")
-                                .header("Authorization", accessToken)
+                                .header("Authorization", userToken)
                                 .content(mapper.writeValueAsString(ADD_STORE_REQUEST))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200));
 
         mvc.perform(
-                        get("/api/v1/store")
-                                .header("Authorization", accessToken))
+                        get("/api/v1/store/myStore")
+                                .header("Authorization", userToken))
                 .andExpect(status().is(200));
+    }
+
+    @Test
+    @DisplayName("상점 정보 조회")
+    void getMyStoreInfo() throws Exception {
+        mvc.perform(
+                        get("/api/v1/store/myStore")
+                                .header("Authorization", managerToken))
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.response.name").value("Store One"));
     }
 }

@@ -4,6 +4,7 @@ import com.example.flab.soft.shoppingmallfashion.auth.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.auth.role.Authority;
 import com.example.flab.soft.shoppingmallfashion.auth.role.RoleService;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
+import com.example.flab.soft.shoppingmallfashion.store.service.StoreDto;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,10 +30,10 @@ public class StoreController {
         return SuccessResult.<Void>builder().build();
     }
 
-    @GetMapping
-    public SuccessResult<Void> getStoreInfo(
+    @GetMapping("/myStore")
+    public SuccessResult<StoreDto> myStore(
             @AuthenticationPrincipal AuthUser user) {
-        //TODO
-        return SuccessResult.<Void>builder().build();
+        StoreDto storeDto = storeService.getUserStore(user.getId());
+        return SuccessResult.<StoreDto>builder().response(storeDto).build();
     }
 }
