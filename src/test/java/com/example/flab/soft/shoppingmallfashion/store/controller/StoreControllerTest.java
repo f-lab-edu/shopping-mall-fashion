@@ -37,12 +37,40 @@ class StoreControllerTest {
 
     @Value("${authorization.user.token}")
     String accessToken;
-    static final AddStoreRequest ADD_STORE_REQUEST = AddStoreRequest.builder()
-            .name("store")
-            .logo("logo")
-            .description("description")
-            .businessRegistrationNumber("0123456789")
-            .build();
+
+    @Test
+    @DisplayName("사업자 등록번호는 10자리 숫자")
+    void businessRegistrationNumberIs10Digit_ifNotReturn400() throws Exception {
+        mvc.perform(
+                        post("/api/v1/store/register")
+                                .with(SecurityMockMvcRequestPostProcessors.csrf())
+                                .content(mapper.writeValueAsString(AddStoreRequest.builder()
+                                        .name("store")
+                                        .logo("logo")
+                                        .description("description")
+                                        .businessRegistrationNumber("123")
+                                        .build()))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.code").value(ErrorEnum.INVALID_REQUEST.getCode()));
+    }
+
+    @Test
+    @DisplayName("상점 이름은 공백일 수 없다.")
+    void nameCannotBeBlank_ifNotReturn400() throws Exception {
+        mvc.perform(
+                        post("/api/v1/store/register")
+                                .with(SecurityMockMvcRequestPostProcessors.csrf())
+                                .content(mapper.writeValueAsString(AddStoreRequest.builder()
+                                        .name("")
+                                        .logo("logo")
+                                        .description("description")
+                                        .businessRegistrationNumber("0123456789")
+                                        .build()))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.code").value(ErrorEnum.INVALID_REQUEST.getCode()));
+    }
 
     @Test
     @DisplayName("이미 존재하는 이름의 상점 등록시 409에러")
@@ -53,7 +81,12 @@ class StoreControllerTest {
         mvc.perform(
                         post("/api/v1/store/register")
                                 .with(SecurityMockMvcRequestPostProcessors.csrf())
-                                .content(mapper.writeValueAsString(ADD_STORE_REQUEST))
+                                .content(mapper.writeValueAsString(AddStoreRequest.builder()
+                                        .name("store")
+                                        .logo("logo")
+                                        .description("description")
+                                        .businessRegistrationNumber("0123456789")
+                                        .build()))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(409))
                 .andExpect(jsonPath("$.code").value(ErrorEnum.STORE_NAME_DUPLICATED.getCode()));

@@ -8,6 +8,7 @@ import com.example.flab.soft.shoppingmallfashion.store.service.StoreDto;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +25,7 @@ public class StoreController {
     @PostMapping("/register")
     public SuccessResult<Void> registerStore(
             @AuthenticationPrincipal AuthUser user,
-            @RequestBody AddStoreRequest addStoreRequest) {
+            @Validated @RequestBody AddStoreRequest addStoreRequest) {
         storeService.addStore(addStoreRequest, user.getId());
         roleService.save(user.getId(), Authority.ROLE_STORE_MANAGER);
         return SuccessResult.<Void>builder().build();
