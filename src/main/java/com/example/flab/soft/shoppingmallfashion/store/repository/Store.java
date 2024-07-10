@@ -30,4 +30,16 @@ public class Store extends BaseEntity {
         this.businessRegistrationNumber = businessRegistrationNumber;
         this.managerId = managerId;
     }
+
+    public void update(String type, String value) {
+        if (Objects.equals(type, "name")) {
+            name = value;
+        }
+        else if (Objects.equals(type, "logo")) {
+            logo = value;
+        }
+        else if (Objects.equals(type, "description")) {
+            logo = description;
+        }
+    }
 }

@@ -37,4 +37,13 @@ public class StoreController {
         StoreDto storeDto = storeService.getUserStore(user.getId());
         return SuccessResult.<StoreDto>builder().response(storeDto).build();
     }
+
+    @PatchMapping("/myStore")
+    public SuccessResult<StoreDto> updateMyStore(
+            @AuthenticationPrincipal AuthUser user,
+            @Validated @RequestBody StoreFieldUpdateRequest storeFieldUpdateRequest,
+            @RequestParam @NotBlank String type) {
+        StoreDto storeDto = storeService.updateMyStore(storeFieldUpdateRequest.getValue(), type, user.getId());
+        return SuccessResult.<StoreDto>builder().response(storeDto).build();
+    }
 }

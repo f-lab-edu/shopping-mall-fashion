@@ -43,4 +43,11 @@ class StoreServiceTest {
         when(storeRepository.findByManagerId(anyLong())).thenReturn(Optional.empty());
         assertThrows(ApiException.class, () -> storeService.getUserStore( 1L));
     }
+
+    @Test
+    @DisplayName("이미 존재하는 상점 이름으로 수정시 예외")
+    void whenUpdateMyStoreDuplicatedName_throwsException() {
+        when(storeRepository.existsByName(anyString())).thenReturn(true);
+        assertThrows(ApiException.class, () -> storeService.updateMyStore( anyString(), "name", 1L));
+    }
 }
