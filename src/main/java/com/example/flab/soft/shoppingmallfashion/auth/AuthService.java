@@ -3,8 +3,6 @@ package com.example.flab.soft.shoppingmallfashion.auth;
 import com.example.flab.soft.shoppingmallfashion.auth.role.Role;
 import com.example.flab.soft.shoppingmallfashion.auth.role.UserRole;
 import com.example.flab.soft.shoppingmallfashion.auth.role.UserRoleRepository;
-import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
-import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import java.util.List;
