@@ -3,6 +3,7 @@ package com.example.flab.soft.shoppingmallfashion.store.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -90,5 +91,17 @@ class StoreControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(409))
                 .andExpect(jsonPath("$.code").value(ErrorEnum.STORE_NAME_DUPLICATED.getCode()));
+    }
+
+    @Test
+    @DisplayName("공백 필드로 수정시 검증 에러")
+    void whenUpdateWithBlankField_thenReturn400() throws Exception {
+        mvc.perform(
+                        patch("/api/v1/store/my-store")
+                                .with(SecurityMockMvcRequestPostProcessors.csrf())
+                                .content(mapper.writeValueAsString(StoreFieldUpdateRequest.builder().name(" ").build()))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.code").value(ErrorEnum.INVALID_REQUEST.getCode()));
     }
 }

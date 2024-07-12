@@ -36,13 +36,14 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreDto updateMyStore(String value, String type, Long userId) throws ApiException {
-        if (Objects.equals(type, "name") && storeRepository.existsByName(value)) {
+    public StoreDto updateMyStore(StoreUpdateDto storeUpdateDto, Long userId) throws ApiException {
+        String name = storeUpdateDto.getName();
+        if (name != null && storeRepository.existsByName(name)) {
             throw new ApiException(ErrorEnum.STORE_NAME_DUPLICATED);
         }
         Store store = storeRepository.findByManagerId(userId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.STORE_NOT_FOUND));
-        store.update(type, value);
+        store.update(storeUpdateDto);
         return buildStoreDto(store);
     }
 

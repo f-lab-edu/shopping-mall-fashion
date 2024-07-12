@@ -1,6 +1,10 @@
 package com.example.flab.soft.shoppingmallfashion.store.repository;
 
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
+import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
+import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
+import com.example.flab.soft.shoppingmallfashion.store.service.StoreUpdateDto;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -19,36 +23,41 @@ public class Store extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = 0L;
+    @Column(nullable = false)
     private String name;
     private String logo;
     private String description;
+    @Column(nullable = false)
     private String businessRegistrationNumber;
+    @Column(nullable = false)
     private Long managerId;
     @Enumerated(EnumType.STRING)
     private StoreState saleState = StoreState.PREPARING;
 
     @Builder
     public Store(String name, String logo, String description, String businessRegistrationNumber, Long managerId) {
-        this.name = name;
+        this.name = requireNotNull(name);
         this.logo = logo;
         this.description = description;
-        this.businessRegistrationNumber = businessRegistrationNumber;
-        this.managerId = managerId;
+        this.businessRegistrationNumber = requireNotNull(businessRegistrationNumber);
+        this.managerId = requireNotNull(managerId);
     }
 
-    public void update(String type, String value) {
-        if (Objects.equals(type, "name")) {
-            name = value;
-        }
-        else if (Objects.equals(type, "logo")) {
-            logo = value;
-        }
-        else if (Objects.equals(type, "description")) {
-            logo = description;
-        }
+    public void update(StoreUpdateDto storeUpdateDto) {
+        name = Objects.requireNonNullElse(storeUpdateDto.getName(), name);
+        logo = Objects.requireNonNullElse(storeUpdateDto.getName(), logo);
+        description = Objects.requireNonNullElse(storeUpdateDto.getName(), description);
     }
 
     public void beOnStoppage() {
         saleState = StoreState.ON_STOPPAGE;
+    }
+
+    private <T> T requireNotNull(T value) {
+        try {
+            return Objects.requireNonNull(value);
+        } catch (NullPointerException e) {
+            throw new ApiException(ErrorEnum.INVALID_REQUEST);
+        }
     }
 }

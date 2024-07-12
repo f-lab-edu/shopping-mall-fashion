@@ -1,9 +1,14 @@
 package com.example.flab.soft.shoppingmallfashion.store.service;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class StoreDto {
     private Long id;
     private String name;
@@ -11,15 +16,4 @@ public class StoreDto {
     private String description;
     private String businessRegistrationNumber;
     private String saleState;
-
-    @Builder
-    public StoreDto(Long id, String name, String logo, String description, String businessRegistrationNumber,
-                    String saleState) {
-        this.id = id;
-        this.name = name;
-        this.logo = logo;
-        this.description = description;
-        this.businessRegistrationNumber = businessRegistrationNumber;
-        this.saleState = saleState;
-    }
 }
