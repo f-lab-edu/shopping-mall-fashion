@@ -56,6 +56,8 @@ public class WebSecurityConfig {
                                         "/login",
                                         "/api/v1/users/signup",
                                         "/api/v1/auth/refresh-token").permitAll()
+                                .requestMatchers("/api/v1/store/register").hasAuthority("ROLE_USER")
+                                .requestMatchers("/api/v1/store").hasAuthority("ROLE_STORE_MANAGER")
                                 .anyRequest().authenticated())
 
                 .exceptionHandling((exceptionHandling) ->

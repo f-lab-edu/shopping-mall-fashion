@@ -43,7 +43,7 @@ class RoleServiceTest {
 
         when(roleRepository.findByAuthority(any())).thenReturn(role);
 
-        roleService.save(user, Authority.ROLE_USER);
+        roleService.save(user.getId(), Authority.ROLE_USER);
 
         ArgumentCaptor<UserRole> userRoleCaptor = ArgumentCaptor.forClass(UserRole.class);
         verify(userRoleRepository).save(userRoleCaptor.capture());

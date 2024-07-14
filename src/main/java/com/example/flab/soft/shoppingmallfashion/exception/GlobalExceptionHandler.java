@@ -1,13 +1,16 @@
 package com.example.flab.soft.shoppingmallfashion.exception;
 
 import java.util.EnumSet;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
     private final EnumSet<ErrorEnum> errorEnumSet = EnumSet.allOf(ErrorEnum.class);
     @ExceptionHandler(ApiException.class)
@@ -24,8 +27,14 @@ public class GlobalExceptionHandler {
         return toErrorResponseEntity(ErrorEnum.INVALID_REQUEST);
     }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResult> exceptionHandler(NoResourceFoundException e) {
+        return toErrorResponseEntity(ErrorEnum.NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResult> exceptionHandler(Exception e) {
+        log.error("Internal Error = {}", e.getMessage());
         return toErrorResponseEntity(ErrorEnum.FAILED_INTERNAL_SYSTEM_PROCESSING);
     }
 
