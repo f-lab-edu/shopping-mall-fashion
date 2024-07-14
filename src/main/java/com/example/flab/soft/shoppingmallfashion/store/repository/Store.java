@@ -4,6 +4,7 @@ import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreUpdateDto;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -44,9 +45,15 @@ public class Store extends BaseEntity {
     }
 
     public void update(StoreUpdateDto storeUpdateDto) {
-        name = Objects.requireNonNullElse(storeUpdateDto.getName(), name);
-        logo = Objects.requireNonNullElse(storeUpdateDto.getName(), logo);
-        description = Objects.requireNonNullElse(storeUpdateDto.getName(), description);
+        if (StringUtils.isNotBlank(storeUpdateDto.getName())) {
+            this. name = storeUpdateDto.getName();
+        }
+        if (StringUtils.isNotBlank(storeUpdateDto.getLogo())) {
+            this. name = storeUpdateDto.getLogo();
+        }
+        if (StringUtils.isNotBlank(storeUpdateDto.getDescription())) {
+            this. name = storeUpdateDto.getDescription();
+        }
     }
 
     public void beOnStoppage() {

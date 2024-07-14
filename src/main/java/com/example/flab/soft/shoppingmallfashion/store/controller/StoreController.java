@@ -6,7 +6,6 @@ import com.example.flab.soft.shoppingmallfashion.auth.role.RoleService;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreDto;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreService;
-import com.example.flab.soft.shoppingmallfashion.store.service.StoreUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -43,15 +42,10 @@ public class StoreController {
     @PatchMapping("/my-store")
     public SuccessResult<StoreDto> updateMyStore(
             @AuthenticationPrincipal AuthUser user,
-            @Validated @RequestBody StoreFieldUpdateRequest storeFieldUpdateRequest) {
+            @RequestBody StoreFieldUpdateRequest storeFieldUpdateRequest) {
         StoreDto storeDto = storeService.updateMyStore(
-                buildStoreUpdateDto(storeFieldUpdateRequest), user.getId());
+                storeFieldUpdateRequest.buildStoreUpdateDto(), user.getId());
         return SuccessResult.<StoreDto>builder().response(storeDto).build();
-    }
-
-    private static StoreUpdateDto buildStoreUpdateDto(StoreFieldUpdateRequest storeFieldUpdateRequest) {
-        return StoreUpdateDto.builder().name(storeFieldUpdateRequest.getName()).logo(storeFieldUpdateRequest.getLogo())
-                .description(storeFieldUpdateRequest.getDescription()).build();
     }
 
     @PatchMapping("/my-store/stoppage")
