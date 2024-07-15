@@ -25,9 +25,11 @@ public class ItemCreateRequest {
     private Integer discountAppliedPrice;
     @Size(max = 1000)
     private String description;
-    @NotNull
+    @NotBlank
     @Size(max = 45)
     private String sex;
+    @NotBlank
+    private String saleState;
     @NotNull
     private Long storeId;
     @NotNull

@@ -36,6 +36,7 @@ public class ItemIntegrationTest {
                                         .name("name")
                                         .price(1000)
                                         .sex("UNISEX")
+                                        .saleState("PREPARING")
                                         .storeId(1L)
                                         .categoryId(1L)
                                         .build()))
@@ -54,5 +55,23 @@ public class ItemIntegrationTest {
                                 .build()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(403));
+    }
+
+    @Test
+    @DisplayName("상품 등록시 필수값이 존재하지 않으면 400에러")
+    void whenMandatoryFieldIsBlank_thenReturn400() throws Exception {
+        mockMvc.perform(
+                        post("/api/v1/item/management/new-item")
+                                .header("Authorization", itemManagerToken)
+                                .content(mapper.writeValueAsString(ItemCreateRequest.builder()
+                                        .name("  ")
+                                        .price(1000)
+                                        .sex("UNISEX")
+                                        .saleState("PREPARING")
+                                        .storeId(1L)
+                                        .categoryId(1L)
+                                        .build()))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400));
     }
 }
