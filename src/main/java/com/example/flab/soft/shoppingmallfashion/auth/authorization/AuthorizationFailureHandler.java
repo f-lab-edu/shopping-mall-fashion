@@ -19,11 +19,11 @@ public class AuthorizationFailureHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
 
-        String jsonResponse = objectMapper.writeValueAsString(new ErrorResult(ErrorEnum.UNAUTHORIZED));
+        String jsonResponse = objectMapper.writeValueAsString(new ErrorResult(ErrorEnum.FORBIDDEN));
         response.getWriter().write(jsonResponse);
     }
 }

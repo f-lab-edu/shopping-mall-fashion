@@ -20,7 +20,7 @@ public enum ErrorEnum {
     // Authentication Exception
     AUTHENTICATION_FAILED(HttpStatus.BAD_REQUEST, "아이디 또는 비밀번호가 잘못되었습니다."),
     UNAUTHENTICATED(HttpStatus.UNAUTHORIZED, "인증되지 않은 접근입니다."),
-    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),
     TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "유효 기간이 만료된 토큰입니다."),
     // Address
