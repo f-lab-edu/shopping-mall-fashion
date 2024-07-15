@@ -1,5 +1,7 @@
 package com.example.flab.soft.shoppingmallfashion.item.domain;
 
+import com.example.flab.soft.shoppingmallfashion.category.Category;
+import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
@@ -22,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "items")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Item {
+public class Item extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
