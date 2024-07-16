@@ -3,15 +3,14 @@ package com.example.flab.soft.shoppingmallfashion.store.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.flab.soft.shoppingmallfashion.WithMockCustomUser;
-import com.example.flab.soft.shoppingmallfashion.auth.role.RoleService;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
+import com.example.flab.soft.shoppingmallfashion.store.service.CrewService;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +33,7 @@ class StoreControllerTest {
     @MockBean
     private StoreService storeService;
     @MockBean
-    private RoleService roleService;
+    private CrewService crewService;
 
     @Value("${authorization.user.token}")
     String accessToken;

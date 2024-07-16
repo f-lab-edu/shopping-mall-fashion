@@ -17,6 +17,10 @@ authorization:
   admin:
     token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMUBleGFtcGxlLmNvbSIsImlkIjoiMSIsImV4cCI6MTcyOTE0NDg2N30.v54vsOfkyP2lc7fL818kT4nxd0eB7YUYGe9m-6-1RBBAPYJVrrTqELuLsgsXv1wmd0lwELJkg7JYBpi3Neapvg
     email: user1@example.com
+  store-manager:
+    id: 3
+    token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMUBleGFtcGxlLmNvbSIsImlkIjoiMSIsImV4cCI6MTcyOTE0NDg2N30.v54vsOfkyP2lc7fL818kT4nxd0eB7YUYGe9m-6-1RBBAPYJVrrTqELuLsgsXv1wmd0lwELJkg7JYBpi3Neapvg
+    email: user3@example.com
   user:
     token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMkBleGFtcGxlLmNvbSIsImlkIjoiMiIsImV4cCI6MTcyOTE0NDgyMX0.z_RGSbA9PUIE1TK6lVpbDGxGWMt_fjXYfc_WhFMdtHOnaCheV-s7mYXHXzdxsf7aWCH2Y2isGHChQMHkLWiSsw
     email: user2@example.com

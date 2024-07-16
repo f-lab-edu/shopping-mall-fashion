@@ -1,6 +1,7 @@
 package com.example.flab.soft.shoppingmallfashion.auth.role;
 
-import com.example.flab.soft.shoppingmallfashion.user.domain.User;
+import com.example.flab.soft.shoppingmallfashion.store.repository.Crew;
+import com.example.flab.soft.shoppingmallfashion.store.repository.CrewRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,15 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RoleService {
     private final RoleRepository roleRepository;
-    private final UserRoleRepository userRoleRepository;
 
     @Transactional
-    public void save(Long userId, Authority authority) {
-        Role role = roleRepository.findByAuthority(authority);
-        userRoleRepository.save(
-                UserRole.builder()
-                        .role(role)
-                        .userId(userId)
-                        .build());
+    public void assignRole(Crew crew, Role role) {
+        RoleEntity roleEntity = roleRepository.findByRole(Role.STORE_MANAGER_BEFORE_APPROVAL);
+        crew.addRole(CrewRole.builder()
+                .crew(crew)
+                .roleEntity(roleEntity)
+                .build());
     }
 }

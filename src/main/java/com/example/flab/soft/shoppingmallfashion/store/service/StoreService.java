@@ -16,17 +16,18 @@ public class StoreService {
     private final StoreRepository storeRepository;
 
     @Transactional
-    public void addStore(AddStoreRequest addStoreRequest, Long id) throws ApiException {
+    public Long addStore(AddStoreRequest addStoreRequest, Long id) throws ApiException {
         if (storeRepository.existsByName(addStoreRequest.getName())) {
             throw new ApiException(ErrorEnum.STORE_NAME_DUPLICATED);
         }
-        storeRepository.save(Store.builder()
+        return storeRepository.save(Store.builder()
                 .name(addStoreRequest.getName())
                 .logo(addStoreRequest.getLogo())
                 .description(addStoreRequest.getDescription())
                 .businessRegistrationNumber(addStoreRequest.getBusinessRegistrationNumber())
                 .managerId(id)
-                .build());
+                .build())
+                .getId();
     }
 
     public StoreDto getUserStore(Long userId) throws ApiException {

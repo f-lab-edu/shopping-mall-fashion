@@ -1,21 +1,15 @@
 package com.example.flab.soft.shoppingmallfashion.auth;
 
-import com.example.flab.soft.shoppingmallfashion.auth.role.Authority;
-import com.example.flab.soft.shoppingmallfashion.auth.role.Role;
-import com.example.flab.soft.shoppingmallfashion.auth.role.UserRole;
-import com.example.flab.soft.shoppingmallfashion.auth.role.UserRoleRepository;
-import com.example.flab.soft.shoppingmallfashion.user.domain.User;
+import com.example.flab.soft.shoppingmallfashion.store.repository.CrewRepository;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,50 +20,12 @@ class AuthServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private UserRoleRepository userRoleRepository;
+    private CrewRepository crewRepository;
     @InjectMocks
     private AuthService authService;
-    private User user;
-    private UserRole userRole;
-    private Role role;
-
-    @BeforeEach
-    void setUp() {
-        user = User.builder()
-                .email("test@example.com")
-                .password("password")
-                .build();
-
-        role = Role.builder()
-                .id(1L)
-                .authority(Authority.ROLE_USER)
-                .build();
-
-        userRole = UserRole.builder()
-                .id(1L)
-                .role(role)
-                .userId(1L)
-                .build();
-    }
 
     @Test
-    void loadUserByUsername_userExists_returnsUserDetails() {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
-        when(userRoleRepository.findAllByUserId(user.getId())).thenReturn(List.of(userRole));
-
-        UserDetails userDetails = authService.loadUserByUsername("test@example.com");
-
-        assertNotNull(userDetails);
-        assertEquals("test@example.com", userDetails.getUsername());
-        assertEquals("password", userDetails.getPassword());
-        assertTrue(userDetails.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_USER")));
-
-        verify(userRepository).findByEmail("test@example.com");
-        verify(userRoleRepository).findAllByUserId(user.getId());
-    }
-
-    @Test
+    @DisplayName("존재하는 유저면 예외를 던진다")
     void loadUserByUsername_userDoesNotExist_throwsException() {
         when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
 
@@ -80,6 +36,6 @@ class AuthServiceTest {
         assertEquals("nonexistent@example.com", exception.getMessage());
 
         verify(userRepository).findByEmail("nonexistent@example.com");
-        verify(userRoleRepository, never()).findAllByUserId(anyLong());
+        verify(crewRepository, never()).findCrewWithRolesByUserId(anyLong());
     }
 }

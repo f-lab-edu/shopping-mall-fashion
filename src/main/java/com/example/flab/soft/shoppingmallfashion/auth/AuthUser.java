@@ -1,7 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.auth;
 
 import com.example.flab.soft.shoppingmallfashion.auth.role.Authority;
-import com.example.flab.soft.shoppingmallfashion.auth.role.Role;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,22 +15,21 @@ public class AuthUser implements UserDetails {
     private Long id;
     private String email;
     private String password;
-    private List<Role> roles;
+    private List<Authority> authorities;
     private boolean enabled;
 
     @Builder
-    public AuthUser(Long id, String email, String password, List<Role> roles, Boolean enabled) {
+    public AuthUser(Long id, String email, String password, List<Authority> authorities, Boolean enabled) {
         this.id = id;
         this.email = email;
         this.password = password;
-        this.roles = roles;
+        this.authorities = authorities;
         this.enabled = enabled;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(Role::getAuthority)
+        return authorities.stream()
                 .map(Authority::name)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
