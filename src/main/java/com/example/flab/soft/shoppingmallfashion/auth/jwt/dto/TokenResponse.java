@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.auth.jwt;
+package com.example.flab.soft.shoppingmallfashion.auth.jwt.dto;
 
 import lombok.Builder;
 import lombok.Getter;

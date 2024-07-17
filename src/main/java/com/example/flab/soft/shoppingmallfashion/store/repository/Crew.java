@@ -1,16 +1,13 @@
 package com.example.flab.soft.shoppingmallfashion.store.repository;
 
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
-import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -25,18 +22,24 @@ public class Crew extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JoinColumn(name = "user_id")
-    @OneToOne
-    private User user;
+    private String email;
+    private String password;
+    private String name;
+    private String cellphoneNumber;
+    private Boolean approved = false;
+    private Boolean withdrawal = false;
     @JoinColumn(name = "store_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Store store;
     @OneToMany(mappedBy = "crew")
     private List<CrewRole> crewRoles = new ArrayList<>();
 
     @Builder
-    public Crew(User user, Store store) {
-        this.user = user;
+    public Crew(String email, String password, String name, String cellphoneNumber, Store store) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.cellphoneNumber = cellphoneNumber;
         this.store = store;
     }
 
@@ -44,5 +47,13 @@ public class Crew extends BaseEntity {
         if (!crewRoles.contains(crewRole)) {
             crewRoles.add(crewRole);
         }
+    }
+
+    public void withdraw() {
+        withdrawal = true;
+    }
+
+    public boolean isInactivated(){
+        return withdrawal;
     }
 }

@@ -1,6 +1,6 @@
-package com.example.flab.soft.shoppingmallfashion.auth.jwt.refreshToken;
+package com.example.flab.soft.shoppingmallfashion.auth.refreshToken;
 
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokensDto;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.NewTokensDto;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +15,10 @@ public class RefreshTokenController {
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/refresh-token")
-    public SuccessResult<TokensDto> refreshToken(@RequestBody TokenRefreshRequest request) {
+    public SuccessResult<NewTokensDto> refreshToken(@RequestBody TokenRefreshRequest request) {
         String oldToken = request.getRefreshToken();
-        TokensDto newTokens = refreshTokenService.renew(oldToken);
-        return SuccessResult.<TokensDto>builder()
+        NewTokensDto newTokens = refreshTokenService.renew(oldToken);
+        return SuccessResult.<NewTokensDto>builder()
                 .response(newTokens).build();
     }
 }

@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.auth.jwt.refreshToken;
+package com.example.flab.soft.shoppingmallfashion.auth.refreshToken;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,16 +19,14 @@ public class RefreshToken {
     private Long id = 0L;
     private String token;
     private LocalDateTime expiration;
-    private Long userId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
-    public RefreshToken(String token, LocalDateTime expiration, Long userId, LocalDateTime createdAt,
+    public RefreshToken(String token, LocalDateTime expiration, LocalDateTime createdAt,
                         LocalDateTime updatedAt) {
         this.token = token;
         this.expiration = expiration;
-        this.userId = userId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

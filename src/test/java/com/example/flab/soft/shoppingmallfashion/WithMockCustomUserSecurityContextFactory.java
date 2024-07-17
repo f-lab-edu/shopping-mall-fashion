@@ -1,6 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion;
 
-import com.example.flab.soft.shoppingmallfashion.auth.AuthUser;
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import java.util.ArrayList;
 import java.util.List;
 

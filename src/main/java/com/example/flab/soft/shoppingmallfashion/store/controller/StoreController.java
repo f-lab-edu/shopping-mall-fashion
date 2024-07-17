@@ -1,6 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.store.controller;
 
-import com.example.flab.soft.shoppingmallfashion.auth.AuthUser;
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreDto;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreService;

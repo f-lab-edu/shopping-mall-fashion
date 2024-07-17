@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.auth.jwt.refreshToken;
+package com.example.flab.soft.shoppingmallfashion.auth.refreshToken;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

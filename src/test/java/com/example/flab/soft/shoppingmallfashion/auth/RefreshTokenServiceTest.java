@@ -1,11 +1,13 @@
 package com.example.flab.soft.shoppingmallfashion.auth;
 
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.UserAuthService;
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.TokenProvider;
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenBuildDto;
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokensDto;
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.refreshToken.RefreshToken;
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.refreshToken.RefreshTokenRepository;
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.refreshToken.RefreshTokenService;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.NewTokensDto;
+import com.example.flab.soft.shoppingmallfashion.auth.refreshToken.RefreshToken;
+import com.example.flab.soft.shoppingmallfashion.auth.refreshToken.RefreshTokenRepository;
+import com.example.flab.soft.shoppingmallfashion.auth.refreshToken.RefreshTokenService;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +29,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class RefreshTokenServiceTest {
     @Mock
-    private AuthService authService;
+    private UserAuthService userAuthService;
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
     @Mock
@@ -56,9 +58,9 @@ class RefreshTokenServiceTest {
         LocalDateTime expiration = LocalDateTime.now().minusDays(1);
 
         when(tokenProvider.validateToken(token)).thenReturn(true);
-        when(tokenProvider.getSubjectFromToken(token)).thenReturn(username);
+        when(tokenProvider.getSubject(token)).thenReturn(username);
         AuthUser mockAuthUser = mock(AuthUser.class);
-        when(authService.loadUserByUsername(username)).thenReturn(mockAuthUser);
+        when(userAuthService.loadUserByUsername(username)).thenReturn(mockAuthUser);
         when(refreshTokenRepository.findByToken(token)).thenReturn(Optional.of(
                 RefreshToken.builder()
                         .token(token)
@@ -83,19 +85,19 @@ class RefreshTokenServiceTest {
                 .build();
 
         when(tokenProvider.validateToken(token)).thenReturn(true);
-        when(tokenProvider.getSubjectFromToken(token)).thenReturn(username);
-        when(authService.loadUserByUsername(username)).thenReturn(authUser);
+        when(tokenProvider.getSubject(token)).thenReturn(username);
+        when(userAuthService.loadUserByUsername(username)).thenReturn(authUser);
         when(authUser.getId()).thenReturn(1L);
         when(refreshTokenRepository.findByToken(token)).thenReturn(Optional.of(oldToken));
         when(oldToken.getExpiration()).thenReturn(LocalDateTime.now().plusDays(1));
         when(tokenProvider.createAccessToken(any(TokenBuildDto.class))).thenReturn("new-access-token");
         when(tokenProvider.createRefreshToken(any(TokenBuildDto.class))).thenReturn("new-refresh-token");
 
-        TokensDto tokensDto = refreshTokenService.renew(token);
+        NewTokensDto newTokensDto = refreshTokenService.renew(token);
 
-        assertThat(tokensDto).isNotNull();
-        assertThat(tokensDto.getAccessToken()).isEqualTo("new-access-token");
-        assertThat(tokensDto.getRefreshToken()).isEqualTo("new-refresh-token");
+        assertThat(newTokensDto).isNotNull();
+        assertThat(newTokensDto.getAccessToken()).isEqualTo("new-access-token");
+        assertThat(newTokensDto.getRefreshToken()).isEqualTo("new-refresh-token");
 
         verify(refreshTokenRepository).save(any(RefreshToken.class));
     }

@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.auth.exception;
+package com.example.flab.soft.shoppingmallfashion.auth.authentication;
 
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorResult;

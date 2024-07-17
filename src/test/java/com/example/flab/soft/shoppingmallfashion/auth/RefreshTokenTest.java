@@ -1,6 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.auth;
 
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.refreshToken.TokenRefreshRequest;
+import com.example.flab.soft.shoppingmallfashion.auth.refreshToken.TokenRefreshRequest;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;

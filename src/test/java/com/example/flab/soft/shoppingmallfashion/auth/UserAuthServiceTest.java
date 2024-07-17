@@ -1,5 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.auth;
 
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.UserAuthService;
 import com.example.flab.soft.shoppingmallfashion.store.repository.CrewRepository;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -16,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class UserAuthServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
     private CrewRepository crewRepository;
     @InjectMocks
-    private AuthService authService;
+    private UserAuthService userAuthService;
 
     @Test
     @DisplayName("존재하는 유저면 예외를 던진다")
@@ -30,12 +31,11 @@ class AuthServiceTest {
         when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(UsernameNotFoundException.class, () -> {
-            authService.loadUserByUsername("nonexistent@example.com");
+            userAuthService.loadUserByUsername("nonexistent@example.com");
         });
 
         assertEquals("nonexistent@example.com", exception.getMessage());
 
         verify(userRepository).findByEmail("nonexistent@example.com");
-        verify(crewRepository, never()).findByUserId(anyLong());
     }
 }
