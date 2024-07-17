@@ -3,7 +3,9 @@ package com.example.flab.soft.shoppingmallfashion.auth;
 import com.example.flab.soft.shoppingmallfashion.auth.role.AdminRepository;
 import com.example.flab.soft.shoppingmallfashion.auth.role.Authority;
 import com.example.flab.soft.shoppingmallfashion.auth.role.AuthorityEntity;
+import com.example.flab.soft.shoppingmallfashion.auth.role.AuthorityRepository;
 import com.example.flab.soft.shoppingmallfashion.auth.role.RoleAuthorityEntity;
+import com.example.flab.soft.shoppingmallfashion.store.repository.Crew;
 import com.example.flab.soft.shoppingmallfashion.store.repository.CrewRepository;
 import com.example.flab.soft.shoppingmallfashion.store.repository.CrewRole;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
@@ -23,6 +25,7 @@ public class AuthService implements UserDetailsService {
     private final UserRepository userRepository;
     private final CrewRepository crewRepository;
     private final AdminRepository adminRepository;
+    private final AuthorityRepository authorityRepository;
 
     @Override
     @Transactional
@@ -43,13 +46,9 @@ public class AuthService implements UserDetailsService {
     }
 
     private void addToAuthorities(User user, List<Authority> authorities) {
-        crewRepository.findCrewWithRolesByUserId(user.getId()).ifPresent(crew ->
-                crew.getCrewRoles().stream()
-                        .map(CrewRole::getRoleEntity)
-                        .flatMap(roleEntity -> roleEntity.getRoleAuthorities().stream())
-                        .map(RoleAuthorityEntity::getAuthority)
-                        .map(AuthorityEntity::getAuthority)
-                        .forEach(authorities::add));
+        Crew crew = crewRepository.findByUserId(user.getId()).get();
+        List<AuthorityEntity> authorityEntities = authorityRepository.findAllByCrewId(crew.getId());
+        authorities.addAll(authorityEntities.stream().map(AuthorityEntity::getAuthority).toList());
     }
 
     private boolean isCrew(User user) {

@@ -1,10 +1,10 @@
 package com.example.flab.soft.shoppingmallfashion.auth.role;
 
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
+import com.example.flab.soft.shoppingmallfashion.store.repository.CrewRole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,8 +25,10 @@ public class RoleEntity extends BaseEntity {
     private Long id = 0L;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "role")
+    @OneToMany(mappedBy = "role")
     private List<RoleAuthorityEntity> roleAuthorities = new ArrayList<>();
+    @OneToMany(mappedBy = "roleEntity")
+    private List<CrewRole> crewRoles = new ArrayList<>();
 
     @Builder
     public RoleEntity(Role role) {

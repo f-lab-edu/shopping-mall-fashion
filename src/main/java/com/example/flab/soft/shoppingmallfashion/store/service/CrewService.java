@@ -23,12 +23,9 @@ public class CrewService {
     private final RoleService roleService;
     private final CrewRepository crewRepository;
     private final UserRepository userRepository;
-    private final StoreRepository storeRepository;
 
     @Transactional
-    public void addManager(Long storeId, Long userId) {
-        Store store = storeRepository.findById(storeId).orElseThrow(() ->
-                new ApiException(ErrorEnum.INVALID_REQUEST));
+    public void addManager(Store store, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new ApiException(ErrorEnum.INVALID_REQUEST));
 

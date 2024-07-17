@@ -6,6 +6,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.Getter;
 
 @Entity(name = "authorities")
@@ -16,4 +18,6 @@ public class AuthorityEntity {
     private Long id;
     @Enumerated(EnumType.STRING)
     private Authority authority;
+    @OneToMany(mappedBy = "authority")
+    private List<RoleAuthorityEntity> roleAuthorities;
 }

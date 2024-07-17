@@ -3,6 +3,7 @@ package com.example.flab.soft.shoppingmallfashion.store.repository;
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,7 +29,7 @@ public class Crew extends BaseEntity {
     @OneToOne
     private User user;
     @JoinColumn(name = "store_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Store store;
     @OneToMany(mappedBy = "crew")
     private List<CrewRole> crewRoles = new ArrayList<>();

@@ -36,6 +36,6 @@ class AuthServiceTest {
         assertEquals("nonexistent@example.com", exception.getMessage());
 
         verify(userRepository).findByEmail("nonexistent@example.com");
-        verify(crewRepository, never()).findCrewWithRolesByUserId(anyLong());
+        verify(crewRepository, never()).findByUserId(anyLong());
     }
 }

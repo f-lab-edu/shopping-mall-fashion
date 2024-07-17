@@ -14,20 +14,21 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StoreService {
     private final StoreRepository storeRepository;
+    private final CrewService crewService;
 
     @Transactional
-    public Long addStore(AddStoreRequest addStoreRequest, Long id) throws ApiException {
+    public void registerStore(AddStoreRequest addStoreRequest, Long userId) throws ApiException {
         if (storeRepository.existsByName(addStoreRequest.getName())) {
             throw new ApiException(ErrorEnum.STORE_NAME_DUPLICATED);
         }
-        return storeRepository.save(Store.builder()
+        Store store = storeRepository.save(Store.builder()
                 .name(addStoreRequest.getName())
                 .logo(addStoreRequest.getLogo())
                 .description(addStoreRequest.getDescription())
                 .businessRegistrationNumber(addStoreRequest.getBusinessRegistrationNumber())
-                .managerId(id)
-                .build())
-                .getId();
+                .managerId(userId)
+                .build());
+        crewService.addManager(store, userId);
     }
 
     public StoreDto getUserStore(Long userId) throws ApiException {

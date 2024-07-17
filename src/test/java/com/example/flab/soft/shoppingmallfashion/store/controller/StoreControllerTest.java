@@ -76,7 +76,7 @@ class StoreControllerTest {
     @DisplayName("이미 존재하는 이름의 상점 등록시 409에러")
     void whenRegisterWithDuplicatedName_thenReturn409() throws Exception {
         doThrow(new ApiException(ErrorEnum.STORE_NAME_DUPLICATED))
-                .when(storeService).addStore(any(AddStoreRequest.class), anyLong());
+                .when(storeService).registerStore(any(AddStoreRequest.class), anyLong());
 
         mvc.perform(
                         post("/api/v1/store/register")
