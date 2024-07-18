@@ -5,16 +5,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.TokenProvider;
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenBuildDto;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
-import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -33,7 +30,7 @@ class AddressAddControllerTest {
     UserRepository userRepository;
     @Autowired
     TokenProvider tokenProvider;
-
+    @Value("${authorization.user.token}")
     String accessToken;
 
     static final AddressAddRequest BAD_ADDRESS_ADD_REQUEST = AddressAddRequest.builder()
@@ -51,19 +48,6 @@ class AddressAddControllerTest {
             .zipcode(12345)
             .recipientCellphone("01012345678")
             .build();
-
-    @BeforeEach
-    void setUp() {
-        User saved = userRepository.save(User.builder()
-                .email("testUser@gmail.com")
-                .password("TestUser1#")
-                .realName("testUser")
-                .cellphoneNumber("01012345678")
-                .nickname("testUser")
-                .build());
-
-        initToken(saved);
-    }
 
     @Test
     @DisplayName("형식이 잘못된 주소지 추가시 400 응답")
@@ -88,14 +72,5 @@ class AddressAddControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is(200));
-    }
-
-    private void initToken(User saved) {
-        String token = tokenProvider.createAccessToken(TokenBuildDto.builder()
-                .subject(saved.getEmail())
-                .claim("id", saved.getId())
-                .build());
-
-        accessToken = "Bearer " + token;
     }
 }

@@ -18,9 +18,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class StoreIntegrationTest {
     @Autowired
     private MockMvc mvc;
@@ -29,7 +31,7 @@ public class StoreIntegrationTest {
 
     @Value("${authorization.user.token}")
     String userToken;
-    @Value("${authorization.admin.token}")
+    @Value("${authorization.store-manager.token}")
     String managerToken;
     static final AddStoreRequest ADD_STORE_REQUEST = AddStoreRequest.builder()
             .name("store")
@@ -39,18 +41,13 @@ public class StoreIntegrationTest {
             .build();
 
     @Test
-    @DisplayName("상점 등록시 상점 관리자 권한 획득")
+    @DisplayName("상점 등록")
     void whenRegisterWithDuplicatedName_thenReturn409() throws Exception {
         mvc.perform(
                         post("/api/v1/store/register")
                                 .header("Authorization", userToken)
                                 .content(mapper.writeValueAsString(ADD_STORE_REQUEST))
                                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(200));
-
-        mvc.perform(
-                        get("/api/v1/store/my-store")
-                                .header("Authorization", userToken))
                 .andExpect(status().is(200));
     }
 

@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StoreService {
     private final StoreRepository storeRepository;
-    private final CrewRepository crewRepository;
 
     @Transactional
     public void registerStore(AddStoreRequest addStoreRequest, Long userId) throws ApiException {

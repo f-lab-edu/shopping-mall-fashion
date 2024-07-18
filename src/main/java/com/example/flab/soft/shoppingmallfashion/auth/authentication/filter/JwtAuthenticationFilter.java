@@ -74,7 +74,8 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
                                             Authentication authResult) throws IOException, ServletException {
         AuthUser authUser = (AuthUser) authResult.getPrincipal();
 
-        NewTokensDto newTokensDto = refreshTokenService.getNewToken(extractTokenBuildData(authUser));
+        TokenBuildDto tokenBuildDto = extractTokenBuildData(authUser);
+        NewTokensDto newTokensDto = refreshTokenService.getNewToken(tokenBuildDto);
         TokenResponse tokenResponse = TokensMapper.INSTANCE.toTokenResponseDto(newTokensDto);
         String successResult = objectMapper.writeValueAsString(
                 SuccessResult.builder().response(tokenResponse).build());

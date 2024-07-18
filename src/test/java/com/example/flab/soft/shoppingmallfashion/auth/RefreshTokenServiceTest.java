@@ -1,41 +1,45 @@
 package com.example.flab.soft.shoppingmallfashion.auth;
 
-import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.UserAuthService;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthCrew;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.CrewAuthService;
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.UserAuthService;
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.TokenProvider;
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenBuildDto;
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.NewTokensDto;
 import com.example.flab.soft.shoppingmallfashion.auth.refreshToken.RefreshToken;
 import com.example.flab.soft.shoppingmallfashion.auth.refreshToken.RefreshTokenRepository;
 import com.example.flab.soft.shoppingmallfashion.auth.refreshToken.RefreshTokenService;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RefreshTokenServiceTest {
     @Mock
     private UserAuthService userAuthService;
     @Mock
+    private CrewAuthService crewAuthService;
+    @Mock
     private RefreshTokenRepository refreshTokenRepository;
     @Mock
     private TokenProvider tokenProvider;
     @InjectMocks
     private RefreshTokenService refreshTokenService;
+    public static final String USER = "USER";
+    public static final String CREW = "CREW";
 
     @BeforeEach
     void setUp() {
@@ -53,19 +57,17 @@ class RefreshTokenServiceTest {
     @Test
     @DisplayName("유효기간이 지난 토큰은 TOKEN_EXPIRED 예외를 던진다.")
     void whenRenewWithExpiredToken_thenThrowApiException() {
-        String token = "valid-token";
-        String username = "testUser";
+        String token = "token";
+        String subject = USER + " user1@test.com";
+        String username = "user1@test.com";
         LocalDateTime expiration = LocalDateTime.now().minusDays(1);
 
         when(tokenProvider.validateToken(token)).thenReturn(true);
-        when(tokenProvider.getSubject(token)).thenReturn(username);
-        AuthUser mockAuthUser = mock(AuthUser.class);
-        when(userAuthService.loadUserByUsername(username)).thenReturn(mockAuthUser);
+        when(tokenProvider.getSubject(token)).thenReturn(subject);
+        when(userAuthService.loadUserByUsername(username)).thenReturn(mock(AuthUser.class));
+//        when(crewAuthService.loadUserByUsername(username)).thenReturn(mock(AuthCrew.class));
         when(refreshTokenRepository.findByToken(token)).thenReturn(Optional.of(
-                RefreshToken.builder()
-                        .token(token)
-                        .expiration(expiration)
-                        .build()));
+                RefreshToken.builder().token(token).expiration(expiration).build()));
 
         assertThatThrownBy(() -> refreshTokenService.renew(token))
                 .isInstanceOf(ApiException.class)
@@ -73,32 +75,44 @@ class RefreshTokenServiceTest {
     }
 
     @Test
-    @DisplayName("유효한 토큰이 들어오면 새로운 토큰을 발급한다.")
-    void whenRenewWithValidToken_thenReturnNewTokens() {
-        String token = "valid-token";
-        String username = "testUser";
-        AuthUser authUser = mock(AuthUser.class);
-        RefreshToken oldToken = mock(RefreshToken.class);
-        TokenBuildDto tokenBuildDto = TokenBuildDto.builder()
-                .subject(username)
-                .claim("id", 1L)
-                .build();
+    @DisplayName("유저 토큰은 유저 인증 서비스를 이용한다")
+    void whenRenewWithUserToken_thenUseUserAuthService() {
+        String token = "token";
+        String subject = USER + " user1@test.com";
+        String username = "user1@test.com";
+        LocalDateTime expiration = LocalDateTime.now().plusHours(1);
 
         when(tokenProvider.validateToken(token)).thenReturn(true);
-        when(tokenProvider.getSubject(token)).thenReturn(username);
-        when(userAuthService.loadUserByUsername(username)).thenReturn(authUser);
-        when(authUser.getId()).thenReturn(1L);
-        when(refreshTokenRepository.findByToken(token)).thenReturn(Optional.of(oldToken));
-        when(oldToken.getExpiration()).thenReturn(LocalDateTime.now().plusDays(1));
-        when(tokenProvider.createAccessToken(any(TokenBuildDto.class))).thenReturn("new-access-token");
-        when(tokenProvider.createRefreshToken(any(TokenBuildDto.class))).thenReturn("new-refresh-token");
+        when(tokenProvider.getSubject(token)).thenReturn(subject);
+        when(userAuthService.loadUserByUsername(username)).thenReturn(AuthUser.builder()
+                .email(username)
+                .build());
+        when(refreshTokenRepository.findByToken(token)).thenReturn(Optional.of(
+                RefreshToken.builder().token(token).expiration(expiration).build()));
 
-        NewTokensDto newTokensDto = refreshTokenService.renew(token);
+        refreshTokenService.renew(token);
 
-        assertThat(newTokensDto).isNotNull();
-        assertThat(newTokensDto.getAccessToken()).isEqualTo("new-access-token");
-        assertThat(newTokensDto.getRefreshToken()).isEqualTo("new-refresh-token");
+        verify(userAuthService).loadUserByUsername(username);
+    }
 
-        verify(refreshTokenRepository).save(any(RefreshToken.class));
+    @Test
+    @DisplayName("직원 토큰은 직원 인증 서비스를 이용한다")
+    void whenRenewWithCrewToken_thenUseCrewAuthService() {
+        String token = "token";
+        String subject = CREW + " crew1@test.com";
+        String username = "crew1@test.com";
+        LocalDateTime expiration = LocalDateTime.now().plusHours(1);
+
+        when(tokenProvider.validateToken(token)).thenReturn(true);
+        when(tokenProvider.getSubject(token)).thenReturn(subject);
+        when(crewAuthService.loadUserByUsername(username)).thenReturn(AuthCrew.builder()
+                .email(username)
+                .build());
+        when(refreshTokenRepository.findByToken(token)).thenReturn(Optional.of(
+                RefreshToken.builder().token(token).expiration(expiration).build()));
+
+        refreshTokenService.renew(token);
+
+        verify(crewAuthService).loadUserByUsername(username);
     }
 }

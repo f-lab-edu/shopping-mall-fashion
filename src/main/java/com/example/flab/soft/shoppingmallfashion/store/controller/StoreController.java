@@ -2,6 +2,7 @@ package com.example.flab.soft.shoppingmallfashion.store.controller;
 
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
+import com.example.flab.soft.shoppingmallfashion.store.service.CrewService;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreDto;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/store")
 public class StoreController {
     private final StoreService storeService;
+    private final CrewService crewService;
 
     @PostMapping("/register")
     public SuccessResult<Void> registerStore(
             @AuthenticationPrincipal AuthUser user,
             @Validated @RequestBody AddStoreRequest addStoreRequest) {
         storeService.registerStore(addStoreRequest, user.getId());
+        return SuccessResult.<Void>builder().build();
+    }
+
+    @PostMapping("/crew/signup")
+    public SuccessResult<Void> signUp(
+            @Validated @RequestBody CrewSignUpRequest crewSignUpRequest) {
+        crewService.addCrew(crewSignUpRequest);
         return SuccessResult.<Void>builder().build();
     }
 

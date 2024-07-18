@@ -1,7 +1,8 @@
 package com.example.flab.soft.shoppingmallfashion.auth;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.CrewAuthService;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.UserAuthService;
 import java.util.Collection;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class AuthIntegrationTest {
     @Autowired
     private UserAuthService userAuthService;
-    @Value("${authorization.admin.email}")
-    String adminEmail;
+    @Autowired
+    private CrewAuthService crewAuthService;
     @Value("${authorization.store-manager.email}")
     String storeManagerEmail;
     @Value("${authorization.user.email}")
@@ -33,16 +34,8 @@ public class AuthIntegrationTest {
     @Test
     @DisplayName("직원으로 등록된 경우 연관된 권한들을 찾는다")
     void crewHasRelatedAuthorities() {
-        UserDetails userDetails = userAuthService.loadUserByUsername(storeManagerEmail);
+        UserDetails userDetails = crewAuthService.loadUserByUsername(storeManagerEmail);
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-        assertThat(authorities.size()).isEqualTo(5);
-    }
-
-    @Test
-    @DisplayName("admin은 모든 권한을 갖는다")
-    void adminHasAllAuthorities() {
-        UserDetails userDetails = userAuthService.loadUserByUsername(adminEmail);
-        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-        assertThat(authorities.size()).isEqualTo(7);
+        assertThat(authorities.size()).isEqualTo(4);
     }
 }

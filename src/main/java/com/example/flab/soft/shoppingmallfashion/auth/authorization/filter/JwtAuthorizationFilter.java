@@ -50,7 +50,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwtToken = parseToken(request);
         if (jwtToken != null && tokenProvider.validateToken(jwtToken)) {
             String subject = tokenProvider.getSubject(jwtToken);
-
             Role role = Role.valueOf(parseRole(subject));
             String username = parseUsername(subject);
 
@@ -66,11 +65,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                                 new ErrorResult(ErrorEnum.INACTIVATED_USER)));
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType("application/json");
-
-                Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        user, user.getPassword(), user.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    user, user.getPassword(), user.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(request, response);
     }
