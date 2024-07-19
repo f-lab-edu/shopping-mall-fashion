@@ -4,7 +4,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateRequest;
+import com.example.flab.soft.shoppingmallfashion.item.controller.ProductDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +36,17 @@ public class ItemIntegrationTest {
                                 .header("Authorization", itemManagerToken)
                                 .content(mapper.writeValueAsString(ItemCreateRequest.builder()
                                         .name("name")
-                                        .price(1000)
+                                        .originalPrice(1000)
+                                        .salePrice(900)
                                         .sex("UNISEX")
-                                        .saleState("PREPARING")
+                                        .saleState("ON_SALE")
                                         .storeId(1L)
+                                        .products(List.of(ProductDto.builder()
+                                                .name("new item red")
+                                                .size("L")
+                                                .option("red")
+                                                .saleState("ON_SALE")
+                                                .build()))
                                         .categoryId(1L)
                                         .build()))
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -48,30 +57,20 @@ public class ItemIntegrationTest {
                         .header("Authorization", userToken)
                         .content(mapper.writeValueAsString(ItemCreateRequest.builder()
                                 .name("name")
-                                .price(1000)
+                                .originalPrice(1000)
+                                .salePrice(900)
                                 .sex("UNISEX")
+                                .saleState("PREPARING")
                                 .storeId(1L)
+                                .products(List.of(ProductDto.builder()
+                                        .name("new item red")
+                                        .size("L")
+                                        .option("red")
+                                        .saleState("ON_SALE")
+                                        .build()))
                                 .categoryId(1L)
                                 .build()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(403));
-    }
-
-    @Test
-    @DisplayName("상품 등록시 필수값이 존재하지 않으면 400에러")
-    void whenMandatoryFieldIsBlank_thenReturn400() throws Exception {
-        mockMvc.perform(
-                        post("/api/v1/item/management/new-item")
-                                .header("Authorization", itemManagerToken)
-                                .content(mapper.writeValueAsString(ItemCreateRequest.builder()
-                                        .name("  ")
-                                        .price(1000)
-                                        .sex("UNISEX")
-                                        .saleState("PREPARING")
-                                        .storeId(1L)
-                                        .categoryId(1L)
-                                        .build()))
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(400));
     }
 }

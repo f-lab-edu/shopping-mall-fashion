@@ -1,13 +1,15 @@
 package com.example.flab.soft.shoppingmallfashion.item.service;
 
+import com.example.flab.soft.shoppingmallfashion.category.Category;
+import com.example.flab.soft.shoppingmallfashion.category.CategoryRepository;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateRequest;
-import com.example.flab.soft.shoppingmallfashion.category.Category;
+import com.example.flab.soft.shoppingmallfashion.item.controller.ProductDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
+import com.example.flab.soft.shoppingmallfashion.item.domain.Product;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
-import com.example.flab.soft.shoppingmallfashion.category.CategoryRepository;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
@@ -23,16 +25,16 @@ public class ItemCommandService {
     private final StoreRepository storeRepository;
 
     @Transactional
-    public void addItem(ItemCreateRequest itemCreateRequest, Long userId) {
+    public Long addItem(ItemCreateRequest itemCreateRequest, Long userId) {
         Category category = categoryRepository.findById(itemCreateRequest.getCategoryId())
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
         Store store = storeRepository.findById(itemCreateRequest.getStoreId())
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
-        itemRepository.save(Item.builder()
+        Item item = itemRepository.save(Item.builder()
                 .name(itemCreateRequest.getName())
-                .price(itemCreateRequest.getPrice())
-                .discountAppliedPrice(itemCreateRequest.getDiscountAppliedPrice())
+                .originalPrice(itemCreateRequest.getOriginalPrice())
+                .salePrice(itemCreateRequest.getSalePrice())
                 .description(itemCreateRequest.getDescription())
                 .sex(Sex.valueOf(itemCreateRequest.getSex()))
                 .saleState(SaleState.valueOf(itemCreateRequest.getSaleState()))
@@ -41,6 +43,21 @@ public class ItemCommandService {
                 .lastlyModifiedBy(userId)
                 .build());
 
+        itemCreateRequest.getProducts().stream()
+                .map(productDto -> toProductEntity(productDto, item))
+                .forEach(item::addProduct);
+
         category.increaseItemCount(1);
+        return item.getId();
+    }
+
+    private Product toProductEntity(ProductDto productDto, Item item) {
+        return Product.builder()
+                .name(productDto.getName())
+                .size(productDto.getSize())
+                .option(productDto.getOption())
+                .item(item)
+                .saleState(SaleState.valueOf(productDto.getSaleState()))
+                .build();
     }
 }

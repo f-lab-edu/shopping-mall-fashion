@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,18 +21,20 @@ public class ItemCreateRequest {
     private String name;
     @NotNull
     @Min(value = 0)
-    private Integer price;
+    private Integer originalPrice;
     @Min(value = 0)
-    private Integer discountAppliedPrice;
+    private Integer salePrice;
     @Size(max = 1000)
     private String description;
     @NotBlank
-    @Size(max = 45)
+    @Size(max = 10)
     private String sex;
     @NotBlank
     private String saleState;
     @NotNull
     private Long storeId;
+    @NotNull
+    private List<ProductDto> products;
     @NotNull
     private Long categoryId;
 }
