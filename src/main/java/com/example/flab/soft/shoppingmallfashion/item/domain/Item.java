@@ -1,9 +1,9 @@
 package com.example.flab.soft.shoppingmallfashion.item.domain;
 
+import static com.example.flab.soft.shoppingmallfashion.util.NotNullValidator.*;
+
 import com.example.flab.soft.shoppingmallfashion.category.Category;
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
-import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
-import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +15,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -61,13 +60,5 @@ public class Item extends BaseEntity {
         this.store = requireNotNull(store);
         this.category = requireNotNull(category);
         this.lastlyModifiedBy = requireNotNull(lastlyModifiedBy);
-    }
-
-    private <T> T requireNotNull(T value) {
-        try {
-            return Objects.requireNonNull(value);
-        } catch (NullPointerException e) {
-            throw new ApiException(ErrorEnum.INVALID_REQUEST);
-        }
     }
 }

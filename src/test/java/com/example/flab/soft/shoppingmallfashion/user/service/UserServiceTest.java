@@ -50,6 +50,9 @@ class UserServiceTest {
         User user = User.builder()
                 .email("valid.email@example.com")
                 .password("ValidPass1#")
+                .realName("Valid Name")
+                .cellphoneNumber("01012345678")
+                .nickname("validNick")
                 .build();
 
         when(userRepository.save(any())).thenReturn(user);
@@ -110,7 +113,13 @@ class UserServiceTest {
     @Test
     void whenChangePasswordWithWrongCurrentPassword_thenThrowsException() {
         when(userRepository.findById(any())).thenReturn(
-                Optional.ofNullable(User.builder().password("Testuser1#").build()));
+                Optional.ofNullable(User.builder()
+                        .email("valid.email@example.com")
+                        .password("ValidPass1#")
+                        .realName("Valid Name")
+                        .cellphoneNumber("01012345678")
+                        .nickname("validNick")
+                        .build()));
         when(passwordEncoder.matches(any(), any())).thenReturn(false);
 
         ApiException exception = assertThrows(ApiException.class, () -> {

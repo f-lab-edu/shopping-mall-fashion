@@ -1,22 +1,19 @@
 package com.example.flab.soft.shoppingmallfashion.user.domain;
 
+import static com.example.flab.soft.shoppingmallfashion.util.NotNullValidator.*;
+
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import com.example.flab.soft.shoppingmallfashion.user.service.UserDto;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDateTime;
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity(name = "users")
 @Getter
@@ -25,20 +22,25 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = 0L;
+    @Column(nullable = false)
     private String email;
+    @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
     private String realName;
+    @Column(nullable = false)
     private String cellphoneNumber;
+    @Column(nullable = false)
     private String nickname;
     private Boolean withdrawal = false;
 
     @Builder
     public User(String email, String password, String realName, String cellphoneNumber, String nickname) {
-        this.email = email;
-        this.password = password;
-        this.realName = realName;
-        this.cellphoneNumber = cellphoneNumber;
-        this.nickname = nickname;
+        this.email = requireNotNull(email);
+        this.password = requireNotNull(password);
+        this.realName = requireNotNull(realName);
+        this.cellphoneNumber = requireNotNull(cellphoneNumber);
+        this.nickname = requireNotNull(nickname);
     }
 
 
