@@ -1,38 +1,37 @@
-package com.example.flab.soft.shoppingmallfashion.auth;
+package com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService;
 
-import com.example.flab.soft.shoppingmallfashion.auth.role.Role;
-import com.example.flab.soft.shoppingmallfashion.auth.role.UserRole;
-import com.example.flab.soft.shoppingmallfashion.auth.role.UserRoleRepository;
-import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
-import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService implements UserDetailsService {
+public class UserAuthService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final UserRoleRepository userRoleRepository;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException((email)));
 
-        List<UserRole> userRoles = userRoleRepository.findAllByUserId(user.getId());
-        List<Role> roles = userRoles.stream().map((UserRole::getRole)).toList();
+        return toAuthUser(user, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+    }
 
+    private AuthUser toAuthUser(User user, List<SimpleGrantedAuthority> authorities) {
         return AuthUser.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .password(user.getPassword())
-                .roles(roles)
+                .authorities(authorities)
                 .enabled(!user.isInactivated())
                 .build();
     }

@@ -34,7 +34,7 @@ class StoreServiceTest {
     @DisplayName("이미 등록된 이름으로 등록시 예외")
     void whenRegisterWithDuplicatedName_throwsException() {
         when(storeRepository.existsByName(anyString())).thenReturn(true);
-        assertThrows(ApiException.class, () -> storeService.addStore(addStoreRequest, 1L));
+        assertThrows(ApiException.class, () -> storeService.registerStore(addStoreRequest, 1L));
     }
 
     @Test

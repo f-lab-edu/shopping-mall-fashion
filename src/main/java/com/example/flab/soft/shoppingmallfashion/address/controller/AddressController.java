@@ -2,7 +2,7 @@ package com.example.flab.soft.shoppingmallfashion.address.controller;
 
 import com.example.flab.soft.shoppingmallfashion.address.service.AddressService;
 import com.example.flab.soft.shoppingmallfashion.address.service.Addresses;
-import com.example.flab.soft.shoppingmallfashion.auth.AuthUser;
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

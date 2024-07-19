@@ -49,13 +49,12 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .setSubject(tokenBuildDto.getSubject())
-                .claim("id", tokenBuildDto.getClaim("id"))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(expiration)
                 .compact();
     }
 
-    public String getSubjectFromToken(String token) {
+    public String getSubject(String token) {
         Claims claims = Jwts
                 .parserBuilder()
                 .setSigningKey(key)

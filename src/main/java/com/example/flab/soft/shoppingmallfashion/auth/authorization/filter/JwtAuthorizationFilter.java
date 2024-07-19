@@ -1,6 +1,9 @@
-package com.example.flab.soft.shoppingmallfashion.auth.jwt;
+package com.example.flab.soft.shoppingmallfashion.auth.authorization.filter;
 
-import com.example.flab.soft.shoppingmallfashion.auth.AuthService;
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.CrewAuthService;
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.UserAuthService;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.Role;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.TokenProvider;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,14 +22,17 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    private final AuthService authService;
+    private final UserAuthService userAuthService;
+    private final CrewAuthService crewAuthService;
     private final TokenProvider tokenProvider;
     private final ObjectMapper objectMapper;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, AuthService authService,
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserAuthService userAuthService,
+                                  CrewAuthService crewAuthService,
                                   TokenProvider tokenProvider, ObjectMapper objectMapper) {
         super(authenticationManager);
-        this.authService = authService;
+        this.userAuthService = userAuthService;
+        this.crewAuthService = crewAuthService;
         this.tokenProvider = tokenProvider;
         this.objectMapper = objectMapper;
     }
@@ -43,17 +49,23 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         String jwtToken = parseToken(request);
         if (jwtToken != null && tokenProvider.validateToken(jwtToken)) {
-            String subject = tokenProvider.getSubjectFromToken(jwtToken);
+            String subject = tokenProvider.getSubject(jwtToken);
+            Role role = Role.valueOf(parseRole(subject));
+            String username = parseUsername(subject);
 
-            UserDetails user = authService.loadUserByUsername(subject);
-            if (!user.isEnabled()) {
+            UserDetails user = null;
+            switch (role) {
+                case USER -> user = userAuthService.loadUserByUsername(username);
+                case CREW -> user = crewAuthService.loadUserByUsername(username);
+            }
+
+            if (user != null && !user.isEnabled()) {
                 response.getWriter().write(
                         objectMapper.writeValueAsString(
                                 new ErrorResult(ErrorEnum.INACTIVATED_USER)));
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType("application/json");
             }
-
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     user, user.getPassword(), user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -61,7 +73,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         chain.doFilter(request, response);
     }
 
+    private String parseUsername(String subject) {
+        return subject.split(" ")[1];
+    }
+
+    private String parseRole(String subject) {
+        return subject.split(" ")[0];
+    }
+
     private String parseToken(HttpServletRequest request) {
-        return request.getHeader(AUTHORIZATION_HEADER).split(" ")[1];
+        return parseUsername(request.getHeader(AUTHORIZATION_HEADER));
     }
 }

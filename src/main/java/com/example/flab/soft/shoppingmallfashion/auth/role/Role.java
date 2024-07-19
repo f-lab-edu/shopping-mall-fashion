@@ -1,30 +1,22 @@
 package com.example.flab.soft.shoppingmallfashion.auth.role;
 
-import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.Builder;
+import java.util.List;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Entity(name = "roles")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Role extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id = 0L;
-    @Enumerated(EnumType.STRING)
-    private Authority authority;
+public enum Role {
+    USER(Authority.ROLE_USER),
+    ITEM_MANAGER(Authority.ROLE_USER, Authority.ITEM_MANAGEMENT),
+    STOCK_MANAGER(Authority.ROLE_USER, Authority.STOCK_MANAGEMENT),
+    CREW_MANGER(Authority.ROLE_USER, Authority.CREW_MANAGEMENT),
+    STORE_MANAGER_BEFORE_APPROVAL(Authority.ROLE_USER, Authority.STORE_MANAGEMENT),
+    STORE_MANAGER(Authority.ROLE_USER, Authority.STORE_MANAGEMENT, Authority.CREW_MANAGEMENT, Authority.ITEM_MANAGEMENT, Authority.STOCK_MANAGEMENT),
+    ADMIN(Authority.ROLE_USER, Authority.ROLE_ADMIN, Authority.STORE_APPROVAL, Authority.STORE_MANAGEMENT,
+            Authority.CREW_MANAGEMENT, Authority.ITEM_MANAGEMENT, Authority.STOCK_MANAGEMENT);
 
-    @Builder
-    public Role(Long id, Authority authority) {
-        this.id = id;
-        this.authority = authority;
+    private final List<Authority> authorities;
+
+    Role(Authority... authorities) {
+        this.authorities = List.of(authorities);
     }
 }

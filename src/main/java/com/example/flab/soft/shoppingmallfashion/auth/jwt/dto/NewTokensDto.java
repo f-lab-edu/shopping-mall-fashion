@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class TokensDto {
+public class NewTokensDto {
     private String accessToken;
     private String refreshToken;
     private final String type = "Bearer";

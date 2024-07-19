@@ -1,40 +1,30 @@
-package com.example.flab.soft.shoppingmallfashion.auth;
+package com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails;
 
-import com.example.flab.soft.shoppingmallfashion.auth.role.Authority;
-import com.example.flab.soft.shoppingmallfashion.auth.role.Role;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.Role;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
+@SuperBuilder
 public class AuthUser implements UserDetails {
     private Long id;
     private String email;
     private String password;
-    private List<Role> roles;
+    private List<SimpleGrantedAuthority> authorities;
     private boolean enabled;
 
-    @Builder
-    public AuthUser(Long id, String email, String password, List<Role> roles, Boolean enabled) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.roles = roles;
-        this.enabled = enabled;
+    public Role getRole() {
+        return Role.USER;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(Role::getAuthority)
-                .map(Authority::name)
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        return authorities;
     }
 
     @Override

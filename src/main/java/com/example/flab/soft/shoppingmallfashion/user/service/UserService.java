@@ -1,7 +1,5 @@
 package com.example.flab.soft.shoppingmallfashion.user.service;
 
-import com.example.flab.soft.shoppingmallfashion.auth.role.Authority;
-import com.example.flab.soft.shoppingmallfashion.auth.role.RoleService;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.user.controller.UserSignUpRequest;
@@ -16,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -26,7 +23,7 @@ public class UserService {
     }
 
     private void saveUser(UserSignUpRequest userSignUpRequest) {
-        User user = userRepository.save(
+        userRepository.save(
                 User.builder()
                         .email(userSignUpRequest.getEmail())
                         .password(passwordEncoder.encode(userSignUpRequest.getPassword()))
@@ -35,8 +32,6 @@ public class UserService {
                         .nickname(userSignUpRequest.getNickname())
                         .build()
         );
-
-        roleService.save(user.getId(), Authority.ROLE_USER);
     }
 
     private void checkDuplication(UserSignUpRequest userSignUpRequest) {
