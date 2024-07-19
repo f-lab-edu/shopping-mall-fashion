@@ -27,7 +27,7 @@ class ItemCommandServiceTest {
         Category category = categoryRepository.findById(1L).get();
         Long itemCountBefore = category.getItemCount();
         itemCommandService.addItem(ItemCreateRequest.builder()
-                .name("name")
+                .name("new item")
                 .price(1000)
                 .sex("UNISEX")
                 .saleState("PREPARING")

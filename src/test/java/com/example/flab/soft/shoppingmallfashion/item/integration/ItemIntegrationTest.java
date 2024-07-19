@@ -23,7 +23,7 @@ public class ItemIntegrationTest {
     ObjectMapper mapper;
     @Value("${authorization.user.token}")
     String userToken;
-    @Value("${authorization.admin.token}")
+    @Value("${authorization.item-manager.token}")
     String itemManagerToken;
 
     @Test
