@@ -68,4 +68,12 @@ public class Product extends BaseEntity {
     public void endProduction() {
         saleState = SaleState.END_OF_PRODUCTION;
     }
+
+    public boolean isOnSale() {
+        return saleState.equals(SaleState.ON_SALE);
+    }
+
+    public void startSale() {
+        saleState = SaleState.ON_SALE;
+    }
 }

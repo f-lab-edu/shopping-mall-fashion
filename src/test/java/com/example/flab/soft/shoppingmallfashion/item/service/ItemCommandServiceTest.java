@@ -124,4 +124,13 @@ class ItemCommandServiceTest {
         assertThat(product.isEndOfProduction()).isTrue();
         assertThat(item.isEndOfProduction()).isTrue();
     }
+
+    @Test
+    @DisplayName("아이템 판매 시작")
+    void startSale() {
+        itemCommandService.startSale(item.getId());
+
+        assertThat(item.isOnSale()).isTrue();
+        assertThat(product.isOnSale()).isTrue();
+    }
 }
