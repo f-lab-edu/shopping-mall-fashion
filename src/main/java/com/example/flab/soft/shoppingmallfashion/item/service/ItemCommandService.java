@@ -75,6 +75,7 @@ public class ItemCommandService {
         }
     }
 
+    @Transactional
     public void endProduction(Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
@@ -82,6 +83,7 @@ public class ItemCommandService {
         item.endProduction();
     }
 
+    @Transactional
     public void startSale(Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
@@ -89,6 +91,7 @@ public class ItemCommandService {
         item.startAllSale();
     }
 
+    @Transactional
     public void restartSale(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
