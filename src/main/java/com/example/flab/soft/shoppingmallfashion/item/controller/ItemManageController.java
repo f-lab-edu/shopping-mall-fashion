@@ -1,6 +1,7 @@
 package com.example.flab.soft.shoppingmallfashion.item.controller;
 
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
+import com.example.flab.soft.shoppingmallfashion.common.Accessible;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemCommandService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class ItemManageController {
 
     @PatchMapping("/{itemId}/end-production")
     public SuccessResult<Void> endProduction(
-            @PathVariable Long itemId) {
+            @Accessible Long itemId) {
         itemService.endProduction(itemId);
         return SuccessResult.<Void>builder().build();
     }
