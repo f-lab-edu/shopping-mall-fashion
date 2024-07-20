@@ -18,4 +18,5 @@ public class ProductDto {
     private String size;
     private String option;
     private SaleState saleState;
+    private Long stocksCount;
 }

@@ -2,7 +2,9 @@ package com.example.flab.soft.shoppingmallfashion.item.controller;
 
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
+import com.example.flab.soft.shoppingmallfashion.item.domain.Product;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemCommandService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -34,9 +36,9 @@ public class ItemManageController {
     }
 
     @PatchMapping("/{itemId}/sale-state/on-sale")
-    public SuccessResult<Void> startSale(
+    public SuccessResult<List<Product>> startSale(
             @PathVariable Long itemId) {
-        itemService.startSale(itemId);
-        return SuccessResult.<Void>builder().build();
+        List<Product> products = itemService.startSale(itemId);
+        return SuccessResult.<List<Product>>builder().build();
     }
 }

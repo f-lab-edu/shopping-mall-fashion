@@ -4,6 +4,8 @@ import static com.example.flab.soft.shoppingmallfashion.util.NotNullValidator.re
 
 import com.example.flab.soft.shoppingmallfashion.category.Category;
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
+import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
+import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateRequest;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import jakarta.persistence.CascadeType;
@@ -93,9 +95,15 @@ public class Item extends BaseEntity {
         return saleState.equals(SaleState.END_OF_PRODUCTION);
     }
 
-    public void startAllSale() {
-        saleState = SaleState.ON_SALE;
+    public List<Product> startAllSale() {
+        boolean isAllProductsOOS = products.stream().allMatch(Product::isOutOfStock);
+        if (isAllProductsOOS) {
+            throw new ApiException(ErrorEnum.OUT_OF_STOCK);
+        }
         products.forEach(Product::startSale);
+        saleState = SaleState.ON_SALE;
+
+        return products;
     }
 
     public void changeSaleState(SaleState saleState) {

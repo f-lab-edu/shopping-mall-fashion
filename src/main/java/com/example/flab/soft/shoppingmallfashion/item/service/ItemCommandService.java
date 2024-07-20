@@ -11,6 +11,7 @@ import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ProductRepository;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,17 +58,20 @@ public class ItemCommandService {
     }
 
     @Transactional
-    public void startSale(Long itemId) {
+    public List<Product> startSale(Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
-        item.startAllSale();
+        return item.startAllSale();
     }
 
     @Transactional
     public void restartSale(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
-        product.startSale();
+        boolean hasSucceed = product.startSale();
+        if (!hasSucceed) {
+            throw new ApiException(ErrorEnum.OUT_OF_STOCK);
+        }
     }
 }

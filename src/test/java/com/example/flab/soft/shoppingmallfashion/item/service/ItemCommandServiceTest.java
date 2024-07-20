@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import com.example.flab.soft.shoppingmallfashion.category.Category;
 import com.example.flab.soft.shoppingmallfashion.category.CategoryRepository;
+import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateRequest;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ProductDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
@@ -47,6 +48,7 @@ class ItemCommandServiceTest {
                     .size("L")
                     .option("red")
                     .saleState(SaleState.ON_SALE)
+                    .stocksCount(10L)
                     .build()))
             .storeId(1L)
             .categoryId(1L)
@@ -56,6 +58,7 @@ class ItemCommandServiceTest {
     Store store;
     Item item;
     Product product;
+    Product OOSProduct;
     @BeforeEach
     void setUp() {
         store = storeRepository.findById(1L).get();
@@ -77,9 +80,21 @@ class ItemCommandServiceTest {
                 .option("red")
                 .item(item)
                 .saleState(SaleState.ON_SALE)
+                .stocksCount(10L)
+                .build();
+
+        OOSProduct = Product.builder()
+                .name("test product2")
+                .size("L")
+                .option("blue")
+                .item(item)
+                .saleState(SaleState.SOLD_OUT)
+                .stocksCount(0L)
                 .build();
         productRepository.save(product);
+        productRepository.save(OOSProduct);
         item.addProduct(product);
+        item.addProduct(OOSProduct);
     }
 
     @Test
@@ -142,5 +157,13 @@ class ItemCommandServiceTest {
 
         assertThat(item.isOnSale()).isTrue();
         assertThat(product.isOnSale()).isTrue();
+    }
+
+    @Test
+    @DisplayName("판매 시작시 재고가 존재해야 한다")
+    void whenStartSaleOOSProduct_throwException() {
+        Product oosProduct = OOSProduct;
+        assertThatThrownBy(() -> itemCommandService.restartSale(oosProduct.getId()))
+                .isInstanceOf(ApiException.class);
     }
 }

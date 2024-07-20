@@ -3,6 +3,8 @@ package com.example.flab.soft.shoppingmallfashion.item.domain;
 import static com.example.flab.soft.shoppingmallfashion.util.NotNullValidator.requireNotNull;
 
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
+import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
+import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ProductDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,14 +40,17 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private SaleState saleState;
+    @Column(name = "stocks_cnt")
+    private Long stocksCount = 0L;
 
     @Builder
-    public Product(String name, String size, String option, Item item, SaleState saleState) {
+    public Product(String name, String size, String option, Item item, SaleState saleState, Long stocksCount) {
         this.name = requireNotNull(name);
         this.size = requireNotNull(size);
         this.option = option;
         this.item = requireNotNull(item);
         this.saleState = saleState;
+        this.stocksCount = requireNotNull(stocksCount);
     }
 
     public void beSoldOut(Boolean isTemporarily) {
@@ -78,11 +83,19 @@ public class Product extends BaseEntity {
         return saleState == SaleState.ON_SALE;
     }
 
-    public void startSale() {
+    public boolean startSale() {
+        if (isOutOfStock()) {
+            return false;
+        }
         saleState = SaleState.ON_SALE;
         if (!item.isOnSale()) {
             item.changeSaleState(SaleState.ON_SALE);
         }
+        return true;
+    }
+
+    public boolean isOutOfStock() {
+        return stocksCount == 0;
     }
 
     public static Product of(Item item, ProductDto productDto) {
@@ -92,6 +105,7 @@ public class Product extends BaseEntity {
                 .option(productDto.getOption())
                 .item(item)
                 .saleState(productDto.getSaleState())
+                .stocksCount(productDto.getStocksCount())
                 .build();
     }
 }

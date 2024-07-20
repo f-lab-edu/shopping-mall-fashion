@@ -28,7 +28,9 @@ public enum ErrorEnum {
     FORBIDDEN_ADDRESS_REQUEST(HttpStatus.FORBIDDEN, "허용되지 않는 주소 요청입니다."),
     // Store
     STORE_NAME_DUPLICATED(HttpStatus.CONFLICT, "이미 등록된 브랜드입니다."),
-    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 브랜드가 존재하지 않습니다.");
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 브랜드가 존재하지 않습니다."),
+    // Item
+    OUT_OF_STOCK(HttpStatus.CONFLICT, "재고가 남아 있지 않습니다.");
 
     private final HttpStatus status;
     private final String code;
