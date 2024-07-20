@@ -46,4 +46,12 @@ public class Product extends BaseEntity {
         this.item = requireNotNull(item);
         this.saleState = saleState;
     }
+
+    public void beSoldOut() {
+        saleState = SaleState.SOLD_OUT;
+    }
+
+    public boolean isSoldOut() {
+        return saleState.equals(SaleState.SOLD_OUT);
+    }
 }

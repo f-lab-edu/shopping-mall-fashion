@@ -74,4 +74,12 @@ public class Item extends BaseEntity {
             products.add(product);
         }
     }
+
+    public boolean isAllProductsSoldOut() {
+        return products.stream().allMatch((Product::isSoldOut));
+    }
+
+    public void beAllSoldOut() {
+        saleState = SaleState.SOLD_OUT;
+    }
 }

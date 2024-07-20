@@ -11,6 +11,7 @@ import com.example.flab.soft.shoppingmallfashion.item.domain.Product;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
+import com.example.flab.soft.shoppingmallfashion.item.repository.ProductRepository;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class ItemCommandService {
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
     private final StoreRepository storeRepository;
+    private final ProductRepository productRepository;
 
     @Transactional
     public Long addItem(ItemCreateRequest itemCreateRequest, Long userId) {
@@ -59,5 +61,17 @@ public class ItemCommandService {
                 .item(item)
                 .saleState(SaleState.valueOf(productDto.getSaleState()))
                 .build();
+    }
+
+    @Transactional
+    public void updateToSoldOut(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+
+        product.beSoldOut();
+        Item item = product.getItem();
+        if (item.isAllProductsSoldOut()) {
+            item.beAllSoldOut();
+        }
     }
 }

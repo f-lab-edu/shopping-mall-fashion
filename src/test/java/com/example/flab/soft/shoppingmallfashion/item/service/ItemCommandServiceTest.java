@@ -6,9 +6,16 @@ import com.example.flab.soft.shoppingmallfashion.category.Category;
 import com.example.flab.soft.shoppingmallfashion.category.CategoryRepository;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateRequest;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ProductDto;
+import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
+import com.example.flab.soft.shoppingmallfashion.item.domain.Product;
+import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
+import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ProductRepository;
+import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
+import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +30,45 @@ class ItemCommandServiceTest {
     @Autowired
     CategoryRepository categoryRepository;
     @Autowired
+    StoreRepository storeRepository;
+    @Autowired
     ItemRepository itemRepository;
     @Autowired
     ProductRepository productRepository;
     private static final long USER_ID = 1L;
 
+    Category category;
+    Store store;
+    Item item;
+    Product product;
+    @BeforeEach
+    void setUp() {
+        store = storeRepository.findById(1L).get();
+        category = categoryRepository.findById(1L).get();
+        item = itemRepository.save(Item.builder()
+                .name("test item")
+                .originalPrice(1000)
+                .salePrice(900)
+                .sex(Sex.MEN)
+                .saleState(SaleState.ON_SALE)
+                .store(store)
+                .category(category)
+                .lastlyModifiedBy(1L)
+                .build());
+
+        product = Product.builder()
+                .name("test product")
+                .size("L")
+                .option("red")
+                .item(item)
+                .saleState(SaleState.ON_SALE)
+                .build();
+        item.addProduct(product);
+    }
 
     @Test
     @DisplayName("상품 등록")
     void addNewItem() {
-        Category category = categoryRepository.findById(1L).get();
         Long itemCountBefore = category.getItemCount();
         Long itemId = itemCommandService.addItem(ItemCreateRequest.builder()
                 .name("new item")
@@ -54,5 +90,14 @@ class ItemCommandServiceTest {
         assertThat(itemRepository.findById(itemId).get().getProducts().get(0))
                 .hasFieldOrPropertyWithValue("name", "new item red");
         assertThat(category.getItemCount()).isEqualTo(itemCountBefore + 1);
+    }
+
+    @Test
+    @DisplayName("상품 품절 처리")
+    void soldOut() {
+        product.beSoldOut();
+
+        assertThat(product.isSoldOut()).isTrue();
+        assertThat(item.isAllProductsSoldOut()).isTrue();
     }
 }
