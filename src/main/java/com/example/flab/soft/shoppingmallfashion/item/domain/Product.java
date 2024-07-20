@@ -3,6 +3,7 @@ package com.example.flab.soft.shoppingmallfashion.item.domain;
 import static com.example.flab.soft.shoppingmallfashion.util.NotNullValidator.requireNotNull;
 
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
+import com.example.flab.soft.shoppingmallfashion.item.controller.ProductDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -51,18 +52,22 @@ public class Product extends BaseEntity {
         if (isTemporarily) {
             saleState = SaleState.TEMPORARILY_SOLD_OUT;
         } else saleState = SaleState.SOLD_OUT;
+
+        if (item.isAllProductsSoldOut()) {
+            item.changeSaleState(SaleState.SOLD_OUT);
+        }
     }
 
     public boolean isSoldOut() {
-        return saleState.equals(SaleState.SOLD_OUT) || saleState.equals(SaleState.TEMPORARILY_SOLD_OUT);
+        return saleState == SaleState.SOLD_OUT || saleState == SaleState.TEMPORARILY_SOLD_OUT;
     }
 
     public boolean isTempSoldOut() {
-        return saleState.equals(SaleState.TEMPORARILY_SOLD_OUT);
+        return saleState == SaleState.TEMPORARILY_SOLD_OUT;
     }
 
     public boolean isEndOfProduction() {
-        return saleState.equals(SaleState.END_OF_PRODUCTION);
+        return saleState == SaleState.END_OF_PRODUCTION;
     }
 
     public void endProduction() {
@@ -70,10 +75,23 @@ public class Product extends BaseEntity {
     }
 
     public boolean isOnSale() {
-        return saleState.equals(SaleState.ON_SALE);
+        return saleState == SaleState.ON_SALE;
     }
 
     public void startSale() {
         saleState = SaleState.ON_SALE;
+        if (!item.isOnSale()) {
+            item.changeSaleState(SaleState.ON_SALE);
+        }
+    }
+
+    public static Product of(Item item, ProductDto productDto) {
+        return builder()
+                .name(productDto.getName())
+                .size(productDto.getSize())
+                .option(productDto.getOption())
+                .item(item)
+                .saleState(productDto.getSaleState())
+                .build();
     }
 }

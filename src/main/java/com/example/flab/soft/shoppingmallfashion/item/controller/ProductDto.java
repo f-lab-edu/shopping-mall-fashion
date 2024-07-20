@@ -1,5 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.item.controller;
 
+import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,5 @@ public class ProductDto {
     @NotBlank
     private String size;
     private String option;
-    @NotBlank
-    private String saleState;
+    private SaleState saleState;
 }

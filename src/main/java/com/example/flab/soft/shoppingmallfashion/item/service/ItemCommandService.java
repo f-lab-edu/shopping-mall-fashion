@@ -5,11 +5,8 @@ import com.example.flab.soft.shoppingmallfashion.category.CategoryRepository;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateRequest;
-import com.example.flab.soft.shoppingmallfashion.item.controller.ProductDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Product;
-import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
-import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ProductRepository;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
@@ -33,34 +30,14 @@ public class ItemCommandService {
         Store store = storeRepository.findById(itemCreateRequest.getStoreId())
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
-        Item item = itemRepository.save(Item.builder()
-                .name(itemCreateRequest.getName())
-                .originalPrice(itemCreateRequest.getOriginalPrice())
-                .salePrice(itemCreateRequest.getSalePrice())
-                .description(itemCreateRequest.getDescription())
-                .sex(Sex.valueOf(itemCreateRequest.getSex()))
-                .saleState(SaleState.valueOf(itemCreateRequest.getSaleState()))
-                .store(store)
-                .category(category)
-                .lastlyModifiedBy(userId)
-                .build());
+        Item item = itemRepository.save(Item.of(category, store, itemCreateRequest, userId));
 
         itemCreateRequest.getProducts().stream()
-                .map(productDto -> toProductEntity(productDto, item))
+                .map(productDto -> Product.of(item, productDto))
                 .forEach(item::addProduct);
 
         category.increaseItemCount(1);
         return item.getId();
-    }
-
-    private Product toProductEntity(ProductDto productDto, Item item) {
-        return Product.builder()
-                .name(productDto.getName())
-                .size(productDto.getSize())
-                .option(productDto.getOption())
-                .item(item)
-                .saleState(SaleState.valueOf(productDto.getSaleState()))
-                .build();
     }
 
     @Transactional
@@ -69,10 +46,6 @@ public class ItemCommandService {
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
         product.beSoldOut(isTemporarily);
-        Item item = product.getItem();
-        if (item.isAllProductsSoldOut()) {
-            item.beAllSoldOut();
-        }
     }
 
     @Transactional
@@ -95,11 +68,6 @@ public class ItemCommandService {
     public void restartSale(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
-        Item item = product.getItem();
-
-        if (!item.isOnSale()) {
-            item.beOnSale();
-        }
         product.startSale();
     }
 }

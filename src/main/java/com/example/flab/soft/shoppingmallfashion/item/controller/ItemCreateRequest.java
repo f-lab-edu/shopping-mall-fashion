@@ -1,5 +1,7 @@
 package com.example.flab.soft.shoppingmallfashion.item.controller;
 
+import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
+import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,11 +28,8 @@ public class ItemCreateRequest {
     private Integer salePrice;
     @Size(max = 1000)
     private String description;
-    @NotBlank
-    @Size(max = 10)
-    private String sex;
-    @NotBlank
-    private String saleState;
+    private Sex sex;
+    private SaleState saleState;
     @NotNull
     private Long storeId;
     @NotNull

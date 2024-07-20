@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/item/management")
+@RequestMapping("/api/v1/crew/item")
 @RequiredArgsConstructor
 public class ItemManageController {
     private final ItemCommandService itemService;
-    @PostMapping("/new-item")
+    @PostMapping("")
     public SuccessResult<Void> newItem(
             @RequestBody @Validated ItemCreateRequest itemCreateRequest,
             @AuthenticationPrincipal AuthUser authUser) {
@@ -26,14 +26,14 @@ public class ItemManageController {
         return SuccessResult.<Void>builder().build();
     }
 
-    @PatchMapping("/{itemId}/end-production")
+    @PatchMapping("/{itemId}/sale-state/end-of-production")
     public SuccessResult<Void> endProduction(
             @PathVariable Long itemId) {
         itemService.endProduction(itemId);
         return SuccessResult.<Void>builder().build();
     }
 
-    @PatchMapping("/{itemId}/start-sale")
+    @PatchMapping("/{itemId}/sale-state/on-sale")
     public SuccessResult<Void> startSale(
             @PathVariable Long itemId) {
         itemService.startSale(itemId);

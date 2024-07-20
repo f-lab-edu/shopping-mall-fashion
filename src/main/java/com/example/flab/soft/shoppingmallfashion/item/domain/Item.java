@@ -4,6 +4,7 @@ import static com.example.flab.soft.shoppingmallfashion.util.NotNullValidator.re
 
 import com.example.flab.soft.shoppingmallfashion.category.Category;
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
+import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateRequest;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -83,10 +84,6 @@ public class Item extends BaseEntity {
         return products.stream().anyMatch((Product::isTempSoldOut));
     }
 
-    public void beAllSoldOut() {
-        saleState = SaleState.SOLD_OUT;
-    }
-
     public void endProduction() {
         saleState = SaleState.END_OF_PRODUCTION;
         products.forEach(Product::endProduction);
@@ -101,11 +98,25 @@ public class Item extends BaseEntity {
         products.forEach(Product::startSale);
     }
 
-    public void beOnSale() {
-        saleState = SaleState.ON_SALE;
+    public void changeSaleState(SaleState saleState) {
+        this.saleState = saleState;
     }
 
     public boolean isOnSale() {
-        return saleState.equals(SaleState.ON_SALE);
+        return saleState == SaleState.ON_SALE;
+    }
+
+    public static Item of(Category category, Store store, ItemCreateRequest itemCreateRequest, Long userId) {
+        return builder()
+                .name(itemCreateRequest.getName())
+                .originalPrice(itemCreateRequest.getOriginalPrice())
+                .salePrice(itemCreateRequest.getSalePrice())
+                .description(itemCreateRequest.getDescription())
+                .sex(itemCreateRequest.getSex())
+                .saleState(itemCreateRequest.getSaleState())
+                .store(store)
+                .category(category)
+                .lastlyModifiedBy(userId)
+                .build();
     }
 }

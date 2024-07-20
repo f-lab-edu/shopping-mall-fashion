@@ -36,6 +36,21 @@ class ItemCommandServiceTest {
     @Autowired
     ProductRepository productRepository;
     private static final long USER_ID = 1L;
+    private static final ItemCreateRequest ITEM_CREATE_REQUEST = ItemCreateRequest.builder()
+            .name("new item")
+            .originalPrice(1000)
+            .salePrice(1000)
+            .sex(Sex.MEN)
+            .saleState(SaleState.ON_SALE)
+            .products(List.of(ProductDto.builder()
+                    .name("new item red")
+                    .size("L")
+                    .option("red")
+                    .saleState(SaleState.ON_SALE)
+                    .build()))
+            .storeId(1L)
+            .categoryId(1L)
+            .build();
 
     Category category;
     Store store;
@@ -71,21 +86,7 @@ class ItemCommandServiceTest {
     @DisplayName("상품 등록")
     void addNewItem() {
         Long itemCountBefore = category.getItemCount();
-        Long itemId = itemCommandService.addItem(ItemCreateRequest.builder()
-                .name("new item")
-                .originalPrice(1000)
-                .salePrice(1000)
-                .sex("UNISEX")
-                .saleState("PREPARING")
-                .products(List.of(ProductDto.builder()
-                        .name("new item red")
-                        .size("L")
-                        .option("red")
-                        .saleState("ON_SALE")
-                        .build()))
-                .storeId(1L)
-                .categoryId(1L)
-                .build(), USER_ID);
+        Long itemId = itemCommandService.addItem(ITEM_CREATE_REQUEST, USER_ID);
 
         assertThat(itemRepository.existsById(itemId)).isTrue();
         assertThat(itemRepository.findById(itemId).get().getProducts().get(0))
