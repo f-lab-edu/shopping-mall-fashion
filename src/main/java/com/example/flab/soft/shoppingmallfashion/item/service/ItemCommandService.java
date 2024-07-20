@@ -74,4 +74,11 @@ public class ItemCommandService {
             item.beAllSoldOut();
         }
     }
+
+    public void endProduction(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+
+        item.endProduction();
+    }
 }

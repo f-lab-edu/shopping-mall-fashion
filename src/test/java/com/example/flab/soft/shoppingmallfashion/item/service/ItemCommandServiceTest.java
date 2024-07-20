@@ -115,4 +115,13 @@ class ItemCommandServiceTest {
         assertThat(item.isAllProductsSoldOut()).isTrue();
         assertThat(item.hasProductTempSoldOut()).isTrue();
     }
+
+    @Test
+    @DisplayName("상품 단종 처리")
+    void endOfProduction() {
+        itemCommandService.endProduction(item.getId());
+
+        assertThat(product.isEndOfProduction()).isTrue();
+        assertThat(item.isEndOfProduction()).isTrue();
+    }
 }

@@ -60,4 +60,12 @@ public class Product extends BaseEntity {
     public boolean isTempSoldOut() {
         return saleState.equals(SaleState.TEMPORARILY_SOLD_OUT);
     }
+
+    public boolean isEndOfProduction() {
+        return saleState.equals(SaleState.END_OF_PRODUCTION);
+    }
+
+    public void endProduction() {
+        saleState = SaleState.END_OF_PRODUCTION;
+    }
 }

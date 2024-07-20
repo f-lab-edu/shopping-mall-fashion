@@ -86,4 +86,13 @@ public class Item extends BaseEntity {
     public void beAllSoldOut() {
         saleState = SaleState.SOLD_OUT;
     }
+
+    public void endProduction() {
+        saleState = SaleState.END_OF_PRODUCTION;
+        products.forEach(Product::endProduction);
+    }
+
+    public boolean isEndOfProduction() {
+        return saleState.equals(SaleState.END_OF_PRODUCTION);
+    }
 }
