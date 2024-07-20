@@ -86,6 +86,17 @@ public class ItemCommandService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
-        item.startSale();
+        item.startAllSale();
+    }
+
+    public void restartSale(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+        Item item = product.getItem();
+
+        if (!item.isOnSale()) {
+            item.beOnSale();
+        }
+        product.startSale();
     }
 }

@@ -133,4 +133,13 @@ class ItemCommandServiceTest {
         assertThat(item.isOnSale()).isTrue();
         assertThat(product.isOnSale()).isTrue();
     }
+
+    @Test
+    @DisplayName("일부 상품 판매 재개")
+    void restartSale() {
+        itemCommandService.restartSale(product.getId());
+
+        assertThat(item.isOnSale()).isTrue();
+        assertThat(product.isOnSale()).isTrue();
+    }
 }

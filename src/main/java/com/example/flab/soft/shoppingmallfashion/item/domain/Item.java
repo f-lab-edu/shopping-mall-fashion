@@ -96,9 +96,13 @@ public class Item extends BaseEntity {
         return saleState.equals(SaleState.END_OF_PRODUCTION);
     }
 
-    public void startSale() {
+    public void startAllSale() {
         saleState = SaleState.ON_SALE;
         products.forEach(Product::startSale);
+    }
+
+    public void beOnSale() {
+        saleState = SaleState.ON_SALE;
     }
 
     public boolean isOnSale() {
