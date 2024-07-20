@@ -79,6 +79,10 @@ public class Item extends BaseEntity {
         return products.stream().allMatch((Product::isSoldOut));
     }
 
+    public boolean hasProductTempSoldOut() {
+        return products.stream().anyMatch((Product::isTempSoldOut));
+    }
+
     public void beAllSoldOut() {
         saleState = SaleState.SOLD_OUT;
     }

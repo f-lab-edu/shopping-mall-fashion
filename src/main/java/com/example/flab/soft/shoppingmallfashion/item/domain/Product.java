@@ -47,11 +47,17 @@ public class Product extends BaseEntity {
         this.saleState = saleState;
     }
 
-    public void beSoldOut() {
-        saleState = SaleState.SOLD_OUT;
+    public void beSoldOut(Boolean isTemporarily) {
+        if (isTemporarily) {
+            saleState = SaleState.TEMPORARILY_SOLD_OUT;
+        } else saleState = SaleState.SOLD_OUT;
     }
 
     public boolean isSoldOut() {
-        return saleState.equals(SaleState.SOLD_OUT);
+        return saleState.equals(SaleState.SOLD_OUT) || saleState.equals(SaleState.TEMPORARILY_SOLD_OUT);
+    }
+
+    public boolean isTempSoldOut() {
+        return saleState.equals(SaleState.TEMPORARILY_SOLD_OUT);
     }
 }

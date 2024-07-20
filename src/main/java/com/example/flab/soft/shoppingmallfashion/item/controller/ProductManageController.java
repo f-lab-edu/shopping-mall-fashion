@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,8 +17,9 @@ public class ProductManageController {
 
     @PatchMapping("/sale-state/{productId}")
     public SuccessResult<Void> soldOut(
-            @PathVariable Long productId) {
-        itemService.updateToSoldOut(productId);
+            @PathVariable Long productId,
+            @RequestParam Boolean isTemporarily) {
+        itemService.updateToSoldOut(productId, isTemporarily);
         return SuccessResult.<Void>builder().build();
     }
 }

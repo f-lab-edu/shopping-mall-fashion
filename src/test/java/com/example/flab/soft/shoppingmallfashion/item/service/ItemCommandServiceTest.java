@@ -63,6 +63,7 @@ class ItemCommandServiceTest {
                 .item(item)
                 .saleState(SaleState.ON_SALE)
                 .build();
+        productRepository.save(product);
         item.addProduct(product);
     }
 
@@ -95,9 +96,23 @@ class ItemCommandServiceTest {
     @Test
     @DisplayName("상품 품절 처리")
     void soldOut() {
-        product.beSoldOut();
+        Boolean isTemporarilySoldOut = false;
+
+        itemCommandService.updateToSoldOut(product.getId(), isTemporarilySoldOut);
 
         assertThat(product.isSoldOut()).isTrue();
         assertThat(item.isAllProductsSoldOut()).isTrue();
+    }
+
+    @Test
+    @DisplayName("상품 일시 품절 처리")
+    void soldOutTemporarily() {
+        Boolean isTemporarilySoldOut = true;
+
+        itemCommandService.updateToSoldOut(product.getId(), isTemporarilySoldOut);
+
+        assertThat(product.isSoldOut()).isTrue();
+        assertThat(item.isAllProductsSoldOut()).isTrue();
+        assertThat(item.hasProductTempSoldOut()).isTrue();
     }
 }

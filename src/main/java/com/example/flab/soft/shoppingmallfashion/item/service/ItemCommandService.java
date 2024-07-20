@@ -64,11 +64,11 @@ public class ItemCommandService {
     }
 
     @Transactional
-    public void updateToSoldOut(Long productId) {
+    public void updateToSoldOut(Long productId, Boolean isTemporarily) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
-        product.beSoldOut();
+        product.beSoldOut(isTemporarily);
         Item item = product.getItem();
         if (item.isAllProductsSoldOut()) {
             item.beAllSoldOut();
