@@ -1,10 +1,12 @@
 package com.example.flab.soft.shoppingmallfashion.item.controller;
 
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
+import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemCommandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,5 +30,13 @@ public class ItemOptionManageController {
             @PathVariable Long itemOptionId) {
         itemService.restartSale(itemOptionId);
         return SuccessResult.<Void>builder().build();
+    }
+
+    @PatchMapping("/{itemOptionId}/stocks-count")
+    public SuccessResult<ItemOption> addStocks(
+            @PathVariable Long itemOptionId, @RequestBody StocksAddRequest stocksAddRequest) {
+        ItemOption itemOption =
+                itemService.addStocks(itemOptionId, stocksAddRequest.getAmount());
+        return SuccessResult.<ItemOption>builder().response(itemOption).build();
     }
 }

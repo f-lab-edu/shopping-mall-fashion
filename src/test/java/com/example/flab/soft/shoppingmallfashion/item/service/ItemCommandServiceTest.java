@@ -162,8 +162,15 @@ class ItemCommandServiceTest {
     @Test
     @DisplayName("판매 시작시 재고가 존재해야 한다")
     void whenStartSaleOOSProduct_throwException() {
-        ItemOption oosItemOption = OOSItemOption;
-        assertThatThrownBy(() -> itemCommandService.restartSale(oosItemOption.getId()))
+        assertThatThrownBy(() -> itemCommandService.restartSale(OOSItemOption.getId()))
                 .isInstanceOf(ApiException.class);
+    }
+
+    @Test
+    @DisplayName("재고 추가")
+    void change_stocks_count() {
+        itemCommandService.addStocks(OOSItemOption.getId(), 10);
+
+        assertThat(itemOptionRepository.findById(OOSItemOption.getId()).get().getStocksCount()).isEqualTo(10);
     }
 }

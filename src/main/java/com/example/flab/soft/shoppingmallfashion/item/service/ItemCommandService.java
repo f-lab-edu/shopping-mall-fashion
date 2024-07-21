@@ -42,8 +42,17 @@ public class ItemCommandService {
     }
 
     @Transactional
-    public void updateToSoldOut(Long productId, Boolean isTemporarily) {
-        ItemOption itemOption = itemOptionRepository.findById(productId)
+    public ItemOption addStocks(Long itemOptionId, int amount) {
+        if (!itemOptionRepository.existsById(itemOptionId)) {
+            throw new ApiException(ErrorEnum.INVALID_REQUEST);
+        }
+        itemOptionRepository.updateStocksCount(itemOptionId, amount);
+        return itemOptionRepository.findById(itemOptionId).get();
+    }
+
+    @Transactional
+    public void updateToSoldOut(Long itemOptionId, Boolean isTemporarily) {
+        ItemOption itemOption = itemOptionRepository.findById(itemOptionId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
         itemOption.beSoldOut(isTemporarily);
@@ -66,8 +75,8 @@ public class ItemCommandService {
     }
 
     @Transactional
-    public void restartSale(Long productId) {
-        ItemOption itemOption = itemOptionRepository.findById(productId)
+    public void restartSale(Long itemOptionId) {
+        ItemOption itemOption = itemOptionRepository.findById(itemOptionId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
         boolean hasSucceed = itemOption.startSale();
         if (!hasSucceed) {
