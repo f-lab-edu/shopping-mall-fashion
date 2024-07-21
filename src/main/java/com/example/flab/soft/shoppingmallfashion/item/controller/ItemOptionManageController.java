@@ -10,23 +10,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/crew/item/product")
+@RequestMapping("/api/v1/crew/item/item-option")
 @RequiredArgsConstructor
-public class ProductManageController {
+public class ItemOptionManageController {
     private final ItemCommandService itemService;
 
-    @PatchMapping("{productId}/sale-state/sold-out")
+    @PatchMapping("{itemOptionId}/sale-state/sold-out")
     public SuccessResult<Void> soldOut(
-            @PathVariable Long productId,
+            @PathVariable Long itemOptionId,
             @RequestParam Boolean isTemporarily) {
-        itemService.updateToSoldOut(productId, isTemporarily);
+        itemService.updateToSoldOut(itemOptionId, isTemporarily);
         return SuccessResult.<Void>builder().build();
     }
 
-    @PatchMapping("/{productId}/sale-state/on-sale")
+    @PatchMapping("/{itemOptionId}/sale-state/on-sale")
     public SuccessResult<Void> startSale(
-            @PathVariable Long productId) {
-        itemService.restartSale(productId);
+            @PathVariable Long itemOptionId) {
+        itemService.restartSale(itemOptionId);
         return SuccessResult.<Void>builder().build();
     }
 }

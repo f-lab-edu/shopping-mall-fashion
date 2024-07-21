@@ -5,7 +5,7 @@ import static com.example.flab.soft.shoppingmallfashion.util.NotNullValidator.re
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
-import com.example.flab.soft.shoppingmallfashion.item.controller.ProductDto;
+import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,11 +21,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "products")
+@Entity(name = "item_options")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @EqualsAndHashCode(of = {"name", "size", "option"}, callSuper = false)
-public class Product extends BaseEntity {
+public class ItemOption extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,7 +44,7 @@ public class Product extends BaseEntity {
     private Long stocksCount = 0L;
 
     @Builder
-    public Product(String name, String size, String option, Item item, SaleState saleState, Long stocksCount) {
+    public ItemOption(String name, String size, String option, Item item, SaleState saleState, Long stocksCount) {
         this.name = requireNotNull(name);
         this.size = requireNotNull(size);
         this.option = option;
@@ -54,11 +54,14 @@ public class Product extends BaseEntity {
     }
 
     public void beSoldOut(Boolean isTemporarily) {
+        if (isSoldOut()) {
+            throw new ApiException(ErrorEnum.ALREADY_SOLD_OUT);
+        }
         if (isTemporarily) {
             saleState = SaleState.TEMPORARILY_SOLD_OUT;
         } else saleState = SaleState.SOLD_OUT;
 
-        if (item.isAllProductsSoldOut()) {
+        if (item.isAllOptionsSoldOut()) {
             item.changeSaleState(SaleState.SOLD_OUT);
         }
     }
@@ -84,6 +87,9 @@ public class Product extends BaseEntity {
     }
 
     public boolean startSale() {
+        if (isOnSale()) {
+            throw new ApiException(ErrorEnum.ALREADY_ON_SALE);
+        }
         if (isOutOfStock()) {
             return false;
         }
@@ -98,14 +104,14 @@ public class Product extends BaseEntity {
         return stocksCount == 0;
     }
 
-    public static Product of(Item item, ProductDto productDto) {
+    public static ItemOption of(Item item, ItemOptionDto itemOptionDto) {
         return builder()
-                .name(productDto.getName())
-                .size(productDto.getSize())
-                .option(productDto.getOption())
+                .name(itemOptionDto.getName())
+                .size(itemOptionDto.getSize())
+                .option(itemOptionDto.getOption())
                 .item(item)
-                .saleState(productDto.getSaleState())
-                .stocksCount(productDto.getStocksCount())
+                .saleState(itemOptionDto.getSaleState())
+                .stocksCount(itemOptionDto.getStocksCount())
                 .build();
     }
 }

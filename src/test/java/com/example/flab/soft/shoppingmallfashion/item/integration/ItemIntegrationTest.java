@@ -4,7 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateRequest;
-import com.example.flab.soft.shoppingmallfashion.item.controller.ProductDto;
+import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,7 +57,7 @@ public class ItemIntegrationTest {
                 .sex(Sex.MEN)
                 .saleState(SaleState.ON_SALE)
                 .storeId(1L)
-                .products(List.of(ProductDto.builder()
+                .itemOptions(List.of(ItemOptionDto.builder()
                         .name("new item red")
                         .size("L")
                         .option("red")

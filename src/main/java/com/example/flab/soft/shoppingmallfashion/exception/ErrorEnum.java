@@ -30,7 +30,9 @@ public enum ErrorEnum {
     STORE_NAME_DUPLICATED(HttpStatus.CONFLICT, "이미 등록된 브랜드입니다."),
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 브랜드가 존재하지 않습니다."),
     // Item
-    OUT_OF_STOCK(HttpStatus.CONFLICT, "재고가 남아 있지 않습니다.");
+    OUT_OF_STOCK(HttpStatus.CONFLICT, "재고가 남아 있지 않습니다."),
+    ALREADY_SOLD_OUT(HttpStatus.CONFLICT, "이미 품절된 상품입니다."),
+    ALREADY_ON_SALE(HttpStatus.CONFLICT, "이미 판매가 시작된 상품입니다.");
 
     private final HttpStatus status;
     private final String code;

@@ -53,7 +53,7 @@ public class Item extends BaseEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
     @OneToMany(mappedBy = "item", cascade = CascadeType.PERSIST)
-    private List<Product> products = new ArrayList<>();
+    private List<ItemOption> itemOptions = new ArrayList<>();
     @Column(nullable = false)
     private Long lastlyModifiedBy;
 
@@ -72,38 +72,38 @@ public class Item extends BaseEntity {
         this.lastlyModifiedBy = requireNotNull(lastlyModifiedBy);
     }
 
-    public void addProduct(Product product) {
-        if (!products.contains(product)) {
-            products.add(product);
+    public void addProduct(ItemOption itemOption) {
+        if (!itemOptions.contains(itemOption)) {
+            itemOptions.add(itemOption);
         }
     }
 
-    public boolean isAllProductsSoldOut() {
-        return products.stream().allMatch((Product::isSoldOut));
+    public boolean isAllOptionsSoldOut() {
+        return itemOptions.stream().allMatch((ItemOption::isSoldOut));
     }
 
     public boolean hasProductTempSoldOut() {
-        return products.stream().anyMatch((Product::isTempSoldOut));
+        return itemOptions.stream().anyMatch((ItemOption::isTempSoldOut));
     }
 
     public void endProduction() {
         saleState = SaleState.END_OF_PRODUCTION;
-        products.forEach(Product::endProduction);
+        itemOptions.forEach(ItemOption::endProduction);
     }
 
     public boolean isEndOfProduction() {
         return saleState.equals(SaleState.END_OF_PRODUCTION);
     }
 
-    public List<Product> startAllSale() {
-        boolean isAllProductsOOS = products.stream().allMatch(Product::isOutOfStock);
-        if (isAllProductsOOS) {
+    public List<ItemOption> startAllSale() {
+        boolean isAllOptionsOOS = itemOptions.stream().allMatch(ItemOption::isOutOfStock);
+        if (isAllOptionsOOS) {
             throw new ApiException(ErrorEnum.OUT_OF_STOCK);
         }
-        products.forEach(Product::startSale);
+        itemOptions.forEach(ItemOption::startSale);
         saleState = SaleState.ON_SALE;
 
-        return products;
+        return itemOptions;
     }
 
     public void changeSaleState(SaleState saleState) {

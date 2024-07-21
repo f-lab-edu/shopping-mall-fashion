@@ -6,9 +6,9 @@ import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateRequest;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
-import com.example.flab.soft.shoppingmallfashion.item.domain.Product;
+import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
-import com.example.flab.soft.shoppingmallfashion.item.repository.ProductRepository;
+import com.example.flab.soft.shoppingmallfashion.item.repository.ItemOptionRepository;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
 import java.util.List;
@@ -22,7 +22,7 @@ public class ItemCommandService {
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
     private final StoreRepository storeRepository;
-    private final ProductRepository productRepository;
+    private final ItemOptionRepository itemOptionRepository;
 
     @Transactional
     public Long addItem(ItemCreateRequest itemCreateRequest, Long userId) {
@@ -33,8 +33,8 @@ public class ItemCommandService {
 
         Item item = itemRepository.save(Item.of(category, store, itemCreateRequest, userId));
 
-        itemCreateRequest.getProducts().stream()
-                .map(productDto -> Product.of(item, productDto))
+        itemCreateRequest.getItemOptions().stream()
+                .map(productDto -> ItemOption.of(item, productDto))
                 .forEach(item::addProduct);
 
         category.increaseItemCount(1);
@@ -43,10 +43,10 @@ public class ItemCommandService {
 
     @Transactional
     public void updateToSoldOut(Long productId, Boolean isTemporarily) {
-        Product product = productRepository.findById(productId)
+        ItemOption itemOption = itemOptionRepository.findById(productId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
-        product.beSoldOut(isTemporarily);
+        itemOption.beSoldOut(isTemporarily);
     }
 
     @Transactional
@@ -58,7 +58,7 @@ public class ItemCommandService {
     }
 
     @Transactional
-    public List<Product> startSale(Long itemId) {
+    public List<ItemOption> startSale(Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
@@ -67,9 +67,9 @@ public class ItemCommandService {
 
     @Transactional
     public void restartSale(Long productId) {
-        Product product = productRepository.findById(productId)
+        ItemOption itemOption = itemOptionRepository.findById(productId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
-        boolean hasSucceed = product.startSale();
+        boolean hasSucceed = itemOption.startSale();
         if (!hasSucceed) {
             throw new ApiException(ErrorEnum.OUT_OF_STOCK);
         }

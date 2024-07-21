@@ -33,7 +33,7 @@ public class ItemCreateRequest {
     @NotNull
     private Long storeId;
     @NotNull
-    private List<ProductDto> products;
+    private List<ItemOptionDto> itemOptions;
     @NotNull
     private Long categoryId;
 }

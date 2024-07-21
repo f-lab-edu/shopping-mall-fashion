@@ -6,13 +6,13 @@ import com.example.flab.soft.shoppingmallfashion.category.Category;
 import com.example.flab.soft.shoppingmallfashion.category.CategoryRepository;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateRequest;
-import com.example.flab.soft.shoppingmallfashion.item.controller.ProductDto;
+import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
-import com.example.flab.soft.shoppingmallfashion.item.domain.Product;
+import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
-import com.example.flab.soft.shoppingmallfashion.item.repository.ProductRepository;
+import com.example.flab.soft.shoppingmallfashion.item.repository.ItemOptionRepository;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
 import java.util.List;
@@ -35,7 +35,7 @@ class ItemCommandServiceTest {
     @Autowired
     ItemRepository itemRepository;
     @Autowired
-    ProductRepository productRepository;
+    ItemOptionRepository itemOptionRepository;
     private static final long USER_ID = 1L;
     private static final ItemCreateRequest ITEM_CREATE_REQUEST = ItemCreateRequest.builder()
             .name("new item")
@@ -43,7 +43,7 @@ class ItemCommandServiceTest {
             .salePrice(1000)
             .sex(Sex.MEN)
             .saleState(SaleState.ON_SALE)
-            .products(List.of(ProductDto.builder()
+            .itemOptions(List.of(ItemOptionDto.builder()
                     .name("new item red")
                     .size("L")
                     .option("red")
@@ -57,8 +57,8 @@ class ItemCommandServiceTest {
     Category category;
     Store store;
     Item item;
-    Product product;
-    Product OOSProduct;
+    ItemOption itemOption;
+    ItemOption OOSItemOption;
     @BeforeEach
     void setUp() {
         store = storeRepository.findById(1L).get();
@@ -68,22 +68,22 @@ class ItemCommandServiceTest {
                 .originalPrice(1000)
                 .salePrice(900)
                 .sex(Sex.MEN)
-                .saleState(SaleState.ON_SALE)
+                .saleState(SaleState.PREPARING)
                 .store(store)
                 .category(category)
                 .lastlyModifiedBy(1L)
                 .build());
 
-        product = Product.builder()
+        itemOption = ItemOption.builder()
                 .name("test product")
                 .size("L")
                 .option("red")
                 .item(item)
-                .saleState(SaleState.ON_SALE)
+                .saleState(SaleState.PREPARING)
                 .stocksCount(10L)
                 .build();
 
-        OOSProduct = Product.builder()
+        OOSItemOption = ItemOption.builder()
                 .name("test product2")
                 .size("L")
                 .option("blue")
@@ -91,10 +91,10 @@ class ItemCommandServiceTest {
                 .saleState(SaleState.SOLD_OUT)
                 .stocksCount(0L)
                 .build();
-        productRepository.save(product);
-        productRepository.save(OOSProduct);
-        item.addProduct(product);
-        item.addProduct(OOSProduct);
+        itemOptionRepository.save(itemOption);
+        itemOptionRepository.save(OOSItemOption);
+        item.addProduct(itemOption);
+        item.addProduct(OOSItemOption);
     }
 
     @Test
@@ -104,7 +104,7 @@ class ItemCommandServiceTest {
         Long itemId = itemCommandService.addItem(ITEM_CREATE_REQUEST, USER_ID);
 
         assertThat(itemRepository.existsById(itemId)).isTrue();
-        assertThat(itemRepository.findById(itemId).get().getProducts().get(0))
+        assertThat(itemRepository.findById(itemId).get().getItemOptions().get(0))
                 .hasFieldOrPropertyWithValue("name", "new item red");
         assertThat(category.getItemCount()).isEqualTo(itemCountBefore + 1);
     }
@@ -114,10 +114,10 @@ class ItemCommandServiceTest {
     void soldOut() {
         Boolean isTemporarilySoldOut = false;
 
-        itemCommandService.updateToSoldOut(product.getId(), isTemporarilySoldOut);
+        itemCommandService.updateToSoldOut(itemOption.getId(), isTemporarilySoldOut);
 
-        assertThat(product.isSoldOut()).isTrue();
-        assertThat(item.isAllProductsSoldOut()).isTrue();
+        assertThat(itemOption.isSoldOut()).isTrue();
+        assertThat(item.isAllOptionsSoldOut()).isTrue();
     }
 
     @Test
@@ -125,10 +125,10 @@ class ItemCommandServiceTest {
     void soldOutTemporarily() {
         Boolean isTemporarilySoldOut = true;
 
-        itemCommandService.updateToSoldOut(product.getId(), isTemporarilySoldOut);
+        itemCommandService.updateToSoldOut(itemOption.getId(), isTemporarilySoldOut);
 
-        assertThat(product.isSoldOut()).isTrue();
-        assertThat(item.isAllProductsSoldOut()).isTrue();
+        assertThat(itemOption.isSoldOut()).isTrue();
+        assertThat(item.isAllOptionsSoldOut()).isTrue();
         assertThat(item.hasProductTempSoldOut()).isTrue();
     }
 
@@ -137,7 +137,7 @@ class ItemCommandServiceTest {
     void endOfProduction() {
         itemCommandService.endProduction(item.getId());
 
-        assertThat(product.isEndOfProduction()).isTrue();
+        assertThat(itemOption.isEndOfProduction()).isTrue();
         assertThat(item.isEndOfProduction()).isTrue();
     }
 
@@ -147,23 +147,23 @@ class ItemCommandServiceTest {
         itemCommandService.startSale(item.getId());
 
         assertThat(item.isOnSale()).isTrue();
-        assertThat(product.isOnSale()).isTrue();
+        assertThat(itemOption.isOnSale()).isTrue();
     }
 
     @Test
     @DisplayName("일부 상품 판매 재개")
     void restartSale() {
-        itemCommandService.restartSale(product.getId());
+        itemCommandService.restartSale(itemOption.getId());
 
         assertThat(item.isOnSale()).isTrue();
-        assertThat(product.isOnSale()).isTrue();
+        assertThat(itemOption.isOnSale()).isTrue();
     }
 
     @Test
     @DisplayName("판매 시작시 재고가 존재해야 한다")
     void whenStartSaleOOSProduct_throwException() {
-        Product oosProduct = OOSProduct;
-        assertThatThrownBy(() -> itemCommandService.restartSale(oosProduct.getId()))
+        ItemOption oosItemOption = OOSItemOption;
+        assertThatThrownBy(() -> itemCommandService.restartSale(oosItemOption.getId()))
                 .isInstanceOf(ApiException.class);
     }
 }

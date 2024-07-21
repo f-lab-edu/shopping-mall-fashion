@@ -2,7 +2,7 @@ package com.example.flab.soft.shoppingmallfashion.item.controller;
 
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
-import com.example.flab.soft.shoppingmallfashion.item.domain.Product;
+import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemCommandService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ItemManageController {
     private final ItemCommandService itemService;
-    @PostMapping("")
+    @PostMapping
     public SuccessResult<Void> newItem(
             @RequestBody @Validated ItemCreateRequest itemCreateRequest,
             @AuthenticationPrincipal AuthUser authUser) {
@@ -36,9 +36,9 @@ public class ItemManageController {
     }
 
     @PatchMapping("/{itemId}/sale-state/on-sale")
-    public SuccessResult<List<Product>> startSale(
+    public SuccessResult<List<ItemOption>> startSale(
             @PathVariable Long itemId) {
-        List<Product> products = itemService.startSale(itemId);
-        return SuccessResult.<List<Product>>builder().build();
+        List<ItemOption> itemOptions = itemService.startSale(itemId);
+        return SuccessResult.<List<ItemOption>>builder().response(itemOptions).build();
     }
 }
