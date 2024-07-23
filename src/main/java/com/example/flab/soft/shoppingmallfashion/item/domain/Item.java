@@ -72,7 +72,7 @@ public class Item extends BaseEntity {
         this.lastlyModifiedBy = requireNotNull(lastlyModifiedBy);
     }
 
-    public void addProduct(ItemOption itemOption) {
+    public void addItemOption(ItemOption itemOption) {
         if (!itemOptions.contains(itemOption)) {
             itemOptions.add(itemOption);
         }
@@ -87,6 +87,9 @@ public class Item extends BaseEntity {
     }
 
     public void endProduction() {
+        if (saleState == SaleState.END_OF_PRODUCTION) {
+            throw new ApiException(ErrorEnum.ALREADY_END_OF_PRODUCTION);
+        }
         saleState = SaleState.END_OF_PRODUCTION;
         itemOptions.forEach(ItemOption::endProduction);
     }

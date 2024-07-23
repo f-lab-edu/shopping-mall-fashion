@@ -93,8 +93,8 @@ class ItemCommandServiceTest {
                 .build();
         itemOptionRepository.save(itemOption);
         itemOptionRepository.save(OOSItemOption);
-        item.addProduct(itemOption);
-        item.addProduct(OOSItemOption);
+        item.addItemOption(itemOption);
+        item.addItemOption(OOSItemOption);
     }
 
     @Test

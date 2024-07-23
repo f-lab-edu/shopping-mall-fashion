@@ -10,7 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 
-@Entity(name = "medium_categories")
+@Entity(name = "categories")
 @Getter
 public class Category extends BaseEntity {
     @Id
@@ -18,7 +18,7 @@ public class Category extends BaseEntity {
     private Long id;
     @Column(nullable = false)
     private String name;
-    @Column(name = "item_cnt", nullable = false)
+    @Column(name = "item_count", nullable = false)
     private Long itemCount;
     @ManyToOne
     @JoinColumn(name = "large_category_id")

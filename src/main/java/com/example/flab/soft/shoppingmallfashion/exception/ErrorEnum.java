@@ -32,7 +32,8 @@ public enum ErrorEnum {
     // Item
     OUT_OF_STOCK(HttpStatus.CONFLICT, "재고가 남아 있지 않습니다."),
     ALREADY_SOLD_OUT(HttpStatus.CONFLICT, "이미 품절된 상품입니다."),
-    ALREADY_ON_SALE(HttpStatus.CONFLICT, "이미 판매가 시작된 상품입니다.");
+    ALREADY_ON_SALE(HttpStatus.CONFLICT, "이미 판매가 시작된 상품입니다."),
+    ALREADY_END_OF_PRODUCTION(HttpStatus.CONFLICT, "이미 단종 처리가 된 상품입니다.");
 
     private final HttpStatus status;
     private final String code;

@@ -34,8 +34,8 @@ public class ItemCommandService {
         Item item = itemRepository.save(Item.of(category, store, itemCreateRequest, userId));
 
         itemCreateRequest.getItemOptions().stream()
-                .map(productDto -> ItemOption.of(item, productDto))
-                .forEach(item::addProduct);
+                .map(itemOptionDto -> ItemOption.of(item, itemOptionDto))
+                .forEach(item::addItemOption);
 
         category.increaseItemCount(1);
         return item.getId();
@@ -43,7 +43,7 @@ public class ItemCommandService {
 
     @Transactional
     public ItemOption addStocks(Long itemOptionId, int amount) {
-        if (!itemOptionRepository.existsById(itemOptionId)) {
+        if (amount <= 0 || itemOptionId == null || !itemOptionRepository.existsById(itemOptionId)) {
             throw new ApiException(ErrorEnum.INVALID_REQUEST);
         }
         itemOptionRepository.updateStocksCount(itemOptionId, amount);

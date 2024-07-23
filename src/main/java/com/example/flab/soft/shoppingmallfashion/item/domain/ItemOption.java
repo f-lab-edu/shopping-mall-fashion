@@ -40,7 +40,7 @@ public class ItemOption extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private SaleState saleState;
-    @Column(name = "stocks_cnt")
+    @Column(name = "stocks_count")
     private Long stocksCount = 0L;
 
     @Builder
@@ -59,7 +59,9 @@ public class ItemOption extends BaseEntity {
         }
         if (isTemporarily) {
             saleState = SaleState.TEMPORARILY_SOLD_OUT;
-        } else saleState = SaleState.SOLD_OUT;
+        } else {
+            saleState = SaleState.SOLD_OUT;
+        }
 
         if (item.isAllOptionsSoldOut()) {
             item.changeSaleState(SaleState.SOLD_OUT);
