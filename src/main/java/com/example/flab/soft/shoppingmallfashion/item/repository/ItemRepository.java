@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    @Query("SELECT i FROM items i WHERE " +
+    @Query("SELECT i FROM items i JOIN FETCH i.store s " +
+            "JOIN FETCH i.category c JOIN FETCH c.largeCategory lc "
+            + "WHERE " +
             "(:minPrice IS NULL OR i.salePrice >= :minPrice) AND " +
             "(:maxPrice IS NULL OR i.salePrice <= :maxPrice) AND " +
             "(:categoryId IS NULL OR i.category.id = :categoryId) AND " +
