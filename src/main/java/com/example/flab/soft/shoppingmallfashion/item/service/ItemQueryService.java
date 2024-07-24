@@ -1,5 +1,8 @@
 package com.example.flab.soft.shoppingmallfashion.item.service;
 
+import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
+import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
+import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,5 +19,11 @@ public class ItemQueryService {
                                        Long categoryId, Long storeId, Sex sex, Pageable pageable) {
         return itemRepository.findAllByFilters(minPrice, maxPrice, categoryId, storeId, sex, pageable)
                 .map(ItemBriefDto::new);
+    }
+
+    public ItemDetailsDto getItemDetails(Long itemId) {
+        Item item = itemRepository.findItemJoinFetchById(itemId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+        return ItemDetailsDto.builder().item(item).build();
     }
 }

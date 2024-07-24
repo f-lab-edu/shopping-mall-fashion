@@ -1,6 +1,7 @@
 package com.example.flab.soft.shoppingmallfashion.item.service;
 
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +22,7 @@ public class ItemBriefDto {
     private Integer reviewCount;
     private String saleState;
 
+    @Builder
     public ItemBriefDto(Item item) {
         this.itemId = item.getId();
         this.storeId = item.getStore().getId();
