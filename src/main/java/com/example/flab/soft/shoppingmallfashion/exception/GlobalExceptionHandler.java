@@ -3,7 +3,7 @@ package com.example.flab.soft.shoppingmallfashion.exception;
 import java.util.EnumSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -30,6 +30,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResult> exceptionHandler(NoResourceFoundException e) {
         return toErrorResponseEntity(ErrorEnum.NOT_FOUND);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResult> exceptionHandler(IllegalArgumentException e) {
+        return toErrorResponseEntity(ErrorEnum.INVALID_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResult> exceptionHandler(HttpMessageNotReadableException e) {
+        return toErrorResponseEntity(ErrorEnum.INVALID_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

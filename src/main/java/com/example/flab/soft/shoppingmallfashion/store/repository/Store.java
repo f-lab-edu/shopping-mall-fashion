@@ -1,8 +1,8 @@
 package com.example.flab.soft.shoppingmallfashion.store.repository;
 
+import static com.example.flab.soft.shoppingmallfashion.util.NotNullValidator.*;
+
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
-import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
-import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreUpdateDto;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.Column;
@@ -12,7 +12,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,13 +57,5 @@ public class Store extends BaseEntity {
 
     public void beOnStoppage() {
         saleState = StoreState.ON_STOPPAGE;
-    }
-
-    private <T> T requireNotNull(T value) {
-        try {
-            return Objects.requireNonNull(value);
-        } catch (NullPointerException e) {
-            throw new ApiException(ErrorEnum.INVALID_REQUEST);
-        }
     }
 }

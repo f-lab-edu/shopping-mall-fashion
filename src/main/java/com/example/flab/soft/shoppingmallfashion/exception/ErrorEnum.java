@@ -20,7 +20,7 @@ public enum ErrorEnum {
     // Authentication Exception
     AUTHENTICATION_FAILED(HttpStatus.BAD_REQUEST, "아이디 또는 비밀번호가 잘못되었습니다."),
     UNAUTHENTICATED(HttpStatus.UNAUTHORIZED, "인증되지 않은 접근입니다."),
-    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),
     TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "유효 기간이 만료된 토큰입니다."),
     // Address
@@ -28,7 +28,12 @@ public enum ErrorEnum {
     FORBIDDEN_ADDRESS_REQUEST(HttpStatus.FORBIDDEN, "허용되지 않는 주소 요청입니다."),
     // Store
     STORE_NAME_DUPLICATED(HttpStatus.CONFLICT, "이미 등록된 브랜드입니다."),
-    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 브랜드가 존재하지 않습니다.");
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 브랜드가 존재하지 않습니다."),
+    // Item
+    OUT_OF_STOCK(HttpStatus.CONFLICT, "재고가 남아 있지 않습니다."),
+    ALREADY_SOLD_OUT(HttpStatus.CONFLICT, "이미 품절된 상품입니다."),
+    ALREADY_ON_SALE(HttpStatus.CONFLICT, "이미 판매가 시작된 상품입니다."),
+    ALREADY_END_OF_PRODUCTION(HttpStatus.CONFLICT, "이미 단종 처리가 된 상품입니다.");
 
     private final HttpStatus status;
     private final String code;
