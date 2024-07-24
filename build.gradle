@@ -30,6 +30,8 @@ dependencies {
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 	//h2
 	runtimeOnly 'com.h2database:h2'
+	//mysql
+	runtimeOnly("com.mysql:mysql-connector-j")
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 

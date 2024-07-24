@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "item_options")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@EqualsAndHashCode(of = {"name", "size", "option"}, callSuper = false)
+@EqualsAndHashCode(of = {"name", "size", "optionValue"}, callSuper = false)
 public class ItemOption extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class ItemOption extends BaseEntity {
     private String name;
     @Column(nullable = false)
     private String size;
-    private String option;
+    private String optionValue;
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
@@ -44,10 +44,10 @@ public class ItemOption extends BaseEntity {
     private Long stocksCount = 0L;
 
     @Builder
-    public ItemOption(String name, String size, String option, Item item, SaleState saleState, Long stocksCount) {
+    public ItemOption(String name, String size, String optionValue, Item item, SaleState saleState, Long stocksCount) {
         this.name = requireNotNull(name);
         this.size = requireNotNull(size);
-        this.option = option;
+        this.optionValue = optionValue;
         this.item = requireNotNull(item);
         this.saleState = saleState;
         this.stocksCount = requireNotNull(stocksCount);
@@ -110,7 +110,7 @@ public class ItemOption extends BaseEntity {
         return builder()
                 .name(itemOptionDto.getName())
                 .size(itemOptionDto.getSize())
-                .option(itemOptionDto.getOption())
+                .optionValue(itemOptionDto.getOption())
                 .item(item)
                 .saleState(itemOptionDto.getSaleState())
                 .stocksCount(itemOptionDto.getStocksCount())

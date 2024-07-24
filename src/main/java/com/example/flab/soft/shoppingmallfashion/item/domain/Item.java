@@ -10,6 +10,7 @@ import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateReque
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -54,6 +55,8 @@ public class Item extends BaseEntity {
     private Category category;
     @OneToMany(mappedBy = "item", cascade = CascadeType.PERSIST)
     private List<ItemOption> itemOptions = new ArrayList<>();
+    @Embedded
+    private ItemStats itemStats;
     @Column(nullable = false)
     private Long lastlyModifiedBy;
 
@@ -69,6 +72,7 @@ public class Item extends BaseEntity {
         this.saleState = requireNotNull(saleState);
         this.store = requireNotNull(store);
         this.category = requireNotNull(category);
+        this.itemStats = ItemStats.builder().build();
         this.lastlyModifiedBy = requireNotNull(lastlyModifiedBy);
     }
 
