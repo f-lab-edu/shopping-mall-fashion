@@ -3,17 +3,10 @@ server:
 
 spring:
   profiles:
-    active: prod
+    active: local
   jpa:
-    defer-datasource-initialization: true
-    show-sql: true
     properties:
       hibernate.default_batch_fetch_size: 100
-
-logging:
-  level:
-    root: info
-    org.springframework.transaction.interceptor: trace
 
 jwt:
   secret: b8fa78bd08382b806cca62e7fb9e6331a850009acdb69c564a6c0a5f82b053bc0f03976b7cd908d89dfecd840471692633c65736b5d7bfce93f8eb8a5f98e590
@@ -35,12 +28,21 @@ spring:
     password: 1234
   jpa:
     defer-datasource-initialization: true
+    show-sql: true
+logging:
+  level:
+    root: debug
+    org.springframework.transaction.interceptor: trace
 ---
 spring.config.activate.on-profile: prod
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/shopping_mall_fashion
+    url: jdbc:mysql://mall-db.c3sqc4k82n13.ap-northeast-2.rds.amazonaws.com:3306/test
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: rootuser
+
+logging:
+  level:
+    root: info
