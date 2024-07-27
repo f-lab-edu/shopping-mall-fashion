@@ -1,9 +1,6 @@
-server:
-  port: 8080
-
 spring:
   profiles:
-    active: local
+    active: prod
   jpa:
     properties:
       hibernate.default_batch_fetch_size: 100
@@ -15,6 +12,8 @@ jwt:
 
 ---
 spring.config.activate.on-profile: local
+server:
+  port: 80
 
 spring:
   h2:
@@ -35,6 +34,8 @@ logging:
     org.springframework.transaction.interceptor: trace
 ---
 spring.config.activate.on-profile: prod
+server:
+  port: 8080
 
 spring:
   datasource:
