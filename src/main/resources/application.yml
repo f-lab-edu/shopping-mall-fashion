@@ -39,10 +39,10 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://mall-db.c3sqc4k82n13.ap-northeast-2.rds.amazonaws.com:3306/test
+    url: jdbc:mysql://db-ogeka-kr.vpc-pub-cdb.ntruss.com:3306/test?allowPublicKeyRetrieval=true&useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: rootuser
+    username: mallroot
+    password: mallroot1#
 
 logging:
   level:
