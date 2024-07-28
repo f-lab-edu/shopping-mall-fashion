@@ -63,13 +63,14 @@ public class WebSecurityConfig {
 
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers(PathRequest.toH2Console()).permitAll()
+//                                .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .requestMatchers(
                                         "/users/login",
                                         "/crews/login",
                                         "/api/v1/users/signup",
                                         "/api/v1/store/crew/signup",
                                         "/api/v1/auth/refresh-token").permitAll()
+                                .requestMatchers("/api/v1/items/**").permitAll()
                                 .requestMatchers("/api/v1/store/register").hasAuthority("ROLE_USER")
                                 .requestMatchers("/api/v1/store/**").hasAuthority("STORE_MANAGEMENT")
                                 .requestMatchers("/api/v1/item/management/**").hasAuthority("ITEM_MANAGEMENT")
