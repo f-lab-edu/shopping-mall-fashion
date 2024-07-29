@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod
+    active: local
   jpa:
     properties:
       hibernate.default_batch_fetch_size: 100
