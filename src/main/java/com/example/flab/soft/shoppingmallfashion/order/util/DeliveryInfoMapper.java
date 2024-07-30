@@ -1,5 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.order.util;
 
+import com.example.flab.soft.shoppingmallfashion.order.controller.DeliveryInfoUpdateRequest;
 import com.example.flab.soft.shoppingmallfashion.order.controller.OrderRequest;
 import com.example.flab.soft.shoppingmallfashion.order.domain.DeliveryInfo;
 import org.mapstruct.Mapper;
@@ -14,4 +15,6 @@ public interface DeliveryInfoMapper {
     @Mapping(source = "roadAddress", target = "roadAddress")
     @Mapping(source = "addressDetail", target = "addressDetail")
     DeliveryInfo toDeliveryInfo(OrderRequest orderRequest);
+
+    DeliveryInfo toDeliveryInfo(DeliveryInfoUpdateRequest deliveryInfoUpdateRequest);
 }

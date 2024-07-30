@@ -35,4 +35,13 @@ public class OrderController {
         orderService.cancelOrder(orderId, authUser.getId());
         return SuccessResult.<Void>builder().build();
     }
+
+    @PatchMapping("/{orderId}/delivery-info")
+    public SuccessResult<Void> cancelOrder(
+            @RequestBody DeliveryInfoUpdateRequest updateRequest,
+            @PathVariable Long orderId,
+            @AuthenticationPrincipal AuthUser authUser) {
+        orderService.changeDeliveryInfo(updateRequest, orderId, authUser.getId());
+        return SuccessResult.<Void>builder().build();
+    }
 }

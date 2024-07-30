@@ -9,6 +9,7 @@ import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemOptionRepository;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
+import com.example.flab.soft.shoppingmallfashion.order.controller.DeliveryInfoUpdateRequest;
 import com.example.flab.soft.shoppingmallfashion.order.controller.OrderRequest;
 import com.example.flab.soft.shoppingmallfashion.order.domain.DeliveryInfo;
 import com.example.flab.soft.shoppingmallfashion.order.domain.Order;
@@ -130,5 +131,31 @@ class OrderServiceTest {
                 .isEqualTo(stocksCountBeforeCancel + 1);
         assertThat(orderRepository.findById(order.getId()).get().getOrderStatus())
                 .isEqualTo(OrderStatus.CANCELLED);
+    }
+
+    @Test
+    @DisplayName("배송이 이미 시작된 경우 배송지 변경 불가")
+    void whenAlreadyOnDeliver_thenCannotChangeDeliveryInfo() {
+        DeliveryInfo deliveryInfoBefore = order.getDeliveryInfo();
+        order.startDelivery();
+        assertThatThrownBy(() -> orderService.changeDeliveryInfo(DeliveryInfoUpdateRequest.builder()
+                .recipientName("new recipient")
+                .roadAddress("new road address")
+                .addressDetail("new address detail")
+                .build(), order.getId(), 1L))
+                .hasMessage(ErrorEnum.ALREADY_ON_DELIVERY.getMessage());
+        assertThat(order.getDeliveryInfo()).isSameAs(deliveryInfoBefore);
+    }
+
+    @Test
+    @DisplayName("배송지 변경")
+    void changeDeliveryInfo() {
+        DeliveryInfo deliveryInfoBefore = order.getDeliveryInfo();
+        orderService.changeDeliveryInfo(DeliveryInfoUpdateRequest.builder()
+                .recipientName("new recipient")
+                .roadAddress("new road address")
+                .addressDetail("new address detail")
+                .build(), order.getId(), 1L);
+        assertThat(order.getDeliveryInfo()).isNotSameAs(deliveryInfoBefore);
     }
 }

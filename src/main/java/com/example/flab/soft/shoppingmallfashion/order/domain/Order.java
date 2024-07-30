@@ -73,4 +73,11 @@ public class Order extends BaseEntity {
         }
         deliveryStatus = DeliveryStatus.ON_DELIVERY;
     }
+
+    public void changeDeliveryInfo(DeliveryInfo deliveryInfo) {
+        if (deliveryStatus != DeliveryStatus.PREPARING) {
+            throw new ApiException(ErrorEnum.ALREADY_ON_DELIVERY);
+        }
+        this.deliveryInfo = deliveryInfo;
+    }
 }
