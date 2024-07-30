@@ -27,11 +27,16 @@ spring:
     password: 1234
   jpa:
     defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql=true:
     show-sql: true
 logging:
   level:
     root: debug
     org.springframework.transaction.interceptor: trace
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
 ---
 spring.config.activate.on-profile: prod
 server:
