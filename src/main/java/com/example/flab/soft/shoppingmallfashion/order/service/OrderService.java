@@ -10,6 +10,7 @@ import com.example.flab.soft.shoppingmallfashion.order.repository.OrderRepositor
 import com.example.flab.soft.shoppingmallfashion.order.util.DeliveryInfoMapper;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,5 +41,19 @@ public class OrderService {
                 .order(order)
                 .itemOption(itemOption)
                 .build();
+    }
+
+    @Transactional
+    public void cancelOrder(Long orderId, Long userId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+
+        if (!Objects.equals(order.getOrderer().getId(), userId)) {
+            throw new ApiException(ErrorEnum.INVALID_REQUEST);
+        }
+
+        order.cancel();
+        itemOptionRepository.updateStocksCount(
+                order.getItemOption().getId(), order.getAmount());
     }
 }

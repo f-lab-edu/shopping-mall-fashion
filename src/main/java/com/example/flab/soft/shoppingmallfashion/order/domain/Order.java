@@ -3,6 +3,8 @@ package com.example.flab.soft.shoppingmallfashion.order.domain;
 import static com.example.flab.soft.shoppingmallfashion.util.NotNullValidator.*;
 
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
+import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
+import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import jakarta.persistence.Embedded;
@@ -56,5 +58,19 @@ public class Order extends BaseEntity {
                 .orderer(user)
                 .deliveryInfo(deliveryInfo)
                 .build();
+    }
+
+    public void cancel() {
+        if (deliveryStatus != DeliveryStatus.PREPARING) {
+            throw new ApiException(ErrorEnum.ALREADY_ON_DELIVERY);
+        }
+        orderStatus = OrderStatus.CANCELLED;
+    }
+
+    public void startDelivery() {
+        if (deliveryStatus != DeliveryStatus.PREPARING) {
+            throw new ApiException(ErrorEnum.ALREADY_ON_DELIVERY);
+        }
+        deliveryStatus = DeliveryStatus.ON_DELIVERY;
     }
 }
