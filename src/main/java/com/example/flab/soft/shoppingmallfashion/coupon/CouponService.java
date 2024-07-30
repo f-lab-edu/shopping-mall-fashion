@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -12,6 +13,7 @@ public class CouponService {
     private final CouponRepository couponRepository;
     private static final int VALIDATION_IN_MONTHS = 3;
 
+    @Transactional
     public Integer issueCoupons(DiscountType discountType,
                              Integer discountedAmount,
                              DiscountUnit discountUnit,
