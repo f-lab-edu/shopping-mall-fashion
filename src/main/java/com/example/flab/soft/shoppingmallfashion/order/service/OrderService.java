@@ -32,13 +32,16 @@ public class OrderService {
             throw new ApiException(ErrorEnum.INVALID_REQUEST);
         }
         ItemOption itemOption = itemOptionRepository.findByIdForUpdate(
-                orderRequest.getItemOptionId(), orderRequest.getAmount())
+                orderRequest.getItemOptionId(), orderRequest.getOrderAmount())
                 .orElseThrow(() -> new ApiException(ErrorEnum.OUT_OF_STOCK));
 
-        itemOption.reduceStocksCount(orderRequest.getAmount());
-
-        Order order = orderRepository.save(Order.of(itemOption, orderRequest.getAmount(),
+        Order order = orderRepository.save(Order.of(orderRequest, itemOption,
                 user, deliveryInfoMapper.toDeliveryInfo(orderRequest)));
+
+        itemOption.reduceStocksCount(orderRequest.getOrderAmount());
+        //TODO 결제 로직 추가
+        order.setPaid();
+        //TODO 주문 성공 알림 추가
         return OrderInfoDto.builder()
                 .order(order)
                 .itemOption(itemOption)
@@ -56,7 +59,7 @@ public class OrderService {
 
         order.cancel();
         itemOptionRepository.updateStocksCount(
-                order.getItemOption().getId(), order.getAmount());
+                order.getItemOption().getId(), order.getOrderAmount());
     }
 
     @Transactional

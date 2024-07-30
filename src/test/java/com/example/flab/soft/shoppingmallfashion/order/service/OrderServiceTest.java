@@ -14,6 +14,7 @@ import com.example.flab.soft.shoppingmallfashion.order.controller.OrderRequest;
 import com.example.flab.soft.shoppingmallfashion.order.domain.DeliveryInfo;
 import com.example.flab.soft.shoppingmallfashion.order.domain.Order;
 import com.example.flab.soft.shoppingmallfashion.order.domain.OrderStatus;
+import com.example.flab.soft.shoppingmallfashion.order.domain.PaymentStatus;
 import com.example.flab.soft.shoppingmallfashion.order.repository.OrderRepository;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +66,10 @@ class OrderServiceTest {
         order = Order.builder()
                 .orderer(userRepository.findById(1L).get())
                 .itemOption(itemOption2)
-                .amount(1)
+                .orderAmount(1)
+                .totalPrice(10000)
+                .discountedAmount(0)
+                .paymentAmount(10000)
                 .deliveryInfo(DeliveryInfo.builder()
                         .recipientName("name")
                         .roadAddress("road123")
@@ -80,7 +84,7 @@ class OrderServiceTest {
     void whenOrderAmountIsBiggerThanStocks_thenThrowException() {
         OrderRequest orderRequest = OrderRequest.builder()
                 .itemOptionId(itemOption.getId())
-                .amount(2)
+                .orderAmount(2)
                 .recipientName("name")
                 .roadAddress("road123")
                 .addressDetail("1-1")
@@ -97,7 +101,10 @@ class OrderServiceTest {
     void reduceStocksCountAsMuchAsOrderAmounts() {
         OrderRequest orderRequest = OrderRequest.builder()
                 .itemOptionId(itemOption.getId())
-                .amount(1)
+                .orderAmount(1)
+                .totalPrice(10000)
+                .discountedAmount(0)
+                .paymentAmount(10000)
                 .recipientName("name")
                 .roadAddress("road123")
                 .addressDetail("1-1")
@@ -110,9 +117,32 @@ class OrderServiceTest {
     }
 
     @Test
+    @DisplayName("상품 주문시 계산 금액 = 총 금액 - 할인 금액")
+    void paymentAmountsNeedsToBeEqualToTotalPriceMinusDiscountedAmounts() {
+        OrderRequest orderRequest = OrderRequest.builder()
+                .itemOptionId(itemOption.getId())
+                .orderAmount(2)
+                .orderAmount(1)
+                .totalPrice(10000)
+                .discountedAmount(1000)
+                .paymentAmount(10000)
+                .recipientName("name")
+                .roadAddress("road123")
+                .addressDetail("1-1")
+                .build();
+        long countBeforeOrder = orderRepository.count();
+
+        assertThatThrownBy(() -> orderService.order(orderRequest, 1L))
+                .hasMessage(ErrorEnum.INVALID_REQUEST.getMessage());
+        assertThat(itemOption.getStocksCount()).isEqualTo(1);
+        assertThat(orderRepository.count()).isEqualTo(countBeforeOrder);
+    }
+
+    @Test
     @DisplayName("이미 배송이 시작되면 주문 취소 불가")
     void whenDeliveryStarts_thenCannotCancelOrder() {
         long countBeforeOrder = orderRepository.count();
+        order.setPaid();
         order.startDelivery();
         assertThatThrownBy(() -> orderService.cancelOrder(order.getId(), 1L))
                 .hasMessage(ErrorEnum.ALREADY_ON_DELIVERY.getMessage());
@@ -122,21 +152,25 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("주문 취소 성공시 주문 수량만큼 재고수 증가")
+    @DisplayName("주문 취소 성공시 주문 수량만큼 재고수 증가, 환불 진행")
     void cancelOrder() {
         Long stocksCountBeforeCancel = itemOption2.getStocksCount();
+        order.setPaid();
         orderService.cancelOrder(order.getId(), 1L);
 
+        Order savedOrder = orderRepository.findById(order.getId()).get();
         assertThat(itemOptionRepository.findById(itemOption2.getId()).get().getStocksCount())
                 .isEqualTo(stocksCountBeforeCancel + 1);
-        assertThat(orderRepository.findById(order.getId()).get().getOrderStatus())
+        assertThat(savedOrder.getOrderStatus())
                 .isEqualTo(OrderStatus.CANCELLED);
+        assertThat(savedOrder.getPaymentStatus()).isEqualTo(PaymentStatus.ON_REFUND);
     }
 
     @Test
     @DisplayName("배송이 이미 시작된 경우 배송지 변경 불가")
     void whenAlreadyOnDeliver_thenCannotChangeDeliveryInfo() {
         DeliveryInfo deliveryInfoBefore = order.getDeliveryInfo();
+        order.setPaid();
         order.startDelivery();
         assertThatThrownBy(() -> orderService.changeDeliveryInfo(DeliveryInfoUpdateRequest.builder()
                 .recipientName("new recipient")

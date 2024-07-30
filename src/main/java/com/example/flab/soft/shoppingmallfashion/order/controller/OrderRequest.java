@@ -19,7 +19,19 @@ public class OrderRequest {
     @NotNull
     @Min(1)
     @Max(10)
-    private Integer amount;
+    private Integer orderAmount;
+    @NotNull
+    @Min(0)
+    @Max(10000000)
+    private Integer totalPrice;
+    @NotNull
+    @Min(0)
+    @Max(1000000)
+    private Integer discountedAmount;
+    @NotNull
+    @Min(0)
+    @Max(100000000)
+    private Integer paymentAmount;
     @NotBlank
     private String recipientName;
     @NotBlank

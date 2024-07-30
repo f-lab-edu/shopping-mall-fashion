@@ -6,6 +6,7 @@ import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
+import com.example.flab.soft.shoppingmallfashion.order.controller.OrderRequest;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -32,11 +33,16 @@ public class Order extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.COMPLETED;
     @Enumerated(value = EnumType.STRING)
+    private PaymentStatus paymentStatus = PaymentStatus.ON_PAYMENT;
+    @Enumerated(value = EnumType.STRING)
     private DeliveryStatus deliveryStatus = DeliveryStatus.PREPARING;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_option_id")
     private ItemOption itemOption;
-    private Integer amount;
+    private Integer orderAmount;
+    private Integer totalPrice;
+    private Integer discountedAmount;
+    private Integer paymentAmount;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderer_id")
     private User orderer;
@@ -44,20 +50,31 @@ public class Order extends BaseEntity {
     private DeliveryInfo deliveryInfo;
 
     @Builder
-    public Order(ItemOption itemOption, Integer amount, User orderer, DeliveryInfo deliveryInfo) {
+    public Order(ItemOption itemOption, Integer orderAmount, Integer totalPrice,
+                 Integer discountedAmount, Integer paymentAmount,
+                 User orderer, DeliveryInfo deliveryInfo) {
         this.itemOption = requireNotNull(itemOption);
-        this.amount = requireNotNull(amount);
+        this.orderAmount = requireNotNull(orderAmount);
+        this.totalPrice = requireNotNull(totalPrice);
+        this.discountedAmount = requireNotNull(discountedAmount);
+        this.paymentAmount = validatePaymentAmount(totalPrice, discountedAmount, paymentAmount);
         this.orderer = requireNotNull(orderer);
         this.deliveryInfo = requireNotNull(deliveryInfo);
     }
 
-    public static Order of(ItemOption itemOption, Integer amount, User user, DeliveryInfo deliveryInfo) {
-        return builder()
-                .itemOption(itemOption)
-                .amount(amount)
-                .orderer(user)
-                .deliveryInfo(deliveryInfo)
-                .build();
+    private Integer validatePaymentAmount(Integer totalPrice,
+                                    Integer discountedAmount, Integer paymentAmount) {
+        if (paymentAmount == totalPrice - discountedAmount) {
+            return paymentAmount;
+        } else throw new ApiException(ErrorEnum.INVALID_REQUEST);
+    }
+
+    public void setPaid() {
+        if (isPaymentSucceed()) {
+            throw new ApiException(ErrorEnum.ALREADY_PAID);
+        }
+        paymentStatus = PaymentStatus.PAID;
+        orderStatus = OrderStatus.COMPLETED;
     }
 
     public void cancel() {
@@ -65,13 +82,31 @@ public class Order extends BaseEntity {
             throw new ApiException(ErrorEnum.ALREADY_ON_DELIVERY);
         }
         orderStatus = OrderStatus.CANCELLED;
+        if (isPaymentNotSucceed()) {
+            paymentStatus = PaymentStatus.PAYMENT_CANCELLED;
+            return;
+        }
+        if (isPaymentSucceed()) {
+            paymentStatus = PaymentStatus.ON_REFUND;
+        }
+    }
+
+    private boolean isPaymentSucceed() {
+        return paymentStatus == PaymentStatus.PAID;
     }
 
     public void startDelivery() {
         if (deliveryStatus != DeliveryStatus.PREPARING) {
             throw new ApiException(ErrorEnum.ALREADY_ON_DELIVERY);
         }
+        if (isPaymentNotSucceed()){
+            throw new ApiException(ErrorEnum.NEED_PAYMENT);
+        }
         deliveryStatus = DeliveryStatus.ON_DELIVERY;
+    }
+
+    private boolean isPaymentNotSucceed() {
+        return paymentStatus == PaymentStatus.ON_PAYMENT || paymentStatus == PaymentStatus.PAYMENT_FAILED;
     }
 
     public void changeDeliveryInfo(DeliveryInfo deliveryInfo) {
@@ -79,5 +114,17 @@ public class Order extends BaseEntity {
             throw new ApiException(ErrorEnum.ALREADY_ON_DELIVERY);
         }
         this.deliveryInfo = deliveryInfo;
+    }
+
+    public static Order of(OrderRequest orderRequest, ItemOption itemOption, User user, DeliveryInfo deliveryInfo) {
+        return builder()
+                .itemOption(itemOption)
+                .orderAmount(orderRequest.getOrderAmount())
+                .totalPrice(orderRequest.getTotalPrice())
+                .discountedAmount(orderRequest.getDiscountedAmount())
+                .paymentAmount(orderRequest.getPaymentAmount())
+                .orderer(user)
+                .deliveryInfo(deliveryInfo)
+                .build();
     }
 }

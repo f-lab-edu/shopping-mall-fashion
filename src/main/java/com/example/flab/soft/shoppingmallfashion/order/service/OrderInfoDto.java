@@ -24,7 +24,7 @@ public class OrderInfoDto {
         this.itemOptionId = itemOption.getId();
         this.itemName = itemOption.getItem().getName();
         this.itemOptionName = itemOption.getName();
-        this.amount = order.getAmount();
+        this.amount = order.getOrderAmount();
         this.recipientName = order.getDeliveryInfo().getRecipientName();
         this.roadAddress = order.getDeliveryInfo().getRoadAddress();
         this.addressDetail = order.getDeliveryInfo().getAddressDetail();
