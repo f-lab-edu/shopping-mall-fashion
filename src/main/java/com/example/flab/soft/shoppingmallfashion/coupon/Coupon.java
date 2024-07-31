@@ -1,6 +1,8 @@
 package com.example.flab.soft.shoppingmallfashion.coupon;
 
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
+import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
+import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -23,6 +25,7 @@ public class Coupon extends BaseEntity {
     @Column(nullable = false)
     private String name;
     private Long ownerId;
+    private Boolean owned = false;
     @Embedded
     private UsageInfo usageInfo = UsageInfo.builder().used(false).build();
     @Embedded
@@ -37,6 +40,14 @@ public class Coupon extends BaseEntity {
     }
 
     public void decideOwner(Long userId) {
+        if (owned) {
+            throw new ApiException(ErrorEnum.ALREADY_OWNED_COUPON);
+        }
         ownerId = userId;
+        owned = true;
+    }
+
+    public boolean hasOwner() {
+        return ownerId != null;
     }
 }

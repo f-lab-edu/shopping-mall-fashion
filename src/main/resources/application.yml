@@ -29,14 +29,15 @@ spring:
     defer-datasource-initialization: true
     properties:
       hibernate:
-        format_sql=true:
-    show-sql: true
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
 logging:
   level:
     root: debug
     org.springframework.transaction.interceptor: trace
     org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql.BasicBinder: trace
+    org.hibernate.type.descriptor.sql : trace
 ---
 spring.config.activate.on-profile: prod
 server:
