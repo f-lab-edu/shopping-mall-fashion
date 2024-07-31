@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,12 +35,9 @@ public class CouponService {
 
     @Transactional
     public CouponInfo getCoupon(Long userId, String couponName) {
-        List<Coupon> coupons = couponRepository
-                .findFirstUnownedCouponByName(couponName, PageRequest.of(0, 1));
-        if (coupons.isEmpty()) {
-            throw new ApiException(ErrorEnum.OUT_OF_COUPON);
-        }
-        Coupon coupon = coupons.get(0);
+        Coupon coupon = couponRepository.findFirstByNameAndOwnedIsFalse(couponName)
+                .orElseThrow(() -> new ApiException(ErrorEnum.OUT_OF_COUPON));
+
         coupon.decideOwner(userId);
         return CouponInfo.builder().coupon(coupon).build();
     }
