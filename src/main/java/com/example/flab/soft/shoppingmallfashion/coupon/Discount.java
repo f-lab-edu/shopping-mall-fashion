@@ -17,5 +17,6 @@ public class Discount {
     @Enumerated(value = EnumType.STRING)
     private DiscountType discountType;
     private Integer amount;
+    @Enumerated(value = EnumType.STRING)
     private DiscountUnit discountUnit;
 }
