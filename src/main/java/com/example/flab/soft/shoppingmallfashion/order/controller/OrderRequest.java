@@ -18,7 +18,6 @@ public class OrderRequest {
     private Long itemOptionId;
     @NotNull
     @Min(1)
-    @Max(10)
     private Integer orderAmount;
     @NotNull
     @Min(0)

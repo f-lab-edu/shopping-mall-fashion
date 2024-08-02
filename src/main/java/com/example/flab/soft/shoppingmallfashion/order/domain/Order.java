@@ -64,9 +64,10 @@ public class Order extends BaseEntity {
 
     private Integer validatePaymentAmount(Integer totalPrice,
                                     Integer discountedAmount, Integer paymentAmount) {
-        if (paymentAmount == totalPrice - discountedAmount) {
-            return paymentAmount;
-        } else throw new ApiException(ErrorEnum.INVALID_REQUEST);
+        if (paymentAmount != totalPrice - discountedAmount) {
+            throw new ApiException(ErrorEnum.INVALID_REQUEST);
+        }
+        return paymentAmount;
     }
 
     public void setPaid() {

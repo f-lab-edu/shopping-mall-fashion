@@ -37,7 +37,7 @@ public class OrderController {
     }
 
     @PatchMapping("/{orderId}/delivery-info")
-    public SuccessResult<Void> cancelOrder(
+    public SuccessResult<Void> changeDeliveryInfo(
             @RequestBody DeliveryInfoUpdateRequest updateRequest,
             @PathVariable Long orderId,
             @AuthenticationPrincipal AuthUser authUser) {
