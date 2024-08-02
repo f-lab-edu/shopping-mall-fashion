@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest
 class CouponServiceTest {
@@ -75,7 +74,6 @@ class CouponServiceTest {
     @Test
     @DisplayName("쿠폰 제공 동시성 테스트")
     void couponRaceConditionTest() throws InterruptedException {
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
         couponService.issueCoupons("welcomeCoupon",
                 DiscountType.FIXED_PRICE_DISCOUNT,
                 1000, DiscountUnit.KRW, THREAD_NUMBER);
@@ -99,7 +97,6 @@ class CouponServiceTest {
     @Test
     @DisplayName("Redisson 이용한 쿠폰 제공 동시성 테스트")
     void couponRaceConditionRedissonTest() throws InterruptedException {
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
         couponService.issueCoupons("welcomeCoupon",
                 DiscountType.FIXED_PRICE_DISCOUNT,
                 1000, DiscountUnit.KRW, THREAD_NUMBER);

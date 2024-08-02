@@ -8,8 +8,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
@@ -23,9 +21,7 @@ public class CouponRedissonService{
                                  PlatformTransactionManager txManager) {
         this.couponRedissonRepository = couponRedissonRepository;
         this.redissonClient = redissonClient;
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        this.txTemplate = new TransactionTemplate(txManager, def);
+        this.txTemplate = new TransactionTemplate(txManager);
     }
 
     public CouponInfo getCoupon(Long userId, String couponName) {
