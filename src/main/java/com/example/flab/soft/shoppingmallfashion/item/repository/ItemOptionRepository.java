@@ -14,6 +14,6 @@ public interface ItemOptionRepository extends JpaRepository<ItemOption, Long> {
     void updateStocksCount(Long id, int stocksAmount);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT io FROM item_options io JOIN FETCH io.item WHERE io.id = :id AND io.stocksCount >= :stocksAmount")
-    Optional<ItemOption> findByIdForUpdate(Long id, int stocksAmount);
+    @Query("SELECT io FROM item_options io JOIN FETCH io.item WHERE io.id = :id")
+    Optional<ItemOption> findByIdForUpdate(Long id);
 }

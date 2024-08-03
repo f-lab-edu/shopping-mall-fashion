@@ -28,17 +28,13 @@ public class OrderService {
     public OrderInfoDto order(OrderRequest orderRequest, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
-        if (!itemOptionRepository.existsById(orderRequest.getItemOptionId())) {
-            throw new ApiException(ErrorEnum.INVALID_REQUEST);
-        }
-        ItemOption itemOption = itemOptionRepository.findByIdForUpdate(
-                orderRequest.getItemOptionId(), orderRequest.getOrderAmount())
-                .orElseThrow(() -> new ApiException(ErrorEnum.OUT_OF_STOCK));
+        ItemOption itemOption = itemOptionRepository.findByIdForUpdate(orderRequest.getItemOptionId())
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+
+        itemOption.reduceStocksCount(orderRequest.getOrderAmount());
 
         Order order = orderRepository.save(Order.of(orderRequest, itemOption,
                 user, deliveryInfoMapper.toDeliveryInfo(orderRequest)));
-
-        itemOption.reduceStocksCount(orderRequest.getOrderAmount());
         //TODO 결제 로직 추가
         order.setPaid();
         //TODO 주문 성공 알림 추가

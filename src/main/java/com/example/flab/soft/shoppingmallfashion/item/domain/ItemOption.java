@@ -54,6 +54,9 @@ public class ItemOption extends BaseEntity {
     }
 
     public Long reduceStocksCount(Integer amount) {
+        if (amount > stocksCount) {
+            throw new ApiException(ErrorEnum.OUT_OF_STOCK);
+        }
         return stocksCount -= amount;
     }
 
