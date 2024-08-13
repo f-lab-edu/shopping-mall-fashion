@@ -40,8 +40,22 @@ public class CouponService {
     }
 
     @Transactional
-    public CouponInfo acquireCoupon(Long userId, Long couponId) {
+    public CouponInfo acquireCouponPessimistic(Long userId, Long couponId) {
         Coupon coupon = couponRepository.findByIdForUpdate(couponId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+
+        coupon.acquire();
+        userCouponRepository.save(UserCoupon.builder()
+                .userId(userId)
+                .coupon(coupon)
+                .validation(Duration.ofMinutes(coupon.getValidationInMinutes()))
+                .build());
+        return CouponInfo.builder().coupon(coupon).build();
+    }
+
+    @Transactional
+    public CouponInfo acquireCoupon(Long userId, Long couponId) {
+        Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
         coupon.acquire();

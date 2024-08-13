@@ -37,12 +37,10 @@ class CouponServiceTest {
     @Autowired
     private UserCouponRepository userCouponRepository;
     @Autowired
-    private static final int THREAD_NUMBER = 10;
+    private static final int THREAD_NUMBER = 100;
     private ExecutorService threads = Executors.newFixedThreadPool(THREAD_NUMBER);
     private CountDownLatch latch = new CountDownLatch(THREAD_NUMBER);
     private static final long ISSUED_AMOUNT = 10;
-    @Autowired
-    private PlatformTransactionManager txManager;
 
     @AfterEach
     void tearDown() {
@@ -102,10 +100,10 @@ class CouponServiceTest {
                 .build());
         long startAt = System.currentTimeMillis();
         for (int i = 1; i < THREAD_NUMBER + 1; i++) {
-            long userId = i;
+            long userId = i % 9 + 1;
             threads.execute(() -> {
                 try {
-                    couponService.acquireCoupon(userId, coupon.getId());
+                    couponService.acquireCouponPessimistic(userId, coupon.getId());
                 } finally {
                     latch.countDown();
                 }
@@ -132,10 +130,10 @@ class CouponServiceTest {
                 .build());
         long startAt = System.currentTimeMillis();
         for (int i = 1; i < THREAD_NUMBER + 1; i++) {
-            long userId = i;
+            long userId = i % 9 + 1;
             threads.execute(() -> {
                 try {
-                    couponRedissonService.getCoupon(userId, coupon.getId());
+                    couponRedissonService.acquireCoupon(userId, coupon.getId());
                 } finally {
                     latch.countDown();
                 }

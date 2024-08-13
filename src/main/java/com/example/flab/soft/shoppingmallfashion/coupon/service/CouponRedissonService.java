@@ -16,10 +16,10 @@ public class CouponRedissonService{
     private final CouponService couponService;
     private final RedissonClient redissonClient;
 
-    public CouponInfo getCoupon(Long userId, Long couponId) {
+    public CouponInfo acquireCoupon(Long userId, Long couponId) {
         RLock lock = redissonClient.getLock(String.valueOf(couponId));
         try {
-            boolean acquireLock = lock.tryLock(30, 1, TimeUnit.SECONDS);
+            boolean acquireLock = lock.tryLock(30, 2, TimeUnit.SECONDS);
             if (!acquireLock) {
                 throw new ApiException(ErrorEnum.RETRY_GET_COUPON);
             }
