@@ -1,6 +1,6 @@
-package com.example.flab.soft.shoppingmallfashion.coupon;
+package com.example.flab.soft.shoppingmallfashion.coupon.service;
 
-import java.time.LocalDateTime;
+import com.example.flab.soft.shoppingmallfashion.coupon.domain.Coupon;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,12 +10,10 @@ import lombok.NoArgsConstructor;
 public class CouponInfo {
     private Long couponId;
     private String couponName;
-    private LocalDateTime expiredAt;
 
     @Builder
     public CouponInfo(Coupon coupon) {
         this.couponId = coupon.getId();
         this.couponName = coupon.getName();
-        this.expiredAt = coupon.getExpiration();
     }
 }
