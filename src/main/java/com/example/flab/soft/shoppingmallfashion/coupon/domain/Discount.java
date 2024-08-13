@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.coupon;
+package com.example.flab.soft.shoppingmallfashion.coupon.domain;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class Discount {
     @Enumerated(value = EnumType.STRING)
     private DiscountType discountType;
-    private Integer amount;
+    private Integer discountAmount;
     @Enumerated(value = EnumType.STRING)
     private DiscountUnit discountUnit;
 }

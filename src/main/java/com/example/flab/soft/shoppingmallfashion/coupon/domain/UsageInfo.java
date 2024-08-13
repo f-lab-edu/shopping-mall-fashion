@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.coupon;
+package com.example.flab.soft.shoppingmallfashion.coupon.domain;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
