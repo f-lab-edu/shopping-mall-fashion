@@ -37,7 +37,10 @@ public enum ErrorEnum {
     // Order
     ALREADY_ON_DELIVERY(HttpStatus.CONFLICT, "이미 배송이 시작된 상품입니다."),
     ALREADY_PAID(HttpStatus.CONFLICT, "이미 결제가 된 상품입니다."),
-    NEED_PAYMENT(HttpStatus.CONFLICT, "사용자의 결제가 필요합니다.");
+    NEED_PAYMENT(HttpStatus.CONFLICT, "사용자의 결제가 필요합니다."),
+    OUT_OF_COUPON(HttpStatus.CONFLICT, "쿠폰이 모두 소진되었습니다."),
+    ALREADY_OWNED_COUPON(HttpStatus.CONFLICT, "다른 사용자가 보유중인 쿠폰입니다."),
+    RETRY_GET_COUPON(HttpStatus.CONFLICT, "현재 접속자가 많아 쿠폰 획득에 실패했습니다. 다시 시도해주세요");
 
     private final HttpStatus status;
     private final String code;
