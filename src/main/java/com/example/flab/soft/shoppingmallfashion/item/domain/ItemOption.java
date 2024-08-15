@@ -53,6 +53,13 @@ public class ItemOption extends BaseEntity {
         this.stocksCount = requireNotNull(stocksCount);
     }
 
+    public Long reduceStocksCount(Integer amount) {
+        if (amount > stocksCount) {
+            throw new ApiException(ErrorEnum.OUT_OF_STOCK);
+        }
+        return stocksCount -= amount;
+    }
+
     public void beSoldOut(Boolean isTemporarily) {
         if (isSoldOut()) {
             throw new ApiException(ErrorEnum.ALREADY_SOLD_OUT);
