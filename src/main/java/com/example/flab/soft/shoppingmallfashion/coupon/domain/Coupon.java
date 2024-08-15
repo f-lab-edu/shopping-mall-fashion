@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.coupon;
+package com.example.flab.soft.shoppingmallfashion.coupon.domain;
 
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
@@ -9,7 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDateTime;
+import java.time.Duration;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,30 +24,23 @@ public class Coupon extends BaseEntity {
     private Long id;
     @Column(nullable = false)
     private String name;
-    private Long ownerId;
-    private Boolean owned = false;
-    @Embedded
-    private UsageInfo usageInfo = UsageInfo.builder().used(false).build();
+    private Long amounts;
     @Embedded
     private Discount discount;
-    private LocalDateTime expiration;
+    private Long validationInMinutes;
 
     @Builder
-    public Coupon(String name, Discount discount, LocalDateTime expiration) {
+    public Coupon(String name, Long amounts, Discount discount, Duration validation) {
         this.name = name;
+        this.amounts = amounts;
         this.discount = discount;
-        this.expiration = expiration;
+        this.validationInMinutes = validation.toMinutes();
     }
 
-    public void decideOwner(Long userId) {
-        if (owned) {
-            throw new ApiException(ErrorEnum.ALREADY_OWNED_COUPON);
+    public void acquire() {
+        if (amounts == 0) {
+            throw new ApiException(ErrorEnum.OUT_OF_COUPON);
         }
-        ownerId = userId;
-        owned = true;
-    }
-
-    public boolean hasOwner() {
-        return ownerId != null;
+        amounts--;
     }
 }
