@@ -10,6 +10,11 @@ jwt:
   access-token-validation-time: 3600000
   refresh-token-validation-time: 8640000000
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 ---
 spring.config.activate.on-profile: local
 server:
