@@ -2,7 +2,6 @@ package com.example.flab.soft.shoppingmallfashion.item.controller;
 
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDto;
-import com.example.flab.soft.shoppingmallfashion.item.service.ItemDetailsDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +11,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,9 +34,16 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public SuccessResult<ItemDetailsDto> getItemDetails(
-            @PathVariable Long itemId) {
-        ItemDetailsDto itemDetails = itemService.getItemDetails(itemId);
-        return SuccessResult.<ItemDetailsDto>builder().response(itemDetails).build();
+    public SuccessResult<ItemDto> getItemDetails(
+            @PathVariable Long itemId,
+            @RequestParam Long storeId,
+            @RequestParam Long categoryId) {
+        ItemDto itemDto = ItemDto.builder()
+                .itemDetailsDto(itemService.getItemDetails(itemId))
+                .sameStoreItems(itemService.getSameStoreItems(storeId))
+                .sameCategoryItems(itemService.getSameCategoryItems(categoryId))
+                .relatedItems(itemService.getRelatedItems(itemId))
+                .build();
+        return SuccessResult.<ItemDto>builder().response(itemDto).build();
     }
 }

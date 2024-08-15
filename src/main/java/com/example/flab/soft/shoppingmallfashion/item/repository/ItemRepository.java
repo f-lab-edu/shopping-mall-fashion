@@ -2,6 +2,7 @@ package com.example.flab.soft.shoppingmallfashion.item.repository;
 
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,4 +32,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             + "JOIN FETCH i.itemOptions io "
             + "WHERE i.id = :id")
     Optional<Item> findItemJoinFetchById(Long id);
+
+    List<Item> findByStoreId(Long storeId);
+
+    List<Item> findByCategoryId(Long categoryId);
 }
