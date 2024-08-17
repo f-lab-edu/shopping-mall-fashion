@@ -7,11 +7,11 @@ import com.example.flab.soft.shoppingmallfashion.item.domain.ItemRelation;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRelationRepository;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,30 +39,28 @@ public class ItemQueryService {
 
     @Transactional(readOnly = true)
     public List<ItemBriefDto> getSameStoreItems(Long storeId) {
-        return itemRepository.findByStoreId(storeId).stream()
-                .sorted(Comparator.comparing((Item item) ->
-                        item.getItemStats().getOrderCount()).reversed())
-                .limit(20)
+        Pageable pageable = PageRequest.of(0, 20);
+        return itemRepository.findTopItemsByStoreId(storeId, pageable)
+                .stream()
                 .map(ItemBriefDto::new)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public List<ItemBriefDto> getSameCategoryItems(Long categoryId) {
-        return itemRepository.findByCategoryId(categoryId).stream()
-                .sorted(Comparator.comparing((Item item) ->
-                        item.getItemStats().getOrderCount()).reversed())
-                .limit(20)
+        Pageable pageable = PageRequest.of(0, 20);
+        return itemRepository.findTopItemsByCategoryId(categoryId, pageable)
+                .stream()
                 .map(ItemBriefDto::new)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public List<ItemBriefDto> getRelatedItems(Long itemId) {
-        return itemRelationRepository.findAllByIdJoinFetch(itemId).stream()
-                .sorted(Comparator.comparing(ItemRelation::getWeight).reversed())
+        Pageable pageable = PageRequest.of(0, 20);
+        return itemRelationRepository.findTopRelatedById(itemId, pageable)
+                .stream()
                 .map(ItemRelation::getRelatedItem)
-                .limit(20)
                 .map(ItemBriefDto::new)
                 .toList();
     }
