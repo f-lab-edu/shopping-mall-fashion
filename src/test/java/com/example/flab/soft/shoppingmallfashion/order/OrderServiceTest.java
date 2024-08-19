@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.order.service;
+package com.example.flab.soft.shoppingmallfashion.order;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -16,6 +16,7 @@ import com.example.flab.soft.shoppingmallfashion.order.domain.Order;
 import com.example.flab.soft.shoppingmallfashion.order.domain.OrderStatus;
 import com.example.flab.soft.shoppingmallfashion.order.domain.PaymentStatus;
 import com.example.flab.soft.shoppingmallfashion.order.repository.OrderRepository;
+import com.example.flab.soft.shoppingmallfashion.order.service.OrderService;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

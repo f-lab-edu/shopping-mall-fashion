@@ -22,10 +22,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity(name = "orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Slf4j
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,8 +73,9 @@ public class Order extends BaseEntity {
     }
 
     public void setPaid() {
-        if (isPaymentSucceed()) {
-            throw new ApiException(ErrorEnum.ALREADY_PAID);
+        if (isPaid()) {
+            log.info("이중 결제 시도 주문번호: {}", id);
+            return;
         }
         paymentStatus = PaymentStatus.PAID;
         orderStatus = OrderStatus.COMPLETED;
@@ -87,12 +90,12 @@ public class Order extends BaseEntity {
             paymentStatus = PaymentStatus.PAYMENT_CANCELLED;
             return;
         }
-        if (isPaymentSucceed()) {
+        if (isPaid()) {
             paymentStatus = PaymentStatus.ON_REFUND;
         }
     }
 
-    private boolean isPaymentSucceed() {
+    private boolean isPaid() {
         return paymentStatus == PaymentStatus.PAID;
     }
 
