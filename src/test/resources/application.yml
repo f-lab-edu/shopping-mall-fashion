@@ -18,31 +18,8 @@ spring:
 
 #2024-12-31까지 유효
 authorization:
-  admin:
-    token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMUBleGFtcGxlLmNvbSIsImlkIjoiMSIsImV4cCI6MTcyOTE0NDg2N30.v54vsOfkyP2lc7fL818kT4nxd0eB7YUYGe9m-6-1RBBAPYJVrrTqELuLsgsXv1wmd0lwELJkg7JYBpi3Neapvg
-    email: admin1@example.com
-  store-manager:
-    id: 1
-    token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDUkVXIHN0b3JlTWFuYWdlckBzdG9yZTEuY29tIiwiZXhwIjoxNzIxNDM3MzQ0fQ.XKNt8pvw0I865MTTp2yFO3cTEyH8qtVUq6D0IAIHM4ZcPsmpbL_lHcaVXrI6Y3nQEkLF4bM2jJgDUHJxR7gX-A
-    email: storeManager@store1.com
-  crew-manager:
-    id: 2
-    token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDUkVXIGNyZXdNYW5hZ2VyQHN0b3JlMS5jb20iLCJleHAiOjE3MjE0Mzc0MTV9.0g1qppe7GMKLcKlxvxVJXZsOzM9-NwlDZtA6qvEtadzwEbtOEkRHBHqT_9LJlvmxicKECK63omZWfsrPn96n6A
-    email: crewManager@store1.com
-  stock-manager:
-    id: 3
-    token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDUkVXIHN0b2NrTWFuYWdlckBzdG9yZTEuY29tIiwiZXhwIjoxNzIxNDM3NDY5fQ.yGrXQCC76lxMJmi-lnOhZgkzmiVFbKOWTwiMoBL13zwXxbyvv3FYlxbc6wHPBMfUXCcgPqEfxUjfSRtdp01NVg
-    email: stockManager@store1.com
-  item-manager:
-    id: 4
-    token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDUkVXIGl0ZW1NYW5hZ2VyQHN0b3JlMS5jb20iLCJleHAiOjE3MjE0Mzc1MzB9.SsLacLuUcjFoq6KKJ46quFyZKD3mOFPfEWNu2ZYqjZBAvIFGH2n5wakUlOc69-SSlsitfFYj8MOzRHxd0JGhtA
-    email: itemManager@store1.com
   user:
-    id: 1
-    token: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJVU0VSIHVzZXIxQGV4YW1wbGUuY29tIiwiZXhwIjoxNzIxNDM3MjIwfQ.8x2AnrRJijnudTNNXhJmLsFXX9lY206FyNnKff4OOZWjUBpfSvo4Hq3Gv_gWu24rJ_E5QylWMYsHPrwhnS_hFw
     email: user1@example.com
-    raw-password: Password1#
-    refresh-token: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJVU0VSIHVzZXIxQGV4YW1wbGUuY29tIiwiZXhwIjoxNzIxNDM3MjIwfQ.8x2AnrRJijnudTNNXhJmLsFXX9lY206FyNnKff4OOZWjUBpfSvo4Hq3Gv_gWu24rJ_E5QylWMYsHPrwhnS_hFw
     expired-token: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDUkVXIGl0ZW1NYW5hZ2VyQHN0b3JlMy5jb20iLCJleHAiOjE3MjEyOTAzNjF9.gWIfZuFYY7LsXYfWAxEpHUPjLK5XZA93FHZBPbaV2EdmFoP-4LEfpPTj0Xsf_mcaCvFfeJIsON3-YkmNW_BhSQ
 jwt:
   secret: b8fa78bd08382b806cca62e7fb9e6331a850009acdb69c564a6c0a5f82b053bc0f03976b7cd908d89dfecd840471692633c65736b5d7bfce93f8eb8a5f98e590

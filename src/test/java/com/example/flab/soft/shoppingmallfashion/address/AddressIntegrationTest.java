@@ -1,30 +1,35 @@
-package com.example.flab.soft.shoppingmallfashion.address.controller;
+package com.example.flab.soft.shoppingmallfashion.address;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.flab.soft.shoppingmallfashion.address.repository.Address;
 import com.example.flab.soft.shoppingmallfashion.address.repository.AddressRepository;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.LoginRequest;
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.TokenProvider;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenResponse;
+import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class AddressDeleteControllerTest {
+class AddressIntegrationTest {
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -36,20 +41,46 @@ class AddressDeleteControllerTest {
     @Autowired
     AddressRepository addressRepository;
 
-    @Value("${authorization.user.token}")
     String accessToken;
-    @Value("${authorization.user.id}")
     Long userId;
     Address savedAddress;
     Address savedAddressOfOtherUser;
+    static final String USER_EMAIL = "correct@gmail.com";
+    static final String USER_PASSWORD = "Correct1#";
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        mockMvc.perform(
+                post("/api/v1/users/signup")
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "email", USER_EMAIL,
+                                "password", USER_PASSWORD,
+                                "realName", "correct",
+                                "cellphoneNumber", "01092345678",
+                                "nickname", "correct"
+                        )))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        SuccessResult<TokenResponse> tokenResponse = objectMapper.readValue(
+                mockMvc.perform(
+                        post("/users/login")
+                                .content(objectMapper.writeValueAsString(LoginRequest.builder()
+                                        .username(USER_EMAIL)
+                                        .password(USER_PASSWORD)
+                                        .build()))
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andReturn().getResponse().getContentAsString(),
+                objectMapper.getTypeFactory().constructParametricType(SuccessResult.class, TokenResponse.class));
+
+        accessToken = "Bearer " + tokenResponse.getResponse().getAccessToken();
+        userId = userRepository.findByEmail(USER_EMAIL).get().getId();
+
         User savedUser2 = userRepository.save(User.builder()
                 .email("testUser2@gmail.com")
                 .password("TestUser2#")
                 .realName("testUser")
-                .cellphoneNumber("01012345679")
+                .cellphoneNumber("01082345679")
                 .nickname("testUser2")
                 .build());
 

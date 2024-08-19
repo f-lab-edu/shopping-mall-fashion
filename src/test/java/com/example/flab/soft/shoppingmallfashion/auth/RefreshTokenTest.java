@@ -4,9 +4,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.LoginRequest;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenResponse;
 import com.example.flab.soft.shoppingmallfashion.auth.refreshToken.TokenRefreshRequest;
+import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +30,39 @@ public class RefreshTokenTest {
     private MockMvc mvc;
     @Autowired
     private ObjectMapper mapper;
-
-    @Value("${authorization.user.refresh-token}")
+    static final String USER_EMAIL = "correct@gmail.com";
+    static final String USER_PASSWORD = "Correct1#";
     String refreshToken;
     @Value("${authorization.user.expired-token}")
     String expiredToken;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        mvc.perform(
+                post("/api/v1/users/signup")
+                        .content(mapper.writeValueAsString(Map.of(
+                                "email", USER_EMAIL,
+                                "password", USER_PASSWORD,
+                                "realName", "correct",
+                                "cellphoneNumber", "01092345678",
+                                "nickname", "correct"
+                        )))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        SuccessResult<TokenResponse> tokenResponse = mapper.readValue(
+                mvc.perform(
+                        post("/users/login")
+                                .content(mapper.writeValueAsString(LoginRequest.builder()
+                                        .username(USER_EMAIL)
+                                        .password(USER_PASSWORD)
+                                        .build()))
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andReturn().getResponse().getContentAsString(),
+                mapper.getTypeFactory().constructParametricType(SuccessResult.class, TokenResponse.class));
+
+        refreshToken = tokenResponse.getResponse().getRefreshToken();
+    }
 
     @Test
     @DisplayName("유효한 refresh 토큰 제공시 200응답과 함께 새로운 access 토큰과 refresh 토큰을 준다.")

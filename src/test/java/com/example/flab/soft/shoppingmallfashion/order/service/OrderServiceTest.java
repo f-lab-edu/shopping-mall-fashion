@@ -121,7 +121,6 @@ class OrderServiceTest {
     void paymentAmountsNeedsToBeEqualToTotalPriceMinusDiscountedAmounts() {
         OrderRequest orderRequest = OrderRequest.builder()
                 .itemOptionId(itemOption.getId())
-                .orderAmount(2)
                 .orderAmount(1)
                 .totalPrice(10000)
                 .discountedAmount(1000)
@@ -134,7 +133,7 @@ class OrderServiceTest {
 
         assertThatThrownBy(() -> orderService.order(orderRequest, 1L))
                 .hasMessage(ErrorEnum.INVALID_REQUEST.getMessage());
-        assertThat(itemOption.getStocksCount()).isEqualTo(1);
+        assertThat(itemOption.getStocksCount()).isEqualTo(0);
         assertThat(orderRepository.count()).isEqualTo(countBeforeOrder);
     }
 

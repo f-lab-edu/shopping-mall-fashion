@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.item.service;
+package com.example.flab.soft.shoppingmallfashion.item;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -13,6 +13,7 @@ import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemOptionRepository;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemCommandService;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
 import java.util.List;
@@ -25,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-class ItemCommandServiceTest {
+class ItemServiceTest {
     @Autowired
     ItemCommandService itemCommandService;
     @Autowired

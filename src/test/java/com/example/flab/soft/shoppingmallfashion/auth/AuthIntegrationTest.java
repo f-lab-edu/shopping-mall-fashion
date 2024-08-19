@@ -4,25 +4,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.CrewAuthService;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.UserAuthService;
+import com.example.flab.soft.shoppingmallfashion.store.repository.CrewRepository;
+import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import java.util.Collection;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@Transactional
 public class AuthIntegrationTest {
     @Autowired
     private UserAuthService userAuthService;
     @Autowired
     private CrewAuthService crewAuthService;
-    @Value("${authorization.store-manager.email}")
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private CrewRepository crewRepository;
     String storeManagerEmail;
-    @Value("${authorization.user.email}")
     String userEmail;
+
+    @BeforeEach
+    void setUp() {
+        userEmail = userRepository.findById(1L).get().getEmail();
+        storeManagerEmail = crewRepository.findById(1L).get().getEmail();
+    }
 
     @Test
     @DisplayName("일반 유저는 유저 권한 하나만 갖는다")

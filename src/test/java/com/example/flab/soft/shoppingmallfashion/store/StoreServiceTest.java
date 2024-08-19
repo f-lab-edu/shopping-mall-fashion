@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.store.service;
+package com.example.flab.soft.shoppingmallfashion.store;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.store.controller.AddStoreRequest;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
+import com.example.flab.soft.shoppingmallfashion.store.service.StoreService;
+import com.example.flab.soft.shoppingmallfashion.store.service.StoreUpdateDto;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

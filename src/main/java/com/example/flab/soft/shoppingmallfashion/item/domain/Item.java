@@ -72,7 +72,7 @@ public class Item extends BaseEntity {
         this.saleState = requireNotNull(saleState);
         this.store = requireNotNull(store);
         this.category = requireNotNull(category);
-        this.itemStats = ItemStats.builder().build();
+        this.itemStats = new ItemStats();
         this.lastlyModifiedBy = requireNotNull(lastlyModifiedBy);
     }
 
