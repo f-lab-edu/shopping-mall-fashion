@@ -75,7 +75,7 @@ public class Order extends BaseEntity {
     public void setPaid() {
         if (isPaid()) {
             log.info("이중 결제 시도 주문번호: {}", id);
-            return;
+            throw new ApiException(ErrorEnum.ALREADY_PAID);
         }
         paymentStatus = PaymentStatus.PAID;
         orderStatus = OrderStatus.COMPLETED;

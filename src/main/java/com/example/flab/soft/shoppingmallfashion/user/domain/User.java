@@ -35,7 +35,9 @@ public class User extends BaseEntity {
     private Boolean withdrawal = false;
 
     @Builder
-    public User(String email, String password, String realName, String cellphoneNumber, String nickname) {
+    public User(Long id, String email, String password,
+                String realName, String cellphoneNumber, String nickname) {
+        this.id = id;
         this.email = requireNotNull(email);
         this.password = requireNotNull(password);
         this.realName = requireNotNull(realName);
