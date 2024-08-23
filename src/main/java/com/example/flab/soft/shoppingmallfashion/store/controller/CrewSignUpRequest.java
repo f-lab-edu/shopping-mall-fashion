@@ -3,11 +3,15 @@ package com.example.flab.soft.shoppingmallfashion.store.controller;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
+@AllArgsConstructor
+@Builder
 public class CrewSignUpRequest {
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$", message = "허용되지 않는 이메일 형식입니다.")
     private String email;
@@ -19,5 +23,4 @@ public class CrewSignUpRequest {
     private String name;
     @Pattern(regexp = "^010[0-9]{8}$", message = "허용되지 않는 전화번호 형식입니다.")
     private String cellphoneNumber;
-    private String storeName;
 }

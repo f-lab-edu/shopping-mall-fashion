@@ -13,7 +13,6 @@ import com.example.flab.soft.shoppingmallfashion.auth.jwt.TokenProvider;
 import com.example.flab.soft.shoppingmallfashion.auth.refreshToken.RefreshTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,8 +69,9 @@ public class WebSecurityConfig {
                                         "/api/v1/store/crew/signup",
                                         "/api/v1/auth/refresh-token").permitAll()
                                 .requestMatchers("/api/v1/items/**").permitAll()
-                                .requestMatchers("/api/v1/store/register").hasAuthority("ROLE_USER")
                                 .requestMatchers("/api/v1/order/**").hasAuthority("ROLE_USER")
+                                .requestMatchers("/api/v1/store/register").hasAuthority("ROLE_USER")
+                                .requestMatchers("/api/v1/store/crews/*/approval").hasAuthority("CREW_MANAGEMENT")
                                 .requestMatchers("/api/v1/store/**").hasAuthority("STORE_MANAGEMENT")
                                 .requestMatchers("/api/v1/item/management/**").hasAuthority("ITEM_MANAGEMENT")
                                 .requestMatchers("/actuator/**").permitAll()
