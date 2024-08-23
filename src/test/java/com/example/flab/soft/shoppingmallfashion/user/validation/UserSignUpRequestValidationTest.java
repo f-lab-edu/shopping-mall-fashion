@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.user;
+package com.example.flab.soft.shoppingmallfashion.user.validation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

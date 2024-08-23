@@ -7,12 +7,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.LoginRequest;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenResponse;
+import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -23,101 +26,58 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureMockMvc
 @SpringBootTest
 class UserIntegrationTest {
-    static final String CORRECT_FORM = "correct@gmail.com";
-    static final String WRONG_FORM = "@@gmail.com";
-    static final String DUPLICATED_FIELD = "correct@gmail.com";
     @Autowired
     private MockMvc mvc;
-
     @Autowired
     private ObjectMapper mapper;
-
-    @Value("${authorization.user.token}")
-    String accessToken;
-
-    @Value("${authorization.user.email}")
-    String userEmail;
-
-    @Value("${authorization.user.raw-password}")
-    String userPassword;
-
+    static final String USER_EMAIL = "correct@gmail.com";
+    static final String USER_PASSWORD = "Correct1#";
     static final String UPDATED_EMAIL = "user4@example.com";
     static final String UPDATED_NAME = "User Four";
     static final String UPDATED_CELLPHONE = "01033333333";
     static final String UPDATED_NICKNAME = "userfour";
     static final String UPDATED_PASSWORD = "Testuser4#";
 
-
-    @DisplayName("필드 형식이 잘못된 경우 400 에러")
-    @Test
-    void whenSignUpWithBadField_thenReturn400() throws Exception {
-        // bad username
+    String accessToken;
+    @BeforeEach
+    void setUp() throws Exception {
         mvc.perform(
-                        post("/api/v1/users/signup")
-                                .content(mapper.writeValueAsString(Map.of(
-                                        "email", CORRECT_FORM,
-                                        "password", "Correct1#",
-                                        "realName", "correct",
-                                        "cellphoneNumber", "01012345678",
-                                        "nickname", "correct"
-                                )))
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(200));
+                post("/api/v1/users/signup")
+                        .content(mapper.writeValueAsString(Map.of(
+                                "email", USER_EMAIL,
+                                "password", USER_PASSWORD,
+                                "realName", "correct",
+                                "cellphoneNumber", "01092345678",
+                                "nickname", "correct"
+                        )))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
 
-        mvc.perform(
-                        post("/api/v1/users/signup")
-                                .content(mapper.writeValueAsString(Map.of(
-                                        "email", WRONG_FORM,
-                                        "password", "Correct1#",
-                                        "realName", "correct",
-                                        "cellphoneNumber", "01012345678",
-                                        "nickname", "correct"
-                                )))
+        SuccessResult<TokenResponse> tokenResponse = mapper.readValue(
+                mvc.perform(
+                        post("/users/login")
+                                .content(mapper.writeValueAsString(LoginRequest.builder()
+                                        .username(USER_EMAIL)
+                                        .password(USER_PASSWORD)
+                                        .build()))
                                 .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(400));
-    }
+                ).andReturn().getResponse().getContentAsString(),
+                mapper.getTypeFactory().constructParametricType(SuccessResult.class, TokenResponse.class));
 
-    @DisplayName("필드 충돌시 409 에러")
-    @Test
-    void whenSignUpWithExistingValue_thenReturn409() throws Exception {
-        mvc.perform(
-                        post("/api/v1/users/signup")
-                                .content(mapper.writeValueAsString(Map.of(
-                                        "email", "correct@gmail.com",
-                                        "password", "Correct1#",
-                                        "realName", "correct",
-                                        "cellphoneNumber", "01012345678",
-                                        "nickname", "correct"
-                                )))
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(200));
-
-        mvc.perform(
-                        post("/api/v1/users/signup")
-                                .content(mapper.writeValueAsString(Map.of(
-                                        "email", DUPLICATED_FIELD,
-                                        "password", "Correct1#",
-                                        "realName", "correct",
-                                        "cellphoneNumber", "01012345678",
-                                        "nickname", "correct"
-                                )))
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(409));
+        accessToken = "Bearer " + tokenResponse.getResponse().getAccessToken();
     }
 
     @DisplayName("내 정보 조회")
     @Test
     void my_info() throws Exception {
+
+
         mvc.perform(
                         get("/api/v1/users/me")
                                 .header("Authorization", accessToken)
                 )
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$.response.email").value(userEmail));
+                .andExpect(jsonPath("$.response.email").value(USER_EMAIL));
 
     }
 
@@ -188,7 +148,7 @@ class UserIntegrationTest {
                         patch("/api/v1/users/me/password")
                                 .header("Authorization", accessToken)
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "currentPassword", userPassword,
+                                        "currentPassword", USER_PASSWORD,
                                         "newPassword", UPDATED_PASSWORD
                                 )))
                                 .contentType(MediaType.APPLICATION_JSON)

@@ -8,10 +8,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "categories")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,10 +23,16 @@ public class Category extends BaseEntity {
     @Column(nullable = false)
     private String name;
     @Column(name = "item_count", nullable = false)
-    private Long itemCount;
+    private Long itemCount = 0L;
     @ManyToOne
     @JoinColumn(name = "large_category_id")
     private LargeCategory largeCategory;
+
+    @Builder
+    public Category(String name, LargeCategory largeCategory) {
+        this.name = name;
+        this.largeCategory = largeCategory;
+    }
 
     public void increaseItemCount(int count) {
         itemCount += count;

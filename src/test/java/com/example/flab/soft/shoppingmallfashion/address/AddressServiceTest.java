@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.address.service;
+package com.example.flab.soft.shoppingmallfashion.address;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.example.flab.soft.shoppingmallfashion.address.repository.Address;
 import com.example.flab.soft.shoppingmallfashion.address.repository.AddressRepository;
+import com.example.flab.soft.shoppingmallfashion.address.service.AddressService;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;

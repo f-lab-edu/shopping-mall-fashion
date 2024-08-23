@@ -7,12 +7,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.LoginRequest;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenResponse;
+import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -27,28 +29,30 @@ public class LoginTest {
     private MockMvc mvc;
     @Autowired
     private ObjectMapper mapper;
-
-    @Value("${authorization.user.token}")
-    String userAccessToken;
-    @Value("${authorization.store-manager.token}")
-    String crewAccessToken;
-
-    @Value("${authorization.user.email}")
-    String userEmail;
-    @Value("${authorization.store-manager.email}")
-    String crewEmail;
-
-    @Value("${authorization.user.raw-password}")
-    String userPassword;
+    static final String USER_EMAIL = "correct@gmail.com";
+    static final String USER_PASSWORD = "Correct1#";
     static final String WRONG_PASSWORD = "wrongPassword";
-
+    @BeforeEach
+    void setUp() throws Exception {
+        mvc.perform(
+                post("/api/v1/users/signup")
+                        .content(mapper.writeValueAsString(Map.of(
+                                "email", USER_EMAIL,
+                                "password", USER_PASSWORD,
+                                "realName", "correct",
+                                "cellphoneNumber", "01092345678",
+                                "nickname", "correct"
+                        )))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
     @Test
     @DisplayName("로그인 정보가 잘못되면 401 응답")
     void whenLoginWithWrongPassword_thenReturn401() throws Exception {
         mvc.perform(
                         post("/users/login")
                                 .content(mapper.writeValueAsString(LoginRequest.builder()
-                                        .username(userEmail)
+                                        .username(USER_EMAIL)
                                         .password(WRONG_PASSWORD)
                                         .build()))
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -64,7 +68,7 @@ public class LoginTest {
                         post("/api/v1/users/signup")
                                 .content(mapper.writeValueAsString(Map.of(
                                         "email", "logintestuser@test.com",
-                                        "password", userPassword,
+                                        "password", USER_PASSWORD,
                                         "realName", "loginTestUser1",
                                         "cellphoneNumber", "01087345678",
                                         "nickname", "LoginTestUser1"
@@ -77,7 +81,7 @@ public class LoginTest {
                         post("/users/login")
                                 .content(mapper.writeValueAsString(LoginRequest.builder()
                                         .username("logintestuser@test.com")
-                                        .password(userPassword)
+                                        .password(USER_PASSWORD)
                                         .build()))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -89,6 +93,18 @@ public class LoginTest {
     @Test
     @DisplayName("토큰이 있으면 401 에러가 발생하지 않는다")
     void whenHaveToken_thenReturn200() throws Exception {
+        SuccessResult<TokenResponse> tokenResponse = mapper.readValue(
+                mvc.perform(
+                        post("/users/login")
+                                .content(mapper.writeValueAsString(LoginRequest.builder()
+                                        .username(USER_EMAIL)
+                                        .password(USER_PASSWORD)
+                                        .build()))
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andReturn().getResponse().getContentAsString(),
+                mapper.getTypeFactory().constructParametricType(SuccessResult.class, TokenResponse.class));
+
+        String accessToken = "Bearer " + tokenResponse.getResponse().getAccessToken();
         //without token
         mvc.perform(
                         get("/api/v1/users/me")
@@ -98,7 +114,7 @@ public class LoginTest {
         //with token
         mvc.perform(
                         get("/api/v1/users/me")
-                                .header("Authorization", userAccessToken)
+                                .header("Authorization", accessToken)
                 )
                 .andExpect(status().is(200));
     }

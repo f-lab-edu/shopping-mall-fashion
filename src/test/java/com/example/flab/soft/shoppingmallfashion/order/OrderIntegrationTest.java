@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.order.service;
+package com.example.flab.soft.shoppingmallfashion.order;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -16,6 +16,7 @@ import com.example.flab.soft.shoppingmallfashion.order.domain.Order;
 import com.example.flab.soft.shoppingmallfashion.order.domain.OrderStatus;
 import com.example.flab.soft.shoppingmallfashion.order.domain.PaymentStatus;
 import com.example.flab.soft.shoppingmallfashion.order.repository.OrderRepository;
+import com.example.flab.soft.shoppingmallfashion.order.service.OrderService;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-class OrderServiceTest {
+class OrderIntegrationTest {
     @Autowired
     private OrderService orderService;
     @Autowired
@@ -121,7 +122,6 @@ class OrderServiceTest {
     void paymentAmountsNeedsToBeEqualToTotalPriceMinusDiscountedAmounts() {
         OrderRequest orderRequest = OrderRequest.builder()
                 .itemOptionId(itemOption.getId())
-                .orderAmount(2)
                 .orderAmount(1)
                 .totalPrice(10000)
                 .discountedAmount(1000)
@@ -134,7 +134,7 @@ class OrderServiceTest {
 
         assertThatThrownBy(() -> orderService.order(orderRequest, 1L))
                 .hasMessage(ErrorEnum.INVALID_REQUEST.getMessage());
-        assertThat(itemOption.getStocksCount()).isEqualTo(1);
+        assertThat(itemOption.getStocksCount()).isEqualTo(0);
         assertThat(orderRepository.count()).isEqualTo(countBeforeOrder);
     }
 

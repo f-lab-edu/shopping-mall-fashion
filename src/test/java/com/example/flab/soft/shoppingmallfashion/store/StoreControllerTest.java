@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.store.controller;
+package com.example.flab.soft.shoppingmallfashion.store;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.flab.soft.shoppingmallfashion.WithMockCustomUser;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
+import com.example.flab.soft.shoppingmallfashion.store.controller.AddStoreRequest;
+import com.example.flab.soft.shoppingmallfashion.store.controller.StoreController;
 import com.example.flab.soft.shoppingmallfashion.store.service.CrewService;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreService;
 import com.fasterxml.jackson.databind.ObjectMapper;
