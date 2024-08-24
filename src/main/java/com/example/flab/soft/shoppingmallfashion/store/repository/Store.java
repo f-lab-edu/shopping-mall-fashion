@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class Store extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id = 0L;
+    private Long id;
     @Column(nullable = false)
     private String name;
     private String logo;

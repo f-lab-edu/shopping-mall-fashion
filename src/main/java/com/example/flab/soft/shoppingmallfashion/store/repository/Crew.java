@@ -56,4 +56,12 @@ public class Crew extends BaseEntity {
     public boolean isInactivated(){
         return withdrawal;
     }
+
+    public void beApproved() {
+        approved = true;
+    }
+
+    public boolean isApproved() {
+        return approved;
+    }
 }

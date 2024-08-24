@@ -120,7 +120,7 @@ public class OrderDomainTest {
     }
 
     @Test
-    @DisplayName("이중결제 시도시 로그 출력")
+    @DisplayName("이중결제 시도시 예외")
     void doublePaid() {
         //given
         Order order= Order.builder()
@@ -138,7 +138,8 @@ public class OrderDomainTest {
                 .build();
         //when
         order.setPaid();
-        order.setPaid();
+        assertThatThrownBy(order::setPaid)
+                .hasMessage(ErrorEnum.ALREADY_PAID.getMessage());
     }
 
     @Test

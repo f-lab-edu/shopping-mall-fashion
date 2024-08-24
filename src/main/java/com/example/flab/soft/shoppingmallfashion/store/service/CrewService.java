@@ -20,16 +20,25 @@ public class CrewService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void addCrew(CrewSignUpRequest crewSignUpRequest) {
-        Store store = storeRepository.findByName(crewSignUpRequest.getStoreName())
+    public CrewBriefInfo addCrew(CrewSignUpRequest crewSignUpRequest, Long storeId) {
+        Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.STORE_NOT_FOUND));
 
-        crewRepository.save(Crew.builder()
+        Crew crew = crewRepository.save(Crew.builder()
                 .email(crewSignUpRequest.getEmail())
                 .password(passwordEncoder.encode(crewSignUpRequest.getPassword()))
                 .cellphoneNumber(crewSignUpRequest.getCellphoneNumber())
                 .name(crewSignUpRequest.getName())
                 .store(store)
                 .build());
+        return CrewBriefInfo.builder().crew(crew).build();
+    }
+
+    @Transactional
+    public CrewBriefInfo approve(Long crewId) {
+        Crew crew = crewRepository.findById(crewId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_CREW_ID));
+        crew.beApproved();
+        return CrewBriefInfo.builder().crew(crew).build();
     }
 }
