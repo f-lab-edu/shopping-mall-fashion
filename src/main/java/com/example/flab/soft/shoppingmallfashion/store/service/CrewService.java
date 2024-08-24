@@ -50,23 +50,23 @@ public class CrewService {
     }
 
     @Transactional
-    public CrewBriefInfo updateRoles(Long crewId, List<Role> updatedRoles) {
+    public CrewBriefInfo patchRoles(Long crewId, List<Role> patchRoles) {
         Crew crew = crewRepository.findById(crewId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_CREW_ID));
-        List<CrewRole> crewRoles = crewRoleRepository.findByCrewIdJoinFetch(crewId);
-        List<Role> roles = crewRoles.stream()
+        List<CrewRole> currentCrewRoles = crewRoleRepository.findByCrewIdJoinFetch(crewId);
+        List<Role> currentRoles = currentCrewRoles.stream()
                 .map(CrewRole::getRole)
                 .toList();
 
-        crewRoles.stream()
-                .filter(crewRole -> !updatedRoles.contains(crewRole.getRole()))
+        currentCrewRoles.stream()
+                .filter(currentCrewRole -> !patchRoles.contains(currentCrewRole.getRole()))
                 .forEach(crewRoleRepository::delete);
 
-        updatedRoles.stream()
-                .filter(role -> !roles.contains(role))
-                .forEach(role -> crewRoleRepository.save(
+        patchRoles.stream()
+                .filter(patchRole -> !currentRoles.contains(patchRole))
+                .forEach(patchRole -> crewRoleRepository.save(
                         CrewRole.builder()
-                                .roleEntity(roleRepository.findByRole(role))
+                                .roleEntity(roleRepository.findByRole(patchRole))
                                 .crew(crew)
                                 .build()));
         return CrewBriefInfo.builder()

@@ -105,7 +105,7 @@ public class CrewIntegrationTest {
                 .store(store)
                 .build());
         //when
-        CrewBriefInfo crewBriefInfo = crewService.updateRoles(crew.getId(),
+        CrewBriefInfo crewBriefInfo = crewService.patchRoles(crew.getId(),
                 List.of(Role.CREW_MANAGER, Role.STORE_MANAGER));
         //then
         crewRoles = crewRoleRepository.findByCrewIdJoinFetch(crew.getId());
@@ -129,7 +129,7 @@ public class CrewIntegrationTest {
                 .crew(crew)
                 .build());
         //when
-        crewService.updateRoles(crew.getId(),
+        crewService.patchRoles(crew.getId(),
                 List.of(Role.CREW_MANAGER, Role.STORE_MANAGER));
         //then
         crewRoles = crewRoleRepository.findByCrewIdJoinFetch(crew.getId());

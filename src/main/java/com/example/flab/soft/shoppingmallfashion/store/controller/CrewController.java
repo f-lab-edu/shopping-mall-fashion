@@ -48,7 +48,7 @@ public class CrewController {
     }
 
     @PatchMapping("/{crewId}/roles")
-    public SuccessResult<CrewBriefInfo> updateRoles(
+    public SuccessResult<CrewBriefInfo> patchRoles(
             @AuthenticationPrincipal AuthCrew crewManager,
             @PathVariable @NotNull Long storeId,
             @NotNull @PathVariable Long crewId,
@@ -57,7 +57,7 @@ public class CrewController {
             throw new ApiException(ErrorEnum.FORBIDDEN);
         }
         return SuccessResult.<CrewBriefInfo>builder()
-                .response(crewService.updateRoles(crewId, roles))
+                .response(crewService.patchRoles(crewId, roles))
                 .build();
     }
 }
