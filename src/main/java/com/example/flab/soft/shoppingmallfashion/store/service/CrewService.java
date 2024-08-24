@@ -1,12 +1,17 @@
 package com.example.flab.soft.shoppingmallfashion.store.service;
 
+import com.example.flab.soft.shoppingmallfashion.auth.role.Role;
+import com.example.flab.soft.shoppingmallfashion.auth.role.RoleRepository;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.store.controller.CrewSignUpRequest;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Crew;
 import com.example.flab.soft.shoppingmallfashion.store.repository.CrewRepository;
+import com.example.flab.soft.shoppingmallfashion.store.repository.CrewRole;
+import com.example.flab.soft.shoppingmallfashion.store.repository.CrewRoleRepository;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CrewService {
     private final StoreRepository storeRepository;
     private final CrewRepository crewRepository;
+    private final CrewRoleRepository crewRoleRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -40,5 +47,33 @@ public class CrewService {
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_CREW_ID));
         crew.beApproved();
         return CrewBriefInfo.builder().crew(crew).build();
+    }
+
+    @Transactional
+    public CrewBriefInfo updateRoles(Long crewId, List<Role> updatedRoles) {
+        Crew crew = crewRepository.findById(crewId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_CREW_ID));
+        List<CrewRole> crewRoles = crewRoleRepository.findByCrewIdJoinFetch(crewId);
+        List<Role> roles = crewRoles.stream()
+                .map(CrewRole::getRole)
+                .toList();
+
+        crewRoles.stream()
+                .filter(crewRole -> !updatedRoles.contains(crewRole.getRole()))
+                .forEach(crewRoleRepository::delete);
+
+        updatedRoles.stream()
+                .filter(role -> !roles.contains(role))
+                .forEach(role -> crewRoleRepository.save(
+                        CrewRole.builder()
+                                .roleEntity(roleRepository.findByRole(role))
+                                .crew(crew)
+                                .build()));
+        return CrewBriefInfo.builder()
+                .crew(crew)
+                .roles(crew.getCrewRoles().stream()
+                        .map(CrewRole::getRole)
+                        .toList())
+                .build();
     }
 }

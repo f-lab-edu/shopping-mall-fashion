@@ -1,5 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.store.repository;
 
+import com.example.flab.soft.shoppingmallfashion.auth.role.Role;
 import com.example.flab.soft.shoppingmallfashion.auth.role.RoleEntity;
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import jakarta.persistence.Entity;
@@ -34,5 +35,9 @@ public class CrewRole extends BaseEntity {
     public CrewRole(Crew crew, RoleEntity roleEntity) {
         this.crew = crew;
         this.roleEntity = roleEntity;
+    }
+
+    public Role getRole() {
+        return roleEntity.getRole();
     }
 }
