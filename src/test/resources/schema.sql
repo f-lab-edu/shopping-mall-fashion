@@ -294,6 +294,18 @@ CREATE TABLE user_coupons (
     INDEX idx_coupons_user (user_id)
 );
 
+CREATE TABLE new_store_register_requests (
+    id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    requester_name VARCHAR(45) NOT NULL,
+    requester_email VARCHAR(45) NOT NULL,
+    requester_phone_number VARCHAR(45) NOT NULL,
+    business_registration_number VARCHAR(45) NOT NULL,
+    approved BOOLEAN DEFAULT FALSE,
+    approved_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insert users
 INSERT INTO users (email, password, real_name, cellphone_number, nickname, created_at, updated_at, withdrawal)
 VALUES

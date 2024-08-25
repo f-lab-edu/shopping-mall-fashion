@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AddStoreRequest {
+public class StoreRegisterRequest {
     @NotBlank
-    private String name;
-    @NotBlank
-    private String logo;
-    private String description;
+    private String requesterName;
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$")
+    private String requesterEmail;
+    @Pattern(regexp = "^010[0-9]{8}$")
+    private String requesterPhoneNumber;
     @Pattern(regexp = "\\d{10}")
     private String businessRegistrationNumber;
 }
