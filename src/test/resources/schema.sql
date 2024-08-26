@@ -289,8 +289,8 @@ CREATE TABLE user_coupons (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (coupon_id) REFERENCES coupons (id),
-    FOREIGN KEY (used_item_id) REFERENCES items (id),
-    FOREIGN KEY (used_order_id) REFERENCES orders (id),
+    INDEX idx_coupons_used_item (used_item_id),
+    INDEX idx_coupons_used_order (used_order_id),
     INDEX idx_coupons_user (user_id)
 );
 

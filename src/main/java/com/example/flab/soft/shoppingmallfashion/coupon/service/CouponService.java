@@ -66,4 +66,11 @@ public class CouponService {
                 .build());
         return CouponInfo.builder().coupon(coupon).build();
     }
+
+    @Transactional
+    public void useCoupon(Long userCouponId, Long itemId, Long orderId) {
+        UserCoupon userCoupon = userCouponRepository.findById(userCouponId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+        userCoupon.use(itemId, orderId);
+    }
 }

@@ -39,4 +39,12 @@ public class UserCoupon extends BaseEntity {
         this.coupon = coupon;
         this.expiredAt = LocalDateTime.now().plus(validation);
     }
+
+    public void use(Long itemId, Long orderId) {
+        usageInfo.use(itemId, orderId);
+    }
+
+    public Boolean isUsed() {
+        return usageInfo.isUsed();
+    }
 }
