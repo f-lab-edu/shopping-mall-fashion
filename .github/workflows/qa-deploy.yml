@@ -29,17 +29,17 @@ jobs:
           push: true
           tags: wedowhatwedo/mall-qa:latest
 
-#      - name: Deploy to EC2
-#        env:
-#          PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-#          HOST: ${{ secrets.EC2_HOST }}
-#          USER: ${{ secrets.EC2_USER }}
-#        run: |
-#          echo "$PRIVATE_KEY" > private_key.pem
-#          chmod 600 private_key.pem
-#          ssh -i private_key.pem $USER@$HOST << 'EOF'
-#            sudo docker pull wedowhatwedo/mall-qa:latest
-#            sudo docker stop backend || true
-#            sudo docker rm backend || true
-#            sudo docker run --rm -d --name backend -p 8080:8080 wedowhatwedo/final3:latest
-#          EOF
+      - name: Deploy to EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -i private_key.pem $USER@$HOST << 'EOF'
+            sudo docker pull wedowhatwedo/mall-qa:latest
+            sudo docker stop backend || true
+            sudo docker rm backend || true
+            sudo docker run --rm -d --name backend -p 8080:8080 wedowhatwedo/mall-qa:latest
+          EOF
