@@ -1,4 +1,4 @@
-name: ci
+name: CI to develop
 
 on:
   push:
