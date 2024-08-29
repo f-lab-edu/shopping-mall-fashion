@@ -66,11 +66,11 @@ public class WebSecurityConfig {
                                         "/users/login",
                                         "/crews/login",
                                         "/api/v1/users/signup",
+                                        "/api/v1/store/register",
                                         "/api/v1/store/crew/signup",
                                         "/api/v1/auth/refresh-token").permitAll()
                                 .requestMatchers("/api/v1/items/**").permitAll()
                                 .requestMatchers("/api/v1/order/**").hasAuthority("ROLE_USER")
-                                .requestMatchers("/api/v1/store/register").hasAuthority("ROLE_USER")
                                 .requestMatchers(
                                         "/api/v1/store/crews/*/approval",
                                         "/api/v1/store/crews/*/roles").hasAuthority("CREW_MANAGEMENT")

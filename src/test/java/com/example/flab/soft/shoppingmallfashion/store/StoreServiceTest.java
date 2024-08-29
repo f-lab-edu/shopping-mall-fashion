@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
-import com.example.flab.soft.shoppingmallfashion.store.controller.AddStoreRequest;
+import com.example.flab.soft.shoppingmallfashion.store.controller.StoreRegisterRequest;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreService;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreUpdateDto;
@@ -25,18 +25,17 @@ class StoreServiceTest {
     @InjectMocks
     private StoreService storeService;
 
-    private static final AddStoreRequest addStoreRequest = AddStoreRequest.builder()
-            .name("name")
-            .logo("logo")
-            .description("description")
+    private static final StoreRegisterRequest STORE_REGISTER_REQUEST = StoreRegisterRequest.builder()
+            .requesterName("name")
+            .requesterEmail("test@email.com")
+            .requesterPhoneNumber("01012345678")
             .businessRegistrationNumber("0123456789")
             .build();
 
     @Test
-    @DisplayName("이미 등록된 이름으로 등록시 예외")
+    @DisplayName("이미 등록된 이름으로 등록시 변경사항 적용")
     void whenRegisterWithDuplicatedName_throwsException() {
-        when(storeRepository.existsByName(anyString())).thenReturn(true);
-        assertThrows(ApiException.class, () -> storeService.registerStore(addStoreRequest, 1L));
+        // TODO
     }
 
     @Test

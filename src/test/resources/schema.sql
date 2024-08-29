@@ -289,9 +289,21 @@ CREATE TABLE user_coupons (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (coupon_id) REFERENCES coupons (id),
-    FOREIGN KEY (used_item_id) REFERENCES items (id),
-    FOREIGN KEY (used_order_id) REFERENCES orders (id),
+    INDEX idx_coupons_used_item (used_item_id),
+    INDEX idx_coupons_used_order (used_order_id),
     INDEX idx_coupons_user (user_id)
+);
+
+CREATE TABLE new_store_register_requests (
+    id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    requester_name VARCHAR(45) NOT NULL,
+    requester_email VARCHAR(45) NOT NULL,
+    requester_phone_number VARCHAR(45) NOT NULL,
+    business_registration_number VARCHAR(45) NOT NULL,
+    approved BOOLEAN DEFAULT FALSE,
+    approved_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Insert users

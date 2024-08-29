@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StoreFieldUpdateRequest {
+public class StoreInfoPatchRequest {
     private String name;
     private String logo;
     private String description;

@@ -2,6 +2,7 @@ package com.example.flab.soft.shoppingmallfashion.store.controller;
 
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
+import com.example.flab.soft.shoppingmallfashion.store.service.NewStoreRegisterService;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreDto;
 import com.example.flab.soft.shoppingmallfashion.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/store")
 public class StoreController {
     private final StoreService storeService;
+    private final NewStoreRegisterService newStoreRegisterService;
 
     @PostMapping("/register")
     public SuccessResult<Void> registerStore(
-            @AuthenticationPrincipal AuthUser user,
-            @Validated @RequestBody AddStoreRequest addStoreRequest) {
-        storeService.registerStore(addStoreRequest, user.getId());
+            @Validated @RequestBody StoreRegisterRequest storeRegisterRequest) {
+        newStoreRegisterService.registerStore(storeRegisterRequest);
         return SuccessResult.<Void>builder().build();
     }
 
@@ -36,11 +37,11 @@ public class StoreController {
     }
 
     @PatchMapping("/my-store")
-    public SuccessResult<StoreDto> updateMyStore(
+    public SuccessResult<StoreDto> patchStoreInfo(
             @AuthenticationPrincipal AuthUser user,
-            @RequestBody StoreFieldUpdateRequest storeFieldUpdateRequest) {
+            @RequestBody StoreInfoPatchRequest storeInfoPatchRequest) {
         StoreDto storeDto = storeService.updateMyStore(
-                storeFieldUpdateRequest.buildStoreUpdateDto(), user.getId());
+                storeInfoPatchRequest.buildStoreUpdateDto(), user.getId());
         return SuccessResult.<StoreDto>builder().response(storeDto).build();
     }
 

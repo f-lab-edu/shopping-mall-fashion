@@ -26,7 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-class CouponServiceTest {
+class CouponIntegrationTest {
     @Autowired
     private CouponService couponService;
     @Autowired
@@ -142,5 +142,37 @@ class CouponServiceTest {
         System.out.println("timeCost = " + (System.currentTimeMillis() - startAt));
         assertThat(userCouponRepository.count()).isEqualTo(THREAD_NUMBER);
         assertThat(couponRepository.findById(coupon.getId()).get().getAmounts()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("쿠폰 사용")
+    void useCoupon() {
+        //given
+        Coupon coupon = couponRepository.save(Coupon.builder()
+                .name("welcomeCoupon")
+                .amounts(1L)
+                .discount(Discount.builder()
+                        .discountType(DiscountType.FIXED_PRICE_DISCOUNT)
+                        .discountAmount(1000)
+                        .discountUnit(DiscountUnit.KRW)
+                        .build())
+                .validation(Duration.of(3, ChronoUnit.DAYS))
+                .build());
+        Long orderId = 1L;
+        Long itemId = 2L;
+
+        UserCoupon userCoupon = userCouponRepository.save(UserCoupon.builder()
+                .coupon(coupon)
+                .userId(1L)
+                .validation(Duration.ofDays(3))
+                .build());
+        //when
+        couponService.useCoupon(userCoupon.getId(), itemId, orderId);
+        //then
+        UserCoupon usedUserCoupon = userCouponRepository.findById(userCoupon.getId()).get();
+        assertThat(usedUserCoupon.isUsed()).isTrue();
+        assertThat(usedUserCoupon.getUsageInfo().getUsed()).isTrue();
+        assertThat(usedUserCoupon.getUsageInfo().getUsedOrderId()).isEqualTo(orderId);
+        assertThat(usedUserCoupon.getUsageInfo().getUsedItemId()).isEqualTo(itemId);
     }
 }
