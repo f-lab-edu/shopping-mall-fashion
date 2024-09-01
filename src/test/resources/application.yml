@@ -16,6 +16,11 @@ spring:
       host: localhost
       port: 6379
 
+coolsms:
+  api:
+    key: key
+    secret: secret
+    number: 01012345678
 #2024-12-31까지 유효
 authorization:
   user:

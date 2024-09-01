@@ -22,7 +22,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/test
+    url: jdbc:mysql://localhost:3306/mall
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: rootuser

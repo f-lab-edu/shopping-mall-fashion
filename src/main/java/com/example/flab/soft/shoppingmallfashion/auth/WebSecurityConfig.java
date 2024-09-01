@@ -68,7 +68,8 @@ public class WebSecurityConfig {
                                         "/api/v1/users/signup",
                                         "/api/v1/store/register",
                                         "/api/v1/store/crew/signup",
-                                        "/api/v1/auth/refresh-token").permitAll()
+                                        "/api/v1/auth/refresh-token",
+                                        "/api/v1/sms/*").permitAll()
                                 .requestMatchers("/api/v1/items/**").permitAll()
                                 .requestMatchers("/api/v1/order/**").hasAuthority("ROLE_USER")
                                 .requestMatchers(
