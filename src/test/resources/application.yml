@@ -18,8 +18,8 @@ spring:
 
 coolsms:
   api:
-    key: key
-    secret: secret
+    key: keykeykeykeykeyk
+    secret: secretsecretsecretsecret
     number: 01012345678
 #2024-12-31까지 유효
 authorization:
