@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SendCodeRequest {
-    @Pattern(regexp = "^(010[0-9]{8}|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})$")
-    private String verificationId;
+public class VerifyCodeByEmailRequest {
+    @Pattern(regexp = "^010[0-9]{8}$")
+    private String email;
+    @Pattern(regexp = "^[1-9]\\d{3}$")
+    private String code;
 }

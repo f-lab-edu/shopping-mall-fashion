@@ -10,21 +10,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/sms")
+@RequestMapping("/api/v1/verification")
 public class VerificationController {
     private final VerificationService verificationService;
-    @PostMapping("/verification-code")
-    public SuccessResult<Void> createCode(
+
+    @PostMapping("/sms/verification-code")
+    public SuccessResult<Void> createCodeBySms(
             @Validated @RequestBody SendCodeRequest sendCodeRequest) {
-        verificationService.sendOne(sendCodeRequest.getPhoneNumber());
+        verificationService.sendMessage(sendCodeRequest.getVerificationId());
         return SuccessResult.<Void>builder().build();
     }
 
-    @PostMapping("/verified-phone-number")
+    @PostMapping("/email/verification-code")
+    public SuccessResult<Void> createCodeByEmail(
+            @Validated @RequestBody SendCodeRequest sendCodeRequest) {
+        verificationService.sendEMail(sendCodeRequest.getVerificationId());
+        return SuccessResult.<Void>builder().build();
+    }
+
+    @PostMapping("/verified-id")
     public SuccessResult<Void> verifyCode(
             @Validated @RequestBody VerifyCodeRequest verifyCodeRequest) {
-        verificationService.cachePhoneNumberIfVerified(
-                verifyCodeRequest.getPhoneNumber(), verifyCodeRequest.getCode());
+        verificationService.cacheEmailOrPhoneNumberIfVerified(
+                verifyCodeRequest.getVerificationId(), verifyCodeRequest.getCode());
         return SuccessResult.<Void>builder().build();
     }
 }

@@ -19,6 +19,8 @@ public class VerificationServiceTest {
     @Mock
     private SmsService smsService;
     @Mock
+    private MailService mailService;
+    @Mock
     private RandomCodeGenerator randomCodeGenerator;
     @Mock
     private RedisUtils redisUtils;
@@ -26,18 +28,33 @@ public class VerificationServiceTest {
     private VerificationService verificationService;
 
     private static final String PHONE_NUMBER = "01012345678";
+    private static final String EMAIL = "test@gmail.com";
     private static final String VERIFICATION_CODE = "1234";
+    private static final String EMAIL_TITLE = "MallFashion 인증번호";
 
     @Test
     @DisplayName("인증코드 전송 후 저장")
-    void whenafterSendingCode_saveVerificationCode() throws Exception {
+    void whenafterSendingCode_saveVerificationCodePhoneNumber() throws Exception {
         //given
         doNothing().when(smsService).sendOne(PHONE_NUMBER, VERIFICATION_CODE);
         when(randomCodeGenerator.generate()).thenReturn(VERIFICATION_CODE);
         //when
-        verificationService.sendOne(PHONE_NUMBER);
+        verificationService.sendMessage(PHONE_NUMBER);
         // then
         verify(smsService).sendOne(PHONE_NUMBER, VERIFICATION_CODE);
+        verify(redisUtils).setData(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("인증코드 전송 후 저장")
+    void whenafterSendingCode_saveVerificationCodeEmail() throws Exception {
+        //given
+        doNothing().when(mailService).sendEmail(EMAIL, EMAIL_TITLE, VERIFICATION_CODE);
+        when(randomCodeGenerator.generate()).thenReturn(VERIFICATION_CODE);
+        //when
+        verificationService.sendEMail(EMAIL);
+        // then
+        verify(mailService).sendEmail(EMAIL, EMAIL_TITLE, VERIFICATION_CODE);
         verify(redisUtils).setData(any(), any(), any());
     }
 }
