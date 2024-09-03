@@ -76,4 +76,20 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow();
         user.withdraw();
     }
+
+    @Transactional
+    public UserDto setEmailVerified(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+        user.setEmailVerified();
+        return UserDto.of(user);
+    }
+
+    @Transactional
+    public UserDto setPhoneNumberVerified(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+        user.setPhoneNumberVerified();
+        return UserDto.of(user);
+    }
 }

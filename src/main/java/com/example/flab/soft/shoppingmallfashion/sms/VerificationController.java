@@ -24,14 +24,14 @@ public class VerificationController {
     @PostMapping("/email/verification-code")
     public SuccessResult<Void> createCodeByEmail(
             @Validated @RequestBody SendCodeRequest sendCodeRequest) {
-        verificationService.sendEMail(sendCodeRequest.getVerificationId());
+        verificationService.sendEmail(sendCodeRequest.getVerificationId());
         return SuccessResult.<Void>builder().build();
     }
 
     @PostMapping("/verified-id")
     public SuccessResult<Void> verifyCode(
             @Validated @RequestBody VerifyCodeRequest verifyCodeRequest) {
-        verificationService.cacheEmailOrPhoneNumberIfVerified(
+        verificationService.verifyCode(
                 verifyCodeRequest.getVerificationId(), verifyCodeRequest.getCode());
         return SuccessResult.<Void>builder().build();
     }

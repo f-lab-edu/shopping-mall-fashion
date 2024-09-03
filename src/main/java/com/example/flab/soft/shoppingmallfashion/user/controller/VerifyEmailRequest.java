@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.sms;
+package com.example.flab.soft.shoppingmallfashion.user.controller;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -7,10 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class SendCodeRequest {
+@NoArgsConstructor
+@Builder
+public class VerifyEmailRequest {
     @NotBlank
-    private String verificationId;
+    private String email;
 }

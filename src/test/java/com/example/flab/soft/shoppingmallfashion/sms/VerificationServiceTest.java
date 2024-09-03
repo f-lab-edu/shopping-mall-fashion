@@ -5,7 +5,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.example.flab.soft.shoppingmallfashion.common.RedisUtils;
+import com.example.flab.soft.shoppingmallfashion.common.RedisRepository;
 import com.example.flab.soft.shoppingmallfashion.util.RandomCodeGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ public class VerificationServiceTest {
     @Mock
     private RandomCodeGenerator randomCodeGenerator;
     @Mock
-    private RedisUtils redisUtils;
+    private RedisRepository redisRepository;
     @InjectMocks
     private VerificationService verificationService;
 
@@ -42,7 +42,7 @@ public class VerificationServiceTest {
         verificationService.sendMessage(PHONE_NUMBER);
         // then
         verify(smsService).sendOne(PHONE_NUMBER, VERIFICATION_CODE);
-        verify(redisUtils).setData(any(), any(), any());
+        verify(redisRepository).setData(any(), any(), any());
     }
 
     @Test
@@ -52,9 +52,9 @@ public class VerificationServiceTest {
         doNothing().when(mailService).sendEmail(EMAIL, EMAIL_TITLE, VERIFICATION_CODE);
         when(randomCodeGenerator.generate()).thenReturn(VERIFICATION_CODE);
         //when
-        verificationService.sendEMail(EMAIL);
+        verificationService.sendEmail(EMAIL);
         // then
         verify(mailService).sendEmail(EMAIL, EMAIL_TITLE, VERIFICATION_CODE);
-        verify(redisUtils).setData(any(), any(), any());
+        verify(redisRepository).setData(any(), any(), any());
     }
 }

@@ -9,9 +9,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.LoginRequest;
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenResponse;
+import com.example.flab.soft.shoppingmallfashion.common.RedisRepository;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,8 @@ class UserIntegrationTest {
     private MockMvc mvc;
     @Autowired
     private ObjectMapper mapper;
+    @Autowired
+    private RedisRepository redisRepository;
     static final String USER_EMAIL = "correct@gmail.com";
     static final String USER_PASSWORD = "Correct1#";
     static final String UPDATED_EMAIL = "user4@example.com";
@@ -37,6 +41,9 @@ class UserIntegrationTest {
     static final String UPDATED_CELLPHONE = "01033333333";
     static final String UPDATED_NICKNAME = "userfour";
     static final String UPDATED_PASSWORD = "Testuser4#";
+    private static final String VERIFIED_PHONE_NUMBER = "01012345678";
+    private static final String VERIFIED_EMAIL = "verified@gmail.com";
+    private static final String REDIS_VERIFIED_ID_PREFIX = "verified-id:";
 
     String accessToken;
     @BeforeEach
@@ -65,6 +72,12 @@ class UserIntegrationTest {
                 mapper.getTypeFactory().constructParametricType(SuccessResult.class, TokenResponse.class));
 
         accessToken = "Bearer " + tokenResponse.getResponse().getAccessToken();
+    }
+
+    @AfterEach
+    void tearDown() {
+        redisRepository.deleteData(REDIS_VERIFIED_ID_PREFIX + VERIFIED_PHONE_NUMBER);
+        redisRepository.deleteData(REDIS_VERIFIED_ID_PREFIX + VERIFIED_EMAIL);
     }
 
     @DisplayName("내 정보 조회")
@@ -170,5 +183,48 @@ class UserIntegrationTest {
                                 .header("Authorization", accessToken)
                 )
                 .andExpect(status().is(401));
+    }
+
+    @DisplayName("이메일 인증")
+    @Test
+    void verify_email() throws Exception {
+        redisRepository.setData(REDIS_VERIFIED_ID_PREFIX + VERIFIED_EMAIL, "1", 5000L);
+        mvc.perform(
+                        patch("/api/v1/users/me/email-verification")
+                                .header("Authorization", accessToken)
+                                .content(mapper.writeValueAsString(Map.of(
+                                        "email", VERIFIED_EMAIL)))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.response.isEmailVerified").value(true));
+    }
+
+    @DisplayName("전화번호 인증")
+    @Test
+    void verify_phone_number() throws Exception {
+        redisRepository.setData(REDIS_VERIFIED_ID_PREFIX + VERIFIED_PHONE_NUMBER, "1", 5000L);
+        mvc.perform(
+                        patch("/api/v1/users/me/phone-number-verification")
+                                .header("Authorization", accessToken)
+                                .content(mapper.writeValueAsString(Map.of(
+                                        "phoneNumber", VERIFIED_PHONE_NUMBER)))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.response.isPhoneNumberVerified").value(true));
+    }
+
+    @DisplayName("인증되지 않은 이메일 혹은 전화번호시 400 응답")
+    @Test
+    void whenIdNotVerified_thenReturn400() throws Exception {
+        mvc.perform(
+                        patch("/api/v1/users/me/email-verification")
+                                .header("Authorization", accessToken)
+                                .content(mapper.writeValueAsString(Map.of(
+                                        "email", VERIFIED_EMAIL)))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is(400));
     }
 }

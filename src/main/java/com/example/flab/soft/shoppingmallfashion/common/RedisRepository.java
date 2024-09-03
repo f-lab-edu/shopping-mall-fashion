@@ -1,15 +1,17 @@
 package com.example.flab.soft.shoppingmallfashion.common;
 
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
-public class RedisUtils {
+@Repository
+@RequiredArgsConstructor
+public class RedisRepository {
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public RedisUtils(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public Boolean exists(String key) {
+        return redisTemplate.hasKey(key);
     }
 
     public void setData(String key, String value, Long expiredTime){

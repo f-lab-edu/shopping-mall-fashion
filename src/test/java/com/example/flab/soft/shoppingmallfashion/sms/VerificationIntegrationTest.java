@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.flab.soft.shoppingmallfashion.common.RedisUtils;
+import com.example.flab.soft.shoppingmallfashion.common.RedisRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 public class VerificationIntegrationTest {
     @Autowired
-    private RedisUtils redisUtils;
+    private RedisRepository redisRepository;
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -34,15 +34,15 @@ public class VerificationIntegrationTest {
 
     @AfterEach
     void tearDown() {
-        redisUtils.deleteData(REDIS_VERIFY_CODE_KEY_PREFIX + PHONE_NUMBER);
-        redisUtils.deleteData(REDIS_VERIFIED_ID_PREFIX + PHONE_NUMBER);
+        redisRepository.deleteData(REDIS_VERIFY_CODE_KEY_PREFIX + PHONE_NUMBER);
+        redisRepository.deleteData(REDIS_VERIFIED_ID_PREFIX + PHONE_NUMBER);
     }
 
     @Test
     @DisplayName("인증코드가 일치하면 전화번호를 캐싱한다.")
     void whenCodeMatch_thenCacheNumber() throws Exception {
         //given
-        redisUtils.setData(REDIS_VERIFY_CODE_KEY_PREFIX + PHONE_NUMBER, VERIFICATION_CODE, 5000L);
+        redisRepository.setData(REDIS_VERIFY_CODE_KEY_PREFIX + PHONE_NUMBER, VERIFICATION_CODE, 5000L);
         //when
         mvc.perform(post("/api/v1/verification/verified-id")
                 .content(mapper.writeValueAsString(VerifyCodeRequest.builder()
@@ -52,7 +52,7 @@ public class VerificationIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200));
         //then
-        assertThat(redisUtils.getData(REDIS_VERIFIED_ID_PREFIX + PHONE_NUMBER))
+        assertThat(redisRepository.getData(REDIS_VERIFIED_ID_PREFIX + PHONE_NUMBER))
                 .isNotNull();
     }
 
@@ -60,7 +60,7 @@ public class VerificationIntegrationTest {
     @DisplayName("인증코드가 일치하면 이메일을 캐싱한다.")
     void whenCodeMatch_thenCacheEmail() throws Exception {
         //given
-        redisUtils.setData(REDIS_VERIFY_CODE_KEY_PREFIX + EMAIL, VERIFICATION_CODE, 5000L);
+        redisRepository.setData(REDIS_VERIFY_CODE_KEY_PREFIX + EMAIL, VERIFICATION_CODE, 5000L);
         //when
         mvc.perform(post("/api/v1/verification/verified-id")
                         .content(mapper.writeValueAsString(VerifyCodeRequest.builder()
@@ -70,7 +70,7 @@ public class VerificationIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200));
         //then
-        assertThat(redisUtils.getData(REDIS_VERIFIED_ID_PREFIX + EMAIL))
+        assertThat(redisRepository.getData(REDIS_VERIFIED_ID_PREFIX + EMAIL))
                 .isNotNull();
     }
 
@@ -78,7 +78,7 @@ public class VerificationIntegrationTest {
     @DisplayName("인증코드가 일치하지 않으면 400응답")
     void whenCodeDoesNotMatch_thenReturn400() throws Exception {
         //given
-        redisUtils.setData(REDIS_VERIFY_CODE_KEY_PREFIX + PHONE_NUMBER, VERIFICATION_CODE, 5000L);
+        redisRepository.setData(REDIS_VERIFY_CODE_KEY_PREFIX + PHONE_NUMBER, VERIFICATION_CODE, 5000L);
         //when
         mvc.perform(post("/api/v1/verification/verified-id")
                 .content(mapper.writeValueAsString(VerifyCodeRequest.builder()

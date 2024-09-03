@@ -1,6 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.sms;
 
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VerifyCodeRequest {
-    @Pattern(regexp = "^(010[0-9]{8}|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})$")
+    @NotBlank
     private String verificationId;
-    @Pattern(regexp = "^[1-9]\\d{3}$")
+    @NotBlank
     private String code;
 }

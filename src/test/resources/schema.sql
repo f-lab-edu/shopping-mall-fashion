@@ -8,6 +8,8 @@ CREATE TABLE users (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     withdrawal BOOLEAN DEFAULT FALSE,
+    is_email_verified BOOLEAN DEFAULT FALSE,
+    is_phone_number_verified BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (id),
     UNIQUE (email),
     UNIQUE (cellphone_number),
