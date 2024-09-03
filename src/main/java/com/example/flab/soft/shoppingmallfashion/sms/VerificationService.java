@@ -15,9 +15,10 @@ public class VerificationService {
     private final RandomCodeGenerator randomCodeGenerator;
     private final RedisRepository redisRepository;
     private static final String REDIS_VERIFY_CODE_KEY_PREFIX = "verification-code:";
-    private static final String REDIS_VERIFIED_ID_PREFIX = "verified-id:";
+    private static final String REDIS_VERIFIED_PHONE_NUMBER_PREFIX = "verified-phone-number:";
+    private static final String REDIS_VERIFIED_EMAIL_PREFIX = "verified-email:";
     private static final long CODE_EXPIRED_TIME_IN_MILLISECONDS = 300 * 1000;
-    private static final long VERIFIED_PHONENUMBER_EXPIRED_TIME_IN_MILLISECONDS = 60 * 60 * 1000;
+    private static final long VERIFIED_ID_EXPIRED_TIME_IN_MILLISECONDS = 60 * 60 * 1000;
     private static final String EMAIL_TITLE = "MallFashion 인증번호";
 
     public void sendMessage(String recipientPhoneNumber) {
@@ -38,24 +39,32 @@ public class VerificationService {
         return randomCodeGenerator.generate();
     }
 
-    public void verifyCode(String emailOrPhoneNumber, String code) {
-        String cachedCode = redisRepository.getData(REDIS_VERIFY_CODE_KEY_PREFIX + emailOrPhoneNumber);
+    public void verifyCodeWithPhoneNumber(String phoneNumber, String code) {
+        String cachedCode = redisRepository.getData(REDIS_VERIFY_CODE_KEY_PREFIX + phoneNumber);
         if (cachedCode == null || !cachedCode.equals(code)) {
             throw new ApiException(ErrorEnum.INVALID_REQUEST);
         }
-        redisRepository.setData(REDIS_VERIFIED_ID_PREFIX + emailOrPhoneNumber,
-                String.valueOf(1),
-                VERIFIED_PHONENUMBER_EXPIRED_TIME_IN_MILLISECONDS);
+        redisRepository.setData(REDIS_VERIFIED_PHONE_NUMBER_PREFIX + phoneNumber,
+                phoneNumber, VERIFIED_ID_EXPIRED_TIME_IN_MILLISECONDS);
+    }
+
+    public void verifyCodeWithEamil(String email, String code) {
+        String cachedCode = redisRepository.getData(REDIS_VERIFY_CODE_KEY_PREFIX + email);
+        if (cachedCode == null || !cachedCode.equals(code)) {
+            throw new ApiException(ErrorEnum.INVALID_REQUEST);
+        }
+        redisRepository.setData(REDIS_VERIFIED_EMAIL_PREFIX + email,
+                email, VERIFIED_ID_EXPIRED_TIME_IN_MILLISECONDS);
     }
 
     public void verifyPhoneNumber(String phoneNumber) {
-        if (!redisRepository.exists(REDIS_VERIFIED_ID_PREFIX + phoneNumber)) {
+        if (!redisRepository.exists(REDIS_VERIFIED_PHONE_NUMBER_PREFIX + phoneNumber)) {
             throw new ApiException(ErrorEnum.INVALID_REQUEST);
         }
     }
 
     public void verifyEmail(String email) {
-        if (!redisRepository.exists(REDIS_VERIFIED_ID_PREFIX + email)) {
+        if (!redisRepository.exists(REDIS_VERIFIED_EMAIL_PREFIX + email)) {
             throw new ApiException(ErrorEnum.INVALID_REQUEST);
         }
     }

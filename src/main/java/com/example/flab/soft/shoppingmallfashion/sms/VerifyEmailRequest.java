@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class VerifyCodeRequest {
+@NoArgsConstructor
+@Builder
+public class VerifyEmailRequest {
     @NotBlank
-    private String verificationId;
+    private String email;
     @NotBlank
     private String code;
 }

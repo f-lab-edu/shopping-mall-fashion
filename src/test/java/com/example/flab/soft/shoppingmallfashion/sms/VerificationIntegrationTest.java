@@ -26,7 +26,8 @@ public class VerificationIntegrationTest {
     private ObjectMapper mapper;
 
     private static final String REDIS_VERIFY_CODE_KEY_PREFIX = "verification-code:";
-    private static final String REDIS_VERIFIED_ID_PREFIX = "verified-id:";
+    private static final String REDIS_VERIFIED_PHONE_NUMBER_PREFIX = "verified-phone-number:";
+    private static final String REDIS_VERIFIED_EMAIL_PREFIX = "verified-email:";
     private static final String PHONE_NUMBER = "01012345678";
     private static final String EMAIL = "test@gmail.com";
     private static final String VERIFICATION_CODE = "1234";
@@ -35,7 +36,8 @@ public class VerificationIntegrationTest {
     @AfterEach
     void tearDown() {
         redisRepository.deleteData(REDIS_VERIFY_CODE_KEY_PREFIX + PHONE_NUMBER);
-        redisRepository.deleteData(REDIS_VERIFIED_ID_PREFIX + PHONE_NUMBER);
+        redisRepository.deleteData(REDIS_VERIFIED_PHONE_NUMBER_PREFIX + PHONE_NUMBER);
+        redisRepository.deleteData(REDIS_VERIFIED_EMAIL_PREFIX + EMAIL);
     }
 
     @Test
@@ -44,15 +46,15 @@ public class VerificationIntegrationTest {
         //given
         redisRepository.setData(REDIS_VERIFY_CODE_KEY_PREFIX + PHONE_NUMBER, VERIFICATION_CODE, 5000L);
         //when
-        mvc.perform(post("/api/v1/verification/verified-id")
-                .content(mapper.writeValueAsString(VerifyCodeRequest.builder()
+        mvc.perform(post("/api/v1/verification/verified-phone-number")
+                .content(mapper.writeValueAsString(VerifyPhoneNumberRequest.builder()
                         .code(VERIFICATION_CODE)
-                        .verificationId(PHONE_NUMBER)
+                        .phoneNumber(PHONE_NUMBER)
                         .build()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200));
         //then
-        assertThat(redisRepository.getData(REDIS_VERIFIED_ID_PREFIX + PHONE_NUMBER))
+        assertThat(redisRepository.getData(REDIS_VERIFIED_PHONE_NUMBER_PREFIX + PHONE_NUMBER))
                 .isNotNull();
     }
 
@@ -62,15 +64,15 @@ public class VerificationIntegrationTest {
         //given
         redisRepository.setData(REDIS_VERIFY_CODE_KEY_PREFIX + EMAIL, VERIFICATION_CODE, 5000L);
         //when
-        mvc.perform(post("/api/v1/verification/verified-id")
-                        .content(mapper.writeValueAsString(VerifyCodeRequest.builder()
+        mvc.perform(post("/api/v1/verification/verified-email")
+                        .content(mapper.writeValueAsString(VerifyEmailRequest.builder()
                                 .code(VERIFICATION_CODE)
-                                .verificationId(EMAIL)
+                                .email(EMAIL)
                                 .build()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200));
         //then
-        assertThat(redisRepository.getData(REDIS_VERIFIED_ID_PREFIX + EMAIL))
+        assertThat(redisRepository.getData(REDIS_VERIFIED_EMAIL_PREFIX + EMAIL))
                 .isNotNull();
     }
 
@@ -80,10 +82,10 @@ public class VerificationIntegrationTest {
         //given
         redisRepository.setData(REDIS_VERIFY_CODE_KEY_PREFIX + PHONE_NUMBER, VERIFICATION_CODE, 5000L);
         //when
-        mvc.perform(post("/api/v1/verification/verified-id")
-                .content(mapper.writeValueAsString(VerifyCodeRequest.builder()
+        mvc.perform(post("/api/v1/verification/verified-email")
+                .content(mapper.writeValueAsString(VerifyPhoneNumberRequest.builder()
                         .code(WRONG_VERIFICATION_CODE)
-                        .verificationId(PHONE_NUMBER)
+                        .phoneNumber(PHONE_NUMBER)
                         .build()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400));

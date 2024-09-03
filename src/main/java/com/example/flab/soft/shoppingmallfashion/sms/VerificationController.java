@@ -28,11 +28,19 @@ public class VerificationController {
         return SuccessResult.<Void>builder().build();
     }
 
-    @PostMapping("/verified-id")
-    public SuccessResult<Void> verifyCode(
-            @Validated @RequestBody VerifyCodeRequest verifyCodeRequest) {
-        verificationService.verifyCode(
-                verifyCodeRequest.getVerificationId(), verifyCodeRequest.getCode());
+    @PostMapping("/verified-phone-number")
+    public SuccessResult<Void> verifyPhoneNumber(
+            @Validated @RequestBody VerifyPhoneNumberRequest verifyPhoneNumberRequest) {
+        verificationService.verifyCodeWithPhoneNumber(
+                verifyPhoneNumberRequest.getPhoneNumber(), verifyPhoneNumberRequest.getCode());
+        return SuccessResult.<Void>builder().build();
+    }
+
+    @PostMapping("/verified-email")
+    public SuccessResult<Void> verifyEmail(
+            @Validated @RequestBody VerifyEmailRequest verifyEmailRequest) {
+        verificationService.verifyCodeWithEamil(
+                verifyEmailRequest.getEmail(), verifyEmailRequest.getCode());
         return SuccessResult.<Void>builder().build();
     }
 }
