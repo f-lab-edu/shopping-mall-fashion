@@ -43,7 +43,8 @@ class UserIntegrationTest {
     static final String UPDATED_PASSWORD = "Testuser4#";
     private static final String VERIFIED_PHONE_NUMBER = "01012345678";
     private static final String VERIFIED_EMAIL = "verified@gmail.com";
-    private static final String REDIS_VERIFIED_ID_PREFIX = "verified-id:";
+    private static final String REDIS_VERIFIED_PHONE_NUMBER_PREFIX = "verified-phone-number:";
+    private static final String REDIS_VERIFIED_EMAIL_PREFIX = "verified-email:";
 
     String accessToken;
     @BeforeEach
@@ -76,8 +77,8 @@ class UserIntegrationTest {
 
     @AfterEach
     void tearDown() {
-        redisRepository.deleteData(REDIS_VERIFIED_ID_PREFIX + VERIFIED_PHONE_NUMBER);
-        redisRepository.deleteData(REDIS_VERIFIED_ID_PREFIX + VERIFIED_EMAIL);
+        redisRepository.deleteData(REDIS_VERIFIED_PHONE_NUMBER_PREFIX + VERIFIED_PHONE_NUMBER);
+        redisRepository.deleteData(REDIS_VERIFIED_EMAIL_PREFIX + VERIFIED_EMAIL);
     }
 
     @DisplayName("내 정보 조회")
@@ -188,7 +189,7 @@ class UserIntegrationTest {
     @DisplayName("이메일 인증")
     @Test
     void verify_email() throws Exception {
-        redisRepository.setData(REDIS_VERIFIED_ID_PREFIX + VERIFIED_EMAIL, "1", 5000L);
+        redisRepository.setData(REDIS_VERIFIED_EMAIL_PREFIX + VERIFIED_EMAIL, "1", 5000L);
         mvc.perform(
                         patch("/api/v1/users/me/email-verification")
                                 .header("Authorization", accessToken)
@@ -203,7 +204,7 @@ class UserIntegrationTest {
     @DisplayName("전화번호 인증")
     @Test
     void verify_phone_number() throws Exception {
-        redisRepository.setData(REDIS_VERIFIED_ID_PREFIX + VERIFIED_PHONE_NUMBER, "1", 5000L);
+        redisRepository.setData(REDIS_VERIFIED_PHONE_NUMBER_PREFIX + VERIFIED_PHONE_NUMBER, "1", 5000L);
         mvc.perform(
                         patch("/api/v1/users/me/phone-number-verification")
                                 .header("Authorization", accessToken)
