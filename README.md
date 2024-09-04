@@ -10,6 +10,16 @@
 <br>
 
 # 🎯 프로젝트 목표
+
+**1. 사용자가 이용하기 편한, 사용자의 정보를 안전하게 취급하는 서비스 제공**
+- 단순한 CRUD 기능만 개발하는 것이 아닌 실제의 Use case를 고민하고 어떻게 하면 고객이 편리하게 이용할 수 있을지 고민하면서 개발합니다.
+- 고객의 정보를 안전하게 유지, 전달합니다.
+  - (기존) 비밀번호 찾기시 유저 전화번호를 쿼리 파라미터로 넘기는 구조
+  - (변경 후) 아이디 찾기, 비밀번호 찾기시 해당 권한만 갖는 일회용 토큰 발급
+  - password 인코딩
+  - 권한에 따라 접근할 수 있는 리소스를 제한
+- 서버의 정보를 안전하게 관리합니다.
+  - 노출되면 안되는 키 값들을 도커 실행시점에 전달
 //TODO
 
 
@@ -36,9 +46,18 @@
 
 <br>
 
-# ✏️️ 유저 인터페이스
+# 💡 MallFashion의 대표적인 Use Case
 
-//TODO
+## 상점 등록 프로세스
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/c8576100-f641-4b42-a7a6-56df8b55d3d0">
+
+단순히 상점 엔티티를 생성하여 DB에 저장하는 것이 아닌 실제 케이스와 같이 
+1. 스토어 신청
+2. 관리자 검토 후 승인
+3. 신청자에게 임시 비밀번호 알림
+4. 신청자는 발급 받은 임시 비밀번호로 상점 초기 정보 세팅
+
+의 절차를 통과하도록 구현합니다.
 
 <br>
 
@@ -49,10 +68,12 @@
 - [CI를 통한 지속적인 통합 환경 구축](https://doohyunhwang97.github.io/develop/mall-fashion/mall3/)
 - [Continuous Delivery를 통한 자동화된 QA환경 구축](https://doohyunhwang97.github.io/develop/mall-fashion/mall4/)
 
+
 # 📚 데이터 모델
 
 ## ERD
-<img width="1450" alt="image" src="https://github.com/user-attachments/assets/f64aedbf-1db7-49f1-b22d-5b862a331e97">
+<img width="1431" alt="image" src="https://github.com/user-attachments/assets/e3b790a0-b392-4b62-9eac-dafc0cd7fd10">
+
 
 //TODO
 
