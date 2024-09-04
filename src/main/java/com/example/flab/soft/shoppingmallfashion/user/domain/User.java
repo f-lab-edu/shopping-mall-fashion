@@ -33,6 +33,8 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
     private Boolean withdrawal = false;
+    private Boolean isEmailVerified = false;
+    private Boolean isPhoneNumberVerified = false;
 
     @Builder
     public User(Long id, String email, String password,
@@ -74,12 +76,22 @@ public class User extends BaseEntity {
         return withdrawal;
     }
 
+    public void setEmailVerified() {
+        isEmailVerified = true;
+    }
+
+    public void setPhoneNumberVerified() {
+        isPhoneNumberVerified = true;
+    }
+
     private UserDto toUserDto() {
         return UserDto.builder()
                 .email(email)
                 .realName(realName)
                 .cellphoneNumber(cellphoneNumber)
                 .nickname(nickname)
+                .isEmailVerified(isEmailVerified)
+                .isPhoneNumberVerified(isPhoneNumberVerified)
                 .createdAt(super.getCreatedAt())
                 .build();
     }

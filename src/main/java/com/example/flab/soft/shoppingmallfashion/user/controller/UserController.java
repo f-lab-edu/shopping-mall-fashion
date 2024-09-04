@@ -2,6 +2,7 @@ package com.example.flab.soft.shoppingmallfashion.user.controller;
 
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
+import com.example.flab.soft.shoppingmallfashion.sms.VerificationService;
 import com.example.flab.soft.shoppingmallfashion.user.service.UserDto;
 import com.example.flab.soft.shoppingmallfashion.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class UserController {
     private final UserService userService;
+    private final VerificationService verificationService;
 
     @PostMapping("/signup")
     public SuccessResult<Void> signup(@RequestBody @Validated UserSignUpRequest userSignUpRequest) {
@@ -58,5 +60,23 @@ public class UserController {
     public SuccessResult<Void> withdraw(@AuthenticationPrincipal AuthUser user) {
         userService.withdraw(user.getId());
         return SuccessResult.<Void>builder().build();
+    }
+
+    @PatchMapping("/me/email-verification")
+    public SuccessResult<UserDto> verifyEmail(
+            @AuthenticationPrincipal AuthUser user,
+            @RequestBody @Validated VerifyEmailRequest verifyEmailRequest) {
+        verificationService.verifyEmail(verifyEmailRequest.getEmail());
+        UserDto userDto = userService.setEmailVerified(user.getId());
+        return SuccessResult.<UserDto>builder().response(userDto).build();
+    }
+
+    @PatchMapping("/me/phone-number-verification")
+    public SuccessResult<UserDto> verifyPhoneNumber(
+            @AuthenticationPrincipal AuthUser user,
+            @RequestBody @Validated VerifyPhoneNumberRequest verifyPhoneNumberRequest) {
+        verificationService.verifyPhoneNumber(verifyPhoneNumberRequest.getPhoneNumber());
+        UserDto userDto = userService.setPhoneNumberVerified(user.getId());
+        return SuccessResult.<UserDto>builder().response(userDto).build();
     }
 }

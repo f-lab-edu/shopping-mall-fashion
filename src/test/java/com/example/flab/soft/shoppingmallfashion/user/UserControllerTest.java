@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.flab.soft.shoppingmallfashion.WithMockCustomUser;
+import com.example.flab.soft.shoppingmallfashion.sms.VerificationService;
 import com.example.flab.soft.shoppingmallfashion.user.controller.UserController;
 import com.example.flab.soft.shoppingmallfashion.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,8 @@ public class UserControllerTest {
     private ObjectMapper mapper;
     @MockBean
     private UserService userService;
+    @MockBean
+    private VerificationService verificationService;
     static final String CORRECT_FORM = "correct@gmail.com";
     static final String WRONG_FORM = "@@gmail.com";
 
