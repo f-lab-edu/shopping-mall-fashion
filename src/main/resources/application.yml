@@ -18,8 +18,6 @@ spring:
           timeout: 5000
           writetimeout: 5000
     code-expiration-millis: 1800000  # 30 * 60 * 1000 == 30분
-  config:
-    import: classpath:application-local-secrets.yml
 
 jwt:
   secret: b8fa78bd08382b806cca62e7fb9e6331a850009acdb69c564a6c0a5f82b053bc0f03976b7cd908d89dfecd840471692633c65736b5d7bfce93f8eb8a5f98e590
@@ -53,6 +51,9 @@ spring:
     redis:
       host: localhost
       port: 6379
+  config:
+    import: classpath:application-local-secrets.yml
+
 logging:
   level:
     root: debug
