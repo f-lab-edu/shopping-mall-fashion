@@ -97,7 +97,8 @@
 
 <br>
 
-# 프로젝트 진행
+# 👬 MallFashion이 협업하는 방식
+## Github Project를 이용한 스프린트 단위 계획 수립과 공유
 - Jira처럼 Github Project를 이용하여 백로그에 issue 들을 등록하고 시작 날짜, 종료 날짜, 예상 시간 등을 입력해서 스프린트로 옮겨서 업무를 진행하고 팀원과 공유하고 있습니다.
 - 스프린트 단위는 일주일로 정해서 스프린트 단위로 계획 수립, 프로젝트를 진행하고 있습니다.
 
@@ -105,4 +106,10 @@
 
 ![image](https://github.com/user-attachments/assets/726f2f6b-0206-4ee6-adfe-cf004078bde6)
 
+## 다이어그램을 이용한 적극적인 소통
+- MallFashion 팀은 한명은 개발, 다른 한명은 코드 리뷰를 담당하고 있습니다.
+- 개발자가 기획까지 담당하기 때문에 적극적으로 소통하지 않으면 서로가 생각하는 기획의 방향성이 다를 수 있습니다.
+- 이러한 상황이 발생할 때마다 다이어그램을 통한 적극적인 의사소통을 해결합니다.
 
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/e3ba4340-7c75-4d03-97b2-1fffa6b5f991">
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/ea40e834-ba1a-4718-96c6-99ae74ec8f77">
