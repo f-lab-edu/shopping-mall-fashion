@@ -63,6 +63,9 @@ logging:
 spring.config.activate.on-profile: prod
 server:
   port: 8080
+  tomcat:
+    mbeanregistry:
+      enabled: true
 
 spring:
   datasource:
