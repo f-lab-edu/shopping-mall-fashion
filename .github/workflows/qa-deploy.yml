@@ -50,9 +50,10 @@ jobs:
             sudo docker pull wedowhatwedo/mall-qa:latest
             sudo docker stop backend || true
             sudo docker rm backend || true
-            sudo docker run --rm -d --name backend -p 8080:8080 \
+            sudo docker run -d --name backend -p 8080:8080 \
               -e COOLSMS_API_KEY="${{ secrets.COOLSMS_KEY }}" \
               -e COOLSMS_API_SECRET="${{ secrets.COOLSMS_SECRET }}" \
               -e COOLSMS_API_NUMBER="${{ secrets.COOLSMS_NUMBER }}" \
+              -e SPRING_MAIL_USERNAME="${{ secrets.GMAIL_USERNAME }}" \
               -e SPRING_MAIL_PASSWORD="${{ secrets.GMAIL_PASSWORD }}" \
               wedowhatwedo/mall-qa:latest
