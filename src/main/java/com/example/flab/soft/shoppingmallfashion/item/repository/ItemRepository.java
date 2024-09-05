@@ -40,4 +40,11 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("SELECT i FROM items i WHERE i.store.id = :storeId "
             + "ORDER BY i.itemStats.orderCount DESC")
     List<Item> findTopItemsByStoreId(Long storeId, Pageable pageable);
+
+    @Query("SELECT i FROM items i JOIN FETCH i.store s " +
+            "JOIN FETCH i.category c JOIN FETCH c.largeCategory lc "
+            + "JOIN i.itemSearchTags ist "
+            + "JOIN ist.searchTag st "
+            + "WHERE st.name = :keyword")
+    Page<Item> findAllWithKeyword(String keyword, Pageable pageable);
 }

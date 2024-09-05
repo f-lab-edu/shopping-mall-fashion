@@ -59,6 +59,8 @@ public class Item extends BaseEntity {
     private ItemStats itemStats;
     @Column(nullable = false)
     private Long lastlyModifiedBy;
+    @OneToMany(mappedBy = "itemId", fetch = FetchType.LAZY)
+    private List<ItemSearchTag> itemSearchTags = new ArrayList<>();
 
     @Builder
     public Item(String name, Integer originalPrice, Integer salePrice, String description, Sex sex,

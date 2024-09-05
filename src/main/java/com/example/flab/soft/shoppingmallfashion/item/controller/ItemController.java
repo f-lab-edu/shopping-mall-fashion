@@ -33,6 +33,16 @@ public class ItemController {
         return SuccessResult.<Page<ItemBriefDto>>builder().response(items).build();
     }
 
+    @GetMapping("/items-with-keyword")
+    public SuccessResult<Page<ItemBriefDto>> getItemsWithKeyword(
+            @PageableDefault(
+                    size = 50, sort = "itemStats.orderCount",
+                    direction = Direction.DESC) Pageable pageable,
+            @RequestParam String keyword) {
+        Page<ItemBriefDto> items = itemService.getItemsWithKeyword(keyword, pageable);
+        return SuccessResult.<Page<ItemBriefDto>>builder().response(items).build();
+    }
+
     @GetMapping("/{itemId}")
     public SuccessResult<ItemDto> getItemDetails(
             @PathVariable Long itemId,

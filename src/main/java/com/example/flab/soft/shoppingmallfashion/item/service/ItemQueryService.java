@@ -31,6 +31,12 @@ public class ItemQueryService {
     }
 
     @Transactional(readOnly = true)
+    public Page<ItemBriefDto> getItemsWithKeyword(String keyword, Pageable pageable) {
+        return itemRepository.findAllWithKeyword(keyword, pageable)
+                .map(ItemBriefDto::new);
+    }
+
+    @Transactional(readOnly = true)
     public ItemDetailsDto getItemDetails(Long itemId) {
         Item item = itemRepository.findItemJoinFetchById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));

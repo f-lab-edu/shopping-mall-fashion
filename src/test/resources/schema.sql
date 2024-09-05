@@ -308,6 +308,24 @@ CREATE TABLE new_store_register_requests (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+
+CREATE TABLE search_tags (
+    id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(45) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE item_search_tags (
+    id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    search_tag_id BIGINT NOT NULL,
+    item_id BIGINT NOT NULL,
+    FOREIGN KEY (search_tag_id) REFERENCES search_tags (id),
+    FOREIGN KEY (item_id) REFERENCES items (id),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insert users
 INSERT INTO users (email, password, real_name, cellphone_number, nickname, created_at, updated_at, withdrawal)
 VALUES
@@ -497,3 +515,7 @@ INSERT INTO item_options (name, size, option_value, item_id, sale_state, stocks_
     ('Option 42', 'M', 'Color: Blue', 10, 'TEMPORARILY_SOLD_OUT', 22, 20, '2024-07-25 15:17:21', '2024-07-25 15:17:21', '2024-07-25 15:17:21'),
     ('Option 43', 'M', 'Color: Green', 10, 'ON_SALE', 80, 8, '2024-07-25 15:17:21', '2024-07-25 15:17:21', '2024-07-25 15:17:21'),
     ('Option 44', 'XL', 'Color: Green', 10, 'SOLD_OUT', 51, 3, '2024-07-25 15:17:21', '2024-07-25 15:17:21', '2024-07-25 15:17:21');
+
+INSERT INTO search_tags (name) VALUES ('Shirts'), ('Pants'), ('Jeans'), ('Jackets');
+
+INSERT INTO item_search_tags (search_tag_id, item_id) VALUES (1, 2), (2, 6), (3, 8), (4, 3), (4, 4);
