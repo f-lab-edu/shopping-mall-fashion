@@ -32,6 +32,13 @@ public class ItemSearchKeywordService {
     }
 
     @Transactional
+    public ItemSearchKeywordDto getAllSearchKeywords(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+        return ItemSearchKeywordDto.builder().item(item).build();
+    }
+
+    @Transactional
     public ItemSearchKeywordDto updateItemSearchKeyword(Long itemId, List<String> newSearchKeywords) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));

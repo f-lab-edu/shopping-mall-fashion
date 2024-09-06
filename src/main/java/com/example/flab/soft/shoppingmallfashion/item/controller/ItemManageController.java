@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,5 +57,12 @@ public class ItemManageController {
                 itemId, itemSearchKeywordsPutRequest.getItemSearchKeywords());
         return SuccessResult.<ItemSearchKeywordDto>builder()
                 .response(itemSearchKeywordDto).build();
+    }
+
+    @GetMapping("/{itemId}/item-search-keywords")
+    public SuccessResult<ItemSearchKeywordDto> getItemSearchKeywords(
+            @PathVariable Long itemId) {
+        return SuccessResult.<ItemSearchKeywordDto>builder()
+                .response(itemSearchKeywordService.getAllSearchKeywords(itemId)).build();
     }
 }

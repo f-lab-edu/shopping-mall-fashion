@@ -3,6 +3,8 @@ package com.example.flab.soft.shoppingmallfashion.item.controller;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemQueryService;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordDto;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemQueryService itemService;
+    private final ItemSearchKeywordService itemSearchKeywordService;
 
     @GetMapping
     public SuccessResult<Page<ItemBriefDto>> getItems(
