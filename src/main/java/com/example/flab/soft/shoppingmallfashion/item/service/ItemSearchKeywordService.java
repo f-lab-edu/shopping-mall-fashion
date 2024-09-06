@@ -25,11 +25,18 @@ public class ItemSearchKeywordService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
+        List<String> defaultSearchKeywords = item.getItemSearchKeywords().stream()
+                .filter(ItemSearchKeyword::isDefault)
+                .map(ItemSearchKeyword::getKeyword)
+                .toList();
+
         item.getItemSearchKeywords().stream()
-                .filter(itemSearchTag -> !newSearchKeywords.contains(itemSearchTag.getSearchKeyword().getName()))
+                .filter(ItemSearchKeyword::isDeletable)
+                .filter(itemSearchKeyword -> !newSearchKeywords.contains(itemSearchKeyword.getKeyword()))
                 .forEach(itemSearchKeywordRepository::delete);
 
         newSearchKeywords.stream()
+                .filter(keyword -> !defaultSearchKeywords.contains(keyword))
                 .map(searchTag -> saveAsItemSearchKeyword(item, searchTag))
                 .forEach(item::addItemSearchKeyword);
 
@@ -45,6 +52,7 @@ public class ItemSearchKeywordService {
                 .orElseGet(() -> itemSearchKeywordRepository.save(ItemSearchKeyword.builder()
                         .itemId(item.getId())
                         .searchKeyword(searchKeywordEntity)
+                        .isDefault(false)
                         .build()));
     }
 }

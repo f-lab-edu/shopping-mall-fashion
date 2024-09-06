@@ -9,6 +9,7 @@ import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateReque
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
 import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
+import com.example.flab.soft.shoppingmallfashion.item.domain.ItemSearchKeyword;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SearchKeyword;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
@@ -186,8 +187,8 @@ class ItemServiceTest {
     }
 
     @Test
-    @DisplayName("상품 검색 태그 변경")
-    void change_item_search_tags() {
+    @DisplayName("상품 검색 키워드 추가")
+    void change_item_search_keywords() {
         itemSearchKeywordService.updateItemSearchKeyword(item.getId(), List.of("pants", "jackets"));
 
         SearchKeyword keyword1 = searchKeywordRepository.findByName("pants").get();
@@ -200,5 +201,51 @@ class ItemServiceTest {
         assertThat(item.getItemSearchKeywords()).contains(
                 itemSearchKeywordRepository.findByItemIdAndSearchKeyword(
                         item.getId(), keyword2).get());
+    }
+
+    @Test
+    @DisplayName("상품 검색 키워드 변경시 기본 키워드는 변경되지 않는다")
+    void change_item_search_tags() {
+        //given
+        SearchKeyword defaultSearchKeyword = SearchKeyword.builder()
+                .name("wind jacket")
+                .build();
+
+        SearchKeyword oldSearchKeyword = SearchKeyword.builder()
+                .name("nike")
+                .build();
+
+        searchKeywordRepository.save(defaultSearchKeyword);
+        searchKeywordRepository.save(oldSearchKeyword);
+
+        ItemSearchKeyword defaultKeyword = ItemSearchKeyword.builder()
+                .itemId(item.getId())
+                .searchKeyword(defaultSearchKeyword)
+                .isDefault(true)
+                .build();
+
+        ItemSearchKeyword nonDefaultKeyword = ItemSearchKeyword.builder()
+                .itemId(item.getId())
+                .searchKeyword(oldSearchKeyword)
+                .isDefault(true)
+                .build();
+
+        itemSearchKeywordRepository.save(defaultKeyword);
+        itemSearchKeywordRepository.save(nonDefaultKeyword);
+
+        String newSearchKeyword = "addidas";
+
+        //when
+        itemSearchKeywordService.updateItemSearchKeyword(item.getId(),
+                List.of(defaultSearchKeyword.getName(), newSearchKeyword));
+
+        //then
+        List<String> itemKeywords = item.getItemSearchKeywords().stream()
+                .map(ItemSearchKeyword::getKeyword)
+                .toList();
+
+        assertThat(itemKeywords).contains(defaultKeyword.getKeyword());
+        assertThat(itemKeywords).contains(newSearchKeyword);
+        assertThat(itemKeywords).doesNotContain(oldSearchKeyword.getName());
     }
 }

@@ -321,6 +321,7 @@ CREATE TABLE item_search_keywords (
     id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     search_keyword_id BIGINT NOT NULL,
     item_id BIGINT NOT NULL,
+    is_default BOOLEAN,
     FOREIGN KEY (search_keyword_id) REFERENCES search_keywords (id),
     FOREIGN KEY (item_id) REFERENCES items (id),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

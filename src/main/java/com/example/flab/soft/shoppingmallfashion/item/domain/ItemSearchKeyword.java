@@ -23,10 +23,24 @@ public class ItemSearchKeyword {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "search_keyword_id")
     private SearchKeyword searchKeyword;
+    private Boolean isDefault;
 
     @Builder
-    public ItemSearchKeyword(Long itemId, SearchKeyword searchKeyword) {
+    public ItemSearchKeyword(Long itemId, SearchKeyword searchKeyword, Boolean isDefault) {
         this.itemId = itemId;
         this.searchKeyword = searchKeyword;
+        this.isDefault = isDefault;
+    }
+
+    public Boolean isDeletable() {
+        return !isDefault;
+    }
+
+    public Boolean isDefault() {
+        return isDefault;
+    }
+
+    public String getKeyword() {
+        return searchKeyword.getName();
     }
 }
