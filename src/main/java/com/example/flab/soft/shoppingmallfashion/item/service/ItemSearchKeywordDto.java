@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemSearchTagDto {
+public class ItemSearchKeywordDto {
     private Integer tags_count;
     private List<String> searchTags;
 
     @Builder
-    public ItemSearchTagDto(Item item) {
+    public ItemSearchKeywordDto(Item item) {
         this.tags_count = item.getItemSearchKeywords().size();
         this.searchTags = item.getItemSearchKeywords().stream()
                 .map(ItemSearchKeyword::getSearchKeyword)

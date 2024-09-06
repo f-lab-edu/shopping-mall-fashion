@@ -4,7 +4,7 @@ import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemCommandService;
-import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchTagDto;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -46,13 +46,13 @@ public class ItemManageController {
         return SuccessResult.<List<ItemOption>>builder().response(itemOptions).build();
     }
 
-    @PutMapping("/{itemId}/item-search-tags")
-    public SuccessResult<ItemSearchTagDto> putItemSearchTags(
+    @PutMapping("/{itemId}/item-search-keywords")
+    public SuccessResult<ItemSearchKeywordDto> putItemSearchKeywords(
             @PathVariable Long itemId,
-            @RequestBody ItemSearchTagsPutRequest itemSearchTagsPutRequest) {
-        ItemSearchTagDto itemSearchTagDto = itemSearchKeywordService.updateItemSearchKeyword(
-                itemId, itemSearchTagsPutRequest.getItemSearchTags());
-        return SuccessResult.<ItemSearchTagDto>builder()
-                .response(itemSearchTagDto).build();
+            @RequestBody ItemSearchKeywordsPutRequest itemSearchKeywordsPutRequest) {
+        ItemSearchKeywordDto itemSearchKeywordDto = itemSearchKeywordService.updateItemSearchKeyword(
+                itemId, itemSearchKeywordsPutRequest.getItemSearchKeywords());
+        return SuccessResult.<ItemSearchKeywordDto>builder()
+                .response(itemSearchKeywordDto).build();
     }
 }

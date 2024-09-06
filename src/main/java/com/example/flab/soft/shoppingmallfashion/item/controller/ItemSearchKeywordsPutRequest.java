@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemSearchTagsPutRequest {
-    List<String> itemSearchTags;
+public class ItemSearchKeywordsPutRequest {
+    List<String> itemSearchKeywords;
 }

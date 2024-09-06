@@ -21,7 +21,7 @@ public class ItemSearchKeywordService {
     private final ItemSearchKeywordRepository itemSearchKeywordRepository;
 
     @Transactional
-    public ItemSearchTagDto updateItemSearchKeyword(Long itemId, List<String> newSearchKeywords) {
+    public ItemSearchKeywordDto updateItemSearchKeyword(Long itemId, List<String> newSearchKeywords) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
@@ -30,13 +30,13 @@ public class ItemSearchKeywordService {
                 .forEach(itemSearchKeywordRepository::delete);
 
         newSearchKeywords.stream()
-                .map(searchTag -> saveAsItemSearchTag(item, searchTag))
+                .map(searchTag -> saveAsItemSearchKeyword(item, searchTag))
                 .forEach(item::addItemSearchKeyword);
 
-        return ItemSearchTagDto.builder().item(item).build();
+        return ItemSearchKeywordDto.builder().item(item).build();
     }
 
-    private ItemSearchKeyword saveAsItemSearchTag(Item item, String searchKeyword) {
+    private ItemSearchKeyword saveAsItemSearchKeyword(Item item, String searchKeyword) {
         SearchKeyword searchKeywordEntity = searchKeywordRepository.findByName(searchKeyword)
                 .orElseGet(() -> searchKeywordRepository.save(SearchKeyword.builder()
                         .name(searchKeyword)
