@@ -39,7 +39,6 @@ public class ItemSearchKeywordService {
                 .filter(keyword -> !defaultSearchKeywords.contains(keyword))
                 .map(searchTag -> saveAsItemSearchKeyword(item, searchTag))
                 .forEach(item::addItemSearchKeyword);
-
         return ItemSearchKeywordDto.builder().item(item).build();
     }
 

@@ -2,7 +2,6 @@ package com.example.flab.soft.shoppingmallfashion.item.service;
 
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
 import com.example.flab.soft.shoppingmallfashion.item.domain.ItemSearchKeyword;
-import com.example.flab.soft.shoppingmallfashion.item.domain.SearchKeyword;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,15 +12,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemSearchKeywordDto {
-    private Integer tags_count;
-    private List<String> searchTags;
+    private Integer keywords_count;
+    private List<String> defaultSearchKeywords;
+    private List<String> userDesignationSearchKeywords;
 
     @Builder
     public ItemSearchKeywordDto(Item item) {
-        this.tags_count = item.getItemSearchKeywords().size();
-        this.searchTags = item.getItemSearchKeywords().stream()
-                .map(ItemSearchKeyword::getSearchKeyword)
-                .map(SearchKeyword::getName)
+        this.keywords_count = item.getItemSearchKeywords().size();
+        this.defaultSearchKeywords = item.getItemSearchKeywords().stream()
+                .filter(ItemSearchKeyword::isDefault)
+                .map(ItemSearchKeyword::getKeyword)
+                .toList();
+        this.userDesignationSearchKeywords = item.getItemSearchKeywords().stream()
+                .filter(itemSearchKeyword -> !itemSearchKeyword.isDefault())
+                .map(ItemSearchKeyword::getKeyword)
                 .toList();
     }
 }
