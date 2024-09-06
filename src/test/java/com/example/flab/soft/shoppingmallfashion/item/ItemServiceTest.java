@@ -10,10 +10,14 @@ import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
 import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
+import com.example.flab.soft.shoppingmallfashion.item.domain.SearchKeyword;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemOptionRepository;
+import com.example.flab.soft.shoppingmallfashion.item.repository.ItemSearchKeywordRepository;
+import com.example.flab.soft.shoppingmallfashion.item.repository.SearchKeywordRepository;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemCommandService;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordService;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
 import java.util.List;
@@ -30,6 +34,8 @@ class ItemServiceTest {
     @Autowired
     ItemCommandService itemCommandService;
     @Autowired
+    ItemSearchKeywordService itemSearchKeywordService;
+    @Autowired
     CategoryRepository categoryRepository;
     @Autowired
     StoreRepository storeRepository;
@@ -37,6 +43,10 @@ class ItemServiceTest {
     ItemRepository itemRepository;
     @Autowired
     ItemOptionRepository itemOptionRepository;
+    @Autowired
+    ItemSearchKeywordRepository itemSearchKeywordRepository;
+    @Autowired
+    SearchKeywordRepository searchKeywordRepository;
     private static final long USER_ID = 1L;
     private static final ItemCreateRequest ITEM_CREATE_REQUEST = ItemCreateRequest.builder()
             .name("new item")
@@ -173,5 +183,22 @@ class ItemServiceTest {
         itemCommandService.addStocks(OOSItemOption.getId(), 10);
 
         assertThat(itemOptionRepository.findById(OOSItemOption.getId()).get().getStocksCount()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("상품 검색 태그 변경")
+    void change_item_search_tags() {
+        itemSearchKeywordService.updateItemSearchKeyword(item.getId(), List.of("pants", "jackets"));
+
+        SearchKeyword keyword1 = searchKeywordRepository.findByName("pants").get();
+        SearchKeyword keyword2  = searchKeywordRepository.findByName("jackets").get();
+        assertThat(keyword1).isNotNull();
+        assertThat(keyword2).isNotNull();
+        assertThat(item.getItemSearchKeywords()).contains(
+                itemSearchKeywordRepository.findByItemIdAndSearchKeyword(
+                        item.getId(), keyword1).get());
+        assertThat(item.getItemSearchKeywords()).contains(
+                itemSearchKeywordRepository.findByItemIdAndSearchKeyword(
+                        item.getId(), keyword2).get());
     }
 }

@@ -123,6 +123,14 @@ public class Item extends BaseEntity {
         return saleState == SaleState.ON_SALE;
     }
 
+    public Integer addItemSearchKeyword(ItemSearchKeyword itemSearchKeyword) {
+        if (itemSearchKeywords.contains(itemSearchKeyword)) {
+            throw new ApiException(ErrorEnum.DUPLICATED_ITEM_SEARCH_TAG);
+        }
+        itemSearchKeywords.add(itemSearchKeyword);
+        return itemSearchKeywords.size();
+    }
+
     public static Item of(Category category, Store store, ItemCreateRequest itemCreateRequest, Long userId) {
         return builder()
                 .name(itemCreateRequest.getName())

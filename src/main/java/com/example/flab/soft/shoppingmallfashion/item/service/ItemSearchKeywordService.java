@@ -1,0 +1,50 @@
+package com.example.flab.soft.shoppingmallfashion.item.service;
+
+import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
+import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
+import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
+import com.example.flab.soft.shoppingmallfashion.item.domain.ItemSearchKeyword;
+import com.example.flab.soft.shoppingmallfashion.item.domain.SearchKeyword;
+import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
+import com.example.flab.soft.shoppingmallfashion.item.repository.ItemSearchKeywordRepository;
+import com.example.flab.soft.shoppingmallfashion.item.repository.SearchKeywordRepository;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class ItemSearchKeywordService {
+    private final ItemRepository itemRepository;
+    private final SearchKeywordRepository searchKeywordRepository;
+    private final ItemSearchKeywordRepository itemSearchKeywordRepository;
+
+    @Transactional
+    public ItemSearchTagDto updateItemSearchKeyword(Long itemId, List<String> newSearchKeywords) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+
+        item.getItemSearchKeywords().stream()
+                .filter(itemSearchTag -> !newSearchKeywords.contains(itemSearchTag.getSearchKeyword().getName()))
+                .forEach(itemSearchKeywordRepository::delete);
+
+        newSearchKeywords.stream()
+                .map(searchTag -> saveAsItemSearchTag(item, searchTag))
+                .forEach(item::addItemSearchKeyword);
+
+        return ItemSearchTagDto.builder().item(item).build();
+    }
+
+    private ItemSearchKeyword saveAsItemSearchTag(Item item, String searchKeyword) {
+        SearchKeyword searchKeywordEntity = searchKeywordRepository.findByName(searchKeyword)
+                .orElseGet(() -> searchKeywordRepository.save(SearchKeyword.builder()
+                        .name(searchKeyword)
+                        .build()));
+        return itemSearchKeywordRepository.findByItemIdAndSearchKeyword(item.getId(), searchKeywordEntity)
+                .orElseGet(() -> itemSearchKeywordRepository.save(ItemSearchKeyword.builder()
+                        .itemId(item.getId())
+                        .searchKeyword(searchKeywordEntity)
+                        .build()));
+    }
+}
