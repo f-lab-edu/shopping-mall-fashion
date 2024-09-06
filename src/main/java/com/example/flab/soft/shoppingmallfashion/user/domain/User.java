@@ -95,4 +95,8 @@ public class User extends BaseEntity {
                 .createdAt(super.getCreatedAt())
                 .build();
     }
+
+    public boolean doesPhoneNumberMatch(String phoneNumber) {
+        return this.cellphoneNumber.equals(phoneNumber);
+    }
 }

@@ -92,4 +92,10 @@ public class UserService {
         user.setPhoneNumberVerified();
         return UserDto.of(user);
     }
+
+    public Boolean doesPhoneNumberMatchUser(String phoneNumber, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+        return user.doesPhoneNumberMatch(phoneNumber);
+    }
 }

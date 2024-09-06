@@ -34,15 +34,14 @@ class UserIntegrationTest {
     private ObjectMapper mapper;
     @Autowired
     private RedisRepository redisRepository;
-    static final String USER_EMAIL = "correct@gmail.com";
+    static final String USER_VERIFIED_EMAIL = "correct@gmail.com";
     static final String USER_PASSWORD = "Correct1#";
     static final String UPDATED_EMAIL = "user4@example.com";
     static final String UPDATED_NAME = "User Four";
     static final String UPDATED_CELLPHONE = "01033333333";
     static final String UPDATED_NICKNAME = "userfour";
     static final String UPDATED_PASSWORD = "Testuser4#";
-    private static final String VERIFIED_PHONE_NUMBER = "01012345678";
-    private static final String VERIFIED_EMAIL = "verified@gmail.com";
+    private static final String VERIFIED_PHONE_NUMBER = "01064763333";
     private static final String REDIS_VERIFIED_PHONE_NUMBER_PREFIX = "verified-phone-number:";
     private static final String REDIS_VERIFIED_EMAIL_PREFIX = "verified-email:";
 
@@ -52,10 +51,10 @@ class UserIntegrationTest {
         mvc.perform(
                 post("/api/v1/users/signup")
                         .content(mapper.writeValueAsString(Map.of(
-                                "email", USER_EMAIL,
+                                "email", USER_VERIFIED_EMAIL,
                                 "password", USER_PASSWORD,
                                 "realName", "correct",
-                                "cellphoneNumber", "01092345678",
+                                "cellphoneNumber", VERIFIED_PHONE_NUMBER,
                                 "nickname", "correct"
                         )))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,7 +64,7 @@ class UserIntegrationTest {
                 mvc.perform(
                         post("/users/login")
                                 .content(mapper.writeValueAsString(LoginRequest.builder()
-                                        .username(USER_EMAIL)
+                                        .username(USER_VERIFIED_EMAIL)
                                         .password(USER_PASSWORD)
                                         .build()))
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -78,7 +77,7 @@ class UserIntegrationTest {
     @AfterEach
     void tearDown() {
         redisRepository.deleteData(REDIS_VERIFIED_PHONE_NUMBER_PREFIX + VERIFIED_PHONE_NUMBER);
-        redisRepository.deleteData(REDIS_VERIFIED_EMAIL_PREFIX + VERIFIED_EMAIL);
+        redisRepository.deleteData(REDIS_VERIFIED_EMAIL_PREFIX + USER_VERIFIED_EMAIL);
     }
 
     @DisplayName("내 정보 조회")
@@ -91,7 +90,7 @@ class UserIntegrationTest {
                                 .header("Authorization", accessToken)
                 )
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$.response.email").value(USER_EMAIL));
+                .andExpect(jsonPath("$.response.email").value(USER_VERIFIED_EMAIL));
 
     }
 
@@ -189,12 +188,12 @@ class UserIntegrationTest {
     @DisplayName("이메일 인증")
     @Test
     void verify_email() throws Exception {
-        redisRepository.setData(REDIS_VERIFIED_EMAIL_PREFIX + VERIFIED_EMAIL, "1", 5000L);
+        redisRepository.setData(REDIS_VERIFIED_EMAIL_PREFIX + USER_VERIFIED_EMAIL, "1", 5000L);
         mvc.perform(
-                        patch("/api/v1/users/me/email-verification")
+                        patch("/api/v1/users/me/verification/email")
                                 .header("Authorization", accessToken)
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "email", VERIFIED_EMAIL)))
+                                        "email", USER_VERIFIED_EMAIL)))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is(200))
@@ -206,7 +205,7 @@ class UserIntegrationTest {
     void verify_phone_number() throws Exception {
         redisRepository.setData(REDIS_VERIFIED_PHONE_NUMBER_PREFIX + VERIFIED_PHONE_NUMBER, "1", 5000L);
         mvc.perform(
-                        patch("/api/v1/users/me/phone-number-verification")
+                        patch("/api/v1/users/me/verification/phone-number")
                                 .header("Authorization", accessToken)
                                 .content(mapper.writeValueAsString(Map.of(
                                         "phoneNumber", VERIFIED_PHONE_NUMBER)))
@@ -220,10 +219,10 @@ class UserIntegrationTest {
     @Test
     void whenIdNotVerified_thenReturn400() throws Exception {
         mvc.perform(
-                        patch("/api/v1/users/me/email-verification")
+                        patch("/api/v1/users/me/verification/email")
                                 .header("Authorization", accessToken)
                                 .content(mapper.writeValueAsString(Map.of(
-                                        "email", VERIFIED_EMAIL)))
+                                        "email", USER_VERIFIED_EMAIL)))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is(400));

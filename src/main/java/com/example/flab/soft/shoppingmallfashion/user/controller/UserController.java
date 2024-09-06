@@ -2,6 +2,8 @@ package com.example.flab.soft.shoppingmallfashion.user.controller;
 
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
+import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
+import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.sms.VerificationService;
 import com.example.flab.soft.shoppingmallfashion.user.service.UserDto;
 import com.example.flab.soft.shoppingmallfashion.user.service.UserService;
@@ -62,19 +64,25 @@ public class UserController {
         return SuccessResult.<Void>builder().build();
     }
 
-    @PatchMapping("/me/email-verification")
+    @PatchMapping("/me/verification/email")
     public SuccessResult<UserDto> verifyEmail(
             @AuthenticationPrincipal AuthUser user,
             @RequestBody @Validated VerifyEmailRequest verifyEmailRequest) {
+        if (!user.getEmail().equals(verifyEmailRequest.getEmail())) {
+            throw new ApiException(ErrorEnum.FORBIDDEN);
+        }
         verificationService.verifyEmail(verifyEmailRequest.getEmail());
         UserDto userDto = userService.setEmailVerified(user.getId());
         return SuccessResult.<UserDto>builder().response(userDto).build();
     }
 
-    @PatchMapping("/me/phone-number-verification")
+    @PatchMapping("/me/verification/phone-number")
     public SuccessResult<UserDto> verifyPhoneNumber(
             @AuthenticationPrincipal AuthUser user,
             @RequestBody @Validated VerifyPhoneNumberRequest verifyPhoneNumberRequest) {
+        if (!userService.doesPhoneNumberMatchUser(verifyPhoneNumberRequest.getPhoneNumber(), user.getId())) {
+            throw new ApiException(ErrorEnum.FORBIDDEN);
+        }
         verificationService.verifyPhoneNumber(verifyPhoneNumberRequest.getPhoneNumber());
         UserDto userDto = userService.setPhoneNumberVerified(user.getId());
         return SuccessResult.<UserDto>builder().response(userDto).build();
