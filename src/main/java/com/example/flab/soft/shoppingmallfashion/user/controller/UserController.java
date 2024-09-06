@@ -40,6 +40,15 @@ public class UserController {
         return SuccessResult.<UserDto>builder().response(userDto).build();
     }
 
+    @GetMapping("/me/email")
+    public SuccessResult<UserEmailDto> findEmail(@AuthenticationPrincipal AuthUser user) {
+        return SuccessResult.<UserEmailDto>builder()
+                .response(UserEmailDto.builder()
+                        .email(user.getEmail())
+                        .build())
+                .build();
+    }
+
     @PatchMapping("/me/password")
     public SuccessResult<Void> updatePassword(
             @AuthenticationPrincipal AuthUser user,

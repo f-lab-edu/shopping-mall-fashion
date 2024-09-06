@@ -3,14 +3,17 @@ package com.example.flab.soft.shoppingmallfashion.auth;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.AuthenticationFailureEntryPoint;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.filter.CrewAuthenticationFilter;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.filter.JwtAuthenticationFilter;
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.filter.UserTemporaryAuthenticationFilter;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.provider.CrewAuthenticationProvider;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.provider.UserAuthenticationProvider;
+import com.example.flab.soft.shoppingmallfashion.auth.authentication.provider.UserTemporaryAuthenticationProvider;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.CrewAuthService;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetailsService.UserAuthService;
 import com.example.flab.soft.shoppingmallfashion.auth.authorization.AuthorizationFailureHandler;
 import com.example.flab.soft.shoppingmallfashion.auth.authorization.filter.JwtAuthorizationFilter;
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.TokenProvider;
 import com.example.flab.soft.shoppingmallfashion.auth.refreshToken.RefreshTokenService;
+import com.example.flab.soft.shoppingmallfashion.sms.VerificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
@@ -38,6 +41,7 @@ public class WebSecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserAuthService userAuthService;
     private final CrewAuthService crewAuthService;
+    private final VerificationService verificationService;
     private final RefreshTokenService refreshTokenService;
     private final AuthorizationFailureHandler authorizationFailureHandler;
     private final AuthenticationFailureEntryPoint authenticationFailureEntryPoint;
@@ -58,12 +62,14 @@ public class WebSecurityConfig {
 
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(crewAuthenticationFilter(), JwtAuthenticationFilter.class)
+                .addFilterBefore(userTempAuthenticationFilter(), CrewAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
 
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers(
                                         "/users/login",
+                                        "/users/temporary-login",
                                         "/crews/login",
                                         "/api/v1/users/signup",
                                         "/api/v1/store/register",
@@ -98,6 +104,15 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    public AbstractAuthenticationProcessingFilter userTempAuthenticationFilter()
+            throws Exception {
+        UserTemporaryAuthenticationFilter userTemporaryAuthenticationFilter =
+                new UserTemporaryAuthenticationFilter(objectMapper, tokenProvider);
+        userTemporaryAuthenticationFilter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+        return userTemporaryAuthenticationFilter;
+    }
+
+    @Bean
     public AbstractAuthenticationProcessingFilter jwtAuthenticationFilter()
             throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(objectMapper, refreshTokenService);
@@ -120,6 +135,11 @@ public class WebSecurityConfig {
         return new JwtAuthorizationFilter(
                 authenticationManager(authenticationConfiguration), userAuthService,
                 crewAuthService, tokenProvider, objectMapper);
+    }
+
+    @Bean
+    public UserTemporaryAuthenticationProvider userTempAuthenticationProvider() {
+        return new UserTemporaryAuthenticationProvider(userAuthService, verificationService);
     }
 
     @Bean
