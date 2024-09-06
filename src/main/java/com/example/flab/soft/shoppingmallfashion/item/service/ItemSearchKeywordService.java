@@ -21,6 +21,17 @@ public class ItemSearchKeywordService {
     private final ItemSearchKeywordRepository itemSearchKeywordRepository;
 
     @Transactional
+    public ItemSearchKeywordDto initDefaultSearchKeywords(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+
+        item.selectDefaultKeywords().stream()
+                .map(searchKeyword -> saveAsItemSearchKeyword(item, searchKeyword, true))
+                .forEach(item::addItemSearchKeyword);
+        return ItemSearchKeywordDto.builder().item(item).build();
+    }
+
+    @Transactional
     public ItemSearchKeywordDto updateItemSearchKeyword(Long itemId, List<String> newSearchKeywords) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
@@ -36,13 +47,14 @@ public class ItemSearchKeywordService {
                 .forEach(itemSearchKeywordRepository::delete);
 
         newSearchKeywords.stream()
+                .distinct()
                 .filter(keyword -> !defaultSearchKeywords.contains(keyword))
-                .map(searchTag -> saveAsItemSearchKeyword(item, searchTag))
+                .map(searchKeyword -> saveAsItemSearchKeyword(item, searchKeyword, false))
                 .forEach(item::addItemSearchKeyword);
         return ItemSearchKeywordDto.builder().item(item).build();
     }
 
-    private ItemSearchKeyword saveAsItemSearchKeyword(Item item, String searchKeyword) {
+    private ItemSearchKeyword saveAsItemSearchKeyword(Item item, String searchKeyword, Boolean isDefault) {
         SearchKeyword searchKeywordEntity = searchKeywordRepository.findByName(searchKeyword)
                 .orElseGet(() -> searchKeywordRepository.save(SearchKeyword.builder()
                         .name(searchKeyword)
@@ -51,7 +63,7 @@ public class ItemSearchKeywordService {
                 .orElseGet(() -> itemSearchKeywordRepository.save(ItemSearchKeyword.builder()
                         .itemId(item.getId())
                         .searchKeyword(searchKeywordEntity)
-                        .isDefault(false)
+                        .isDefault(isDefault)
                         .build()));
     }
 }

@@ -23,9 +23,10 @@ public class ItemCommandService {
     private final CategoryRepository categoryRepository;
     private final StoreRepository storeRepository;
     private final ItemOptionRepository itemOptionRepository;
+    private final ItemSearchKeywordService itemSearchKeywordService;
 
     @Transactional
-    public Long addItem(ItemCreateRequest itemCreateRequest, Long userId) {
+    public ItemBriefDto addItem(ItemCreateRequest itemCreateRequest, Long userId) {
         Category category = categoryRepository.findById(itemCreateRequest.getCategoryId())
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
         Store store = storeRepository.findById(itemCreateRequest.getStoreId())
@@ -38,7 +39,8 @@ public class ItemCommandService {
                 .forEach(item::addItemOption);
 
         category.increaseItemCount(1);
-        return item.getId();
+        itemSearchKeywordService.initDefaultSearchKeywords(item.getId());
+        return ItemBriefDto.builder().item(item).build();
     }
 
     @Transactional

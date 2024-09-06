@@ -3,6 +3,7 @@ package com.example.flab.soft.shoppingmallfashion.item.controller;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemCommandService;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordService;
@@ -25,11 +26,12 @@ public class ItemManageController {
     private final ItemCommandService itemService;
     private final ItemSearchKeywordService itemSearchKeywordService;
     @PostMapping
-    public SuccessResult<Void> newItem(
+    public SuccessResult<ItemBriefDto> newItem(
             @RequestBody @Validated ItemCreateRequest itemCreateRequest,
             @AuthenticationPrincipal AuthUser authUser) {
-        itemService.addItem(itemCreateRequest, authUser.getId());
-        return SuccessResult.<Void>builder().build();
+        return SuccessResult.<ItemBriefDto>builder()
+                .response(itemService.addItem(itemCreateRequest, authUser.getId()))
+                .build();
     }
 
     @PatchMapping("/{itemId}/sale-state/end-of-production")

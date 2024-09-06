@@ -50,7 +50,7 @@ class ItemServiceTest {
     SearchKeywordRepository searchKeywordRepository;
     private static final long USER_ID = 1L;
     private static final ItemCreateRequest ITEM_CREATE_REQUEST = ItemCreateRequest.builder()
-            .name("new item")
+            .name("nike wind jacket")
             .originalPrice(1000)
             .salePrice(1000)
             .sex(Sex.MEN)
@@ -113,12 +113,27 @@ class ItemServiceTest {
     @DisplayName("상품 등록")
     void addNewItem() {
         Long itemCountBefore = category.getItemCount();
-        Long itemId = itemCommandService.addItem(ITEM_CREATE_REQUEST, USER_ID);
+        Long itemId = itemCommandService.addItem(ITEM_CREATE_REQUEST, USER_ID).getItemId();
 
         assertThat(itemRepository.existsById(itemId)).isTrue();
         assertThat(itemRepository.findById(itemId).get().getItemOptions().get(0))
                 .hasFieldOrPropertyWithValue("name", "new item red");
         assertThat(category.getItemCount()).isEqualTo(itemCountBefore + 1);
+    }
+
+    @Test
+    @DisplayName("상품 등록시 상품 이름의 각 어절, 스토어명과 대분류, 분류명이 모두 기본 검색 키워드로 등록된다.")
+    void addDefaultKeywords_whenAddItem() {
+        Long itemId = itemCommandService.addItem(ITEM_CREATE_REQUEST, USER_ID).getItemId();
+
+        Item newItem = itemRepository.findById(itemId).get();
+        List<String> defaultKeywords = newItem.getItemSearchKeywords().stream()
+                .map(ItemSearchKeyword::getKeyword)
+                .toList();
+        assertThat(defaultKeywords).contains(newItem.getCategory().getName());
+        assertThat(defaultKeywords).contains(newItem.getCategory().getLargeCategory().getName());
+        assertThat(defaultKeywords).contains(newItem.getStore().getName());
+        assertThat(defaultKeywords).contains(newItem.getName().split(" "));
     }
 
     @Test
