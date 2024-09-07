@@ -74,7 +74,7 @@ public class CouponService {
 
     @Transactional
     public void useCoupon(Long couponId, Long userId, Long itemId, Long orderId) {
-        List<UserCoupon> coupons = userCouponRepository.findAllByCouponId(couponId);
+        List<UserCoupon> coupons = userCouponRepository.findAllByUserIdAndCouponId(userId, couponId);
 
         if (coupons.isEmpty()) {
             throw new ApiException(ErrorEnum.INVALID_REQUEST);

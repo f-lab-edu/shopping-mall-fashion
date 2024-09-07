@@ -293,7 +293,7 @@ CREATE TABLE user_coupons (
     FOREIGN KEY (coupon_id) REFERENCES coupons (id),
     INDEX idx_coupons_used_item (used_item_id),
     INDEX idx_coupons_used_order (used_order_id),
-    INDEX idx_coupons_user (user_id)
+    INDEX idx_coupons_user (user_id, coupon_id)
 );
 
 CREATE TABLE new_store_register_requests (
