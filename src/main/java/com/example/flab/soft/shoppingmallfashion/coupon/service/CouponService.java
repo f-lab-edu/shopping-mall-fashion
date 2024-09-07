@@ -13,7 +13,9 @@ import java.time.Duration;
 import java.time.temporal.TemporalUnit;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,5 +81,26 @@ public class CouponService {
         }
         UserCoupon couponToUse = coupons.stream().min(Comparator.comparing(UserCoupon::getExpiredAt)).get();
         couponToUse.use(itemId, orderId);
+    }
+
+    public List<UserCouponInfo> findAllCouponsByUserId(Long userId) {
+        List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
+
+        Map<Coupon, List<UserCoupon>> couponUserCouponMap = userCoupons.stream()
+                .filter(UserCoupon::isNotExpired)
+                .collect(Collectors.groupingBy(UserCoupon::getCoupon));
+
+        return couponUserCouponMap.entrySet().stream()
+                .map(entry -> UserCouponInfo.builder()
+                        .couponInfo(CouponInfo.builder()
+                                .coupon(entry.getKey())
+                                .build())
+                        .quantity(entry.getValue().size())
+                        .expiredAt(entry.getValue().stream()
+                                .map(UserCoupon::getExpiredAt)
+                                .sorted()
+                                .toList())
+                        .build())
+                .toList();
     }
 }

@@ -47,4 +47,8 @@ public class UserCoupon extends BaseEntity {
     public Boolean isUsed() {
         return usageInfo.isUsed();
     }
+
+    public Boolean isNotExpired() {
+        return LocalDateTime.now().isBefore(expiredAt);
+    }
 }
