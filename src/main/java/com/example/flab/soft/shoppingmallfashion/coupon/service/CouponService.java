@@ -11,6 +11,9 @@ import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import java.time.Duration;
 import java.time.temporal.TemporalUnit;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,9 +71,13 @@ public class CouponService {
     }
 
     @Transactional
-    public void useCoupon(Long userCouponId, Long itemId, Long orderId) {
-        UserCoupon userCoupon = userCouponRepository.findById(userCouponId)
-                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
-        userCoupon.use(itemId, orderId);
+    public void useCoupon(Long couponId, Long userId, Long itemId, Long orderId) {
+        List<UserCoupon> coupons = userCouponRepository.findAllByCouponId(couponId);
+
+        if (coupons.isEmpty()) {
+            throw new ApiException(ErrorEnum.INVALID_REQUEST);
+        }
+        UserCoupon couponToUse = coupons.stream().min(Comparator.comparing(UserCoupon::getExpiredAt)).get();
+        couponToUse.use(itemId, orderId);
     }
 }
