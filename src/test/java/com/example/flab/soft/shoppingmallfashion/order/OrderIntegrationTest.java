@@ -2,6 +2,12 @@ package com.example.flab.soft.shoppingmallfashion.order;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.example.flab.soft.shoppingmallfashion.coupon.domain.Coupon;
+import com.example.flab.soft.shoppingmallfashion.coupon.domain.Discount;
+import com.example.flab.soft.shoppingmallfashion.coupon.domain.DiscountType;
+import com.example.flab.soft.shoppingmallfashion.coupon.domain.UserCoupon;
+import com.example.flab.soft.shoppingmallfashion.coupon.repository.CouponRepository;
+import com.example.flab.soft.shoppingmallfashion.coupon.repository.UserCouponRepository;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
@@ -16,8 +22,11 @@ import com.example.flab.soft.shoppingmallfashion.order.domain.Order;
 import com.example.flab.soft.shoppingmallfashion.order.domain.OrderStatus;
 import com.example.flab.soft.shoppingmallfashion.order.domain.PaymentStatus;
 import com.example.flab.soft.shoppingmallfashion.order.repository.OrderRepository;
+import com.example.flab.soft.shoppingmallfashion.order.service.OrderInfoDto;
 import com.example.flab.soft.shoppingmallfashion.order.service.OrderService;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,13 +47,18 @@ class OrderIntegrationTest {
     private OrderRepository orderRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CouponRepository couponRepository;
+    @Autowired
+    private UserCouponRepository userCouponRepository;
 
+    Item item;
     ItemOption itemOption;
     ItemOption itemOption2;
     Order order;
     @BeforeEach
     void setUp() {
-        Item item = itemRepository.findById(1L).get();
+        item = itemRepository.findById(1L).get();
 
         itemOption = itemOptionRepository.save(ItemOption.builder()
                 .name("test product")
@@ -66,11 +80,14 @@ class OrderIntegrationTest {
 
         order = Order.builder()
                 .orderer(userRepository.findById(1L).get())
+                .item(item)
                 .itemOption(itemOption2)
                 .orderAmount(1)
                 .totalPrice(10000)
                 .discountedAmount(0)
+                .couponDiscountAmount(0)
                 .paymentAmount(10000)
+                .couponDiscountAmount(0)
                 .deliveryInfo(DeliveryInfo.builder()
                         .recipientName("name")
                         .roadAddress("road123")
@@ -84,11 +101,13 @@ class OrderIntegrationTest {
     @DisplayName("상품 주문시 재고 이상으로 주문시 예외, 주문은 생성되지 않으며 재고수는 감소하지 않는다")
     void whenOrderAmountIsBiggerThanStocks_thenThrowException() {
         OrderRequest orderRequest = OrderRequest.builder()
+                .itemId(item.getId())
                 .itemOptionId(itemOption.getId())
                 .orderAmount(2)
                 .recipientName("name")
                 .roadAddress("road123")
                 .addressDetail("1-1")
+                .isCouponUsed(false)
                 .build();
         long countBeforeOrder = orderRepository.count();
 
@@ -101,14 +120,17 @@ class OrderIntegrationTest {
     @DisplayName("상품 주문시 주문 수량만큼 재고수 감소")
     void reduceStocksCountAsMuchAsOrderAmounts() {
         OrderRequest orderRequest = OrderRequest.builder()
+                .itemId(item.getId())
                 .itemOptionId(itemOption.getId())
                 .orderAmount(1)
                 .totalPrice(10000)
                 .discountedAmount(0)
+                .couponDiscountAmount(0)
                 .paymentAmount(10000)
                 .recipientName("name")
                 .roadAddress("road123")
                 .addressDetail("1-1")
+                .isCouponUsed(false)
                 .build();
         long countBeforeOrder = orderRepository.count();
 
@@ -118,13 +140,59 @@ class OrderIntegrationTest {
     }
 
     @Test
-    @DisplayName("상품 주문시 계산 금액 = 총 금액 - 할인 금액")
+    @DisplayName("주문시 쿠폰 사용")
+    void useCouponWhenOrder() {
+        Coupon coupon = couponRepository.save(Coupon.builder()
+                .name("welcomeCoupon")
+                .amounts(1L)
+                .discount(Discount.builder()
+                        .discountType(DiscountType.FIXED_DISCOUNT_KRW)
+                        .discountAmount(1000)
+                        .build())
+                .validation(Duration.of(3, ChronoUnit.DAYS))
+                .build());
+        Long userId = 1L;
+
+        UserCoupon userCoupon = userCouponRepository.save(UserCoupon.builder()
+                .coupon(coupon)
+                .userId(userId)
+                .validation(Duration.ofDays(1))
+                .build());
+
+        OrderRequest orderRequest = OrderRequest.builder()
+                .itemId(item.getId())
+                .itemOptionId(itemOption.getId())
+                .orderAmount(1)
+                .totalPrice(10000)
+                .discountedAmount(0)
+                .couponDiscountAmount(1000)
+                .paymentAmount(9000)
+                .recipientName("name")
+                .roadAddress("road123")
+                .addressDetail("1-1")
+                .isCouponUsed(true)
+                .usedCouponId(coupon.getId())
+                .build();
+
+        OrderInfoDto orderInfoDto = orderService.order(orderRequest, 1L);
+
+        Order orderWithCoupon = orderRepository.findById(orderInfoDto.getOrderId()).get();
+        assertThat(userCoupon.isUsed()).isTrue();
+        assertThat(userCoupon.getUsageInfo().getUsedOrderId()).isEqualTo(orderWithCoupon.getId());
+        assertThat(orderWithCoupon.getUsedCouponInfo().getUsedUserCouponId()).isEqualTo(userCoupon.getId());
+        assertThat(orderWithCoupon.getUsedCouponInfo().getUsedCouponName()).isEqualTo(coupon.getName());
+    }
+
+    @Test
+    @DisplayName("상품 주문시 계산 금액 = 총 금액 - 할인 금액 - 쿠폰 할인 금액")
     void paymentAmountsNeedsToBeEqualToTotalPriceMinusDiscountedAmounts() {
         OrderRequest orderRequest = OrderRequest.builder()
+                .itemId(item.getId())
                 .itemOptionId(itemOption.getId())
                 .orderAmount(1)
                 .totalPrice(10000)
                 .discountedAmount(1000)
+                .couponDiscountAmount(0)
                 .paymentAmount(10000)
                 .recipientName("name")
                 .roadAddress("road123")

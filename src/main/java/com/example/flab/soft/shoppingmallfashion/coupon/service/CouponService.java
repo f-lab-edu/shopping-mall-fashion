@@ -1,20 +1,19 @@
 package com.example.flab.soft.shoppingmallfashion.coupon.service;
 
+import com.example.flab.soft.shoppingmallfashion.coupon.domain.Discount;
 import com.example.flab.soft.shoppingmallfashion.coupon.repository.CouponRepository;
 import com.example.flab.soft.shoppingmallfashion.coupon.repository.UserCouponRepository;
 import com.example.flab.soft.shoppingmallfashion.coupon.domain.Coupon;
-import com.example.flab.soft.shoppingmallfashion.coupon.domain.Discount;
 import com.example.flab.soft.shoppingmallfashion.coupon.domain.DiscountType;
-import com.example.flab.soft.shoppingmallfashion.coupon.domain.DiscountUnit;
 import com.example.flab.soft.shoppingmallfashion.coupon.domain.UserCoupon;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
+import com.example.flab.soft.shoppingmallfashion.order.domain.UsedCouponInfo;
 import java.time.Duration;
 import java.time.temporal.TemporalUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,15 +28,14 @@ public class CouponService {
     @Transactional
     public Long issueCoupons(String couponName,
                              DiscountType discountType, Integer discountedAmount,
-                             DiscountUnit discountUnit, Long issuedAmount,
-                             Long validationAmount, TemporalUnit validationUnit) {
+                             Long issuedAmount, Long validationAmount,
+                             TemporalUnit validationUnit) {
         Coupon coupon = Coupon.builder()
                 .name(couponName)
                 .amounts(issuedAmount)
                 .discount(Discount.builder()
                         .discountType(discountType)
                         .discountAmount(discountedAmount)
-                        .discountUnit(discountUnit)
                         .build())
                 .validation(Duration.of(validationAmount, validationUnit))
                 .build();
@@ -73,7 +71,7 @@ public class CouponService {
     }
 
     @Transactional
-    public void useCoupon(Long couponId, Long userId, Long itemId, Long orderId) {
+    public UsedCouponInfo useCoupon(Long couponId, Long userId, Long itemId, Long orderId) {
         List<UserCoupon> coupons = userCouponRepository.findAllByUserIdAndCouponId(userId, couponId);
 
         if (coupons.isEmpty()) {
@@ -81,8 +79,14 @@ public class CouponService {
         }
         UserCoupon couponToUse = coupons.stream().min(Comparator.comparing(UserCoupon::getExpiredAt)).get();
         couponToUse.use(itemId, orderId);
+
+        return UsedCouponInfo.builder()
+                .usedUserCouponId(couponToUse.getId())
+                .usedCouponName(couponToUse.getCouponName())
+                .build();
     }
 
+    @Transactional
     public List<UserCouponInfo> findAllCouponsByUserId(Long userId) {
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
 

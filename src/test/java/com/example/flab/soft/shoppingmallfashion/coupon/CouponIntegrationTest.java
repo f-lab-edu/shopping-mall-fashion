@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import com.example.flab.soft.shoppingmallfashion.coupon.domain.Coupon;
 import com.example.flab.soft.shoppingmallfashion.coupon.domain.Discount;
 import com.example.flab.soft.shoppingmallfashion.coupon.domain.DiscountType;
-import com.example.flab.soft.shoppingmallfashion.coupon.domain.DiscountUnit;
 import com.example.flab.soft.shoppingmallfashion.coupon.domain.UserCoupon;
 import com.example.flab.soft.shoppingmallfashion.coupon.repository.CouponRepository;
 import com.example.flab.soft.shoppingmallfashion.coupon.repository.UserCouponRepository;
@@ -52,8 +51,8 @@ class CouponIntegrationTest {
     @Transactional
     void issueCoupons() {
         Long couponId = couponService.issueCoupons("welcomeCoupon",
-                DiscountType.FIXED_PRICE_DISCOUNT,
-                1000, DiscountUnit.KRW, ISSUED_AMOUNT,
+                DiscountType.FIXED_DISCOUNT_KRW,
+                1000, ISSUED_AMOUNT,
                 3L, ChronoUnit.DAYS);
 
         Coupon coupon = couponRepository.findById(couponId).get();
@@ -70,9 +69,8 @@ class CouponIntegrationTest {
                 .name("welcomeCoupon")
                 .amounts(1L)
                 .discount(Discount.builder()
-                        .discountType(DiscountType.FIXED_PRICE_DISCOUNT)
+                        .discountType(DiscountType.FIXED_DISCOUNT_KRW)
                         .discountAmount(1000)
-                        .discountUnit(DiscountUnit.KRW)
                         .build())
                 .validation(Duration.of(3, ChronoUnit.DAYS))
                 .build());
@@ -91,9 +89,8 @@ class CouponIntegrationTest {
                 .name("welcomeCoupon")
                 .amounts((long) THREAD_NUMBER)
                 .discount(Discount.builder()
-                        .discountType(DiscountType.FIXED_PRICE_DISCOUNT)
+                        .discountType(DiscountType.FIXED_DISCOUNT_KRW)
                         .discountAmount(1000)
-                        .discountUnit(DiscountUnit.KRW)
                         .build())
                 .validation(Duration.of(3, ChronoUnit.DAYS))
                 .build());
@@ -121,9 +118,8 @@ class CouponIntegrationTest {
                 .name("welcomeCoupon")
                 .amounts((long) THREAD_NUMBER)
                 .discount(Discount.builder()
-                        .discountType(DiscountType.FIXED_PRICE_DISCOUNT)
+                        .discountType(DiscountType.FIXED_DISCOUNT_KRW)
                         .discountAmount(1000)
-                        .discountUnit(DiscountUnit.KRW)
                         .build())
                 .validation(Duration.of(3, ChronoUnit.DAYS))
                 .build());
@@ -152,9 +148,8 @@ class CouponIntegrationTest {
                 .name("welcomeCoupon")
                 .amounts(1L)
                 .discount(Discount.builder()
-                        .discountType(DiscountType.FIXED_PRICE_DISCOUNT)
+                        .discountType(DiscountType.FIXED_DISCOUNT_KRW)
                         .discountAmount(1000)
-                        .discountUnit(DiscountUnit.KRW)
                         .build())
                 .validation(Duration.of(3, ChronoUnit.DAYS))
                 .build());

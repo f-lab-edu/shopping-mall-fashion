@@ -5,6 +5,7 @@ import static com.example.flab.soft.shoppingmallfashion.util.NotNullValidator.*;
 import com.example.flab.soft.shoppingmallfashion.common.BaseEntity;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
+import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
 import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.order.controller.OrderRequest;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
@@ -39,34 +40,50 @@ public class Order extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private DeliveryStatus deliveryStatus = DeliveryStatus.PREPARING;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id")
+    private Item item;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_option_id")
     private ItemOption itemOption;
     private Integer orderAmount;
     private Integer totalPrice;
     private Integer discountedAmount;
+    private Integer couponDiscountedAmount;
     private Integer paymentAmount;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderer_id")
     private User orderer;
     @Embedded
     private DeliveryInfo deliveryInfo;
+    @Embedded
+    private UsedCouponInfo usedCouponInfo;
 
     @Builder
-    public Order(ItemOption itemOption, Integer orderAmount, Integer totalPrice,
-                 Integer discountedAmount, Integer paymentAmount,
+    public Order(Item item, ItemOption itemOption, Integer orderAmount, Integer totalPrice,
+                 Integer discountedAmount, Integer couponDiscountAmount, Integer paymentAmount,
                  User orderer, DeliveryInfo deliveryInfo) {
-        this.itemOption = requireNotNull(itemOption);
+        this.item = requireNotNull(item);
+        this.itemOption = validateItemOption(itemOption);
         this.orderAmount = requireNotNull(orderAmount);
         this.totalPrice = requireNotNull(totalPrice);
         this.discountedAmount = requireNotNull(discountedAmount);
-        this.paymentAmount = validatePaymentAmount(totalPrice, discountedAmount, paymentAmount);
+        this.couponDiscountedAmount = requireNotNull(couponDiscountAmount);
+        this.paymentAmount =
+                validatePaymentAmount(totalPrice, discountedAmount, couponDiscountAmount, paymentAmount);
         this.orderer = requireNotNull(orderer);
         this.deliveryInfo = requireNotNull(deliveryInfo);
     }
 
-    private Integer validatePaymentAmount(Integer totalPrice,
-                                    Integer discountedAmount, Integer paymentAmount) {
-        if (paymentAmount != totalPrice - discountedAmount) {
+    private ItemOption validateItemOption(ItemOption itemOption) {
+        if (this.item != requireNotNull(itemOption).getItem()) {
+            throw new ApiException(ErrorEnum.INVALID_REQUEST);
+        }
+        return itemOption;
+    }
+
+    private Integer validatePaymentAmount(Integer totalPrice, Integer discountedAmount,
+                                          Integer couponDiscountAmount, Integer paymentAmount) {
+        if (paymentAmount != totalPrice - discountedAmount - couponDiscountAmount) {
             throw new ApiException(ErrorEnum.INVALID_REQUEST);
         }
         return paymentAmount;
@@ -120,15 +137,22 @@ public class Order extends BaseEntity {
         this.deliveryInfo = deliveryInfo;
     }
 
-    public static Order of(OrderRequest orderRequest, ItemOption itemOption, User user, DeliveryInfo deliveryInfo) {
+    public static Order of(OrderRequest orderRequest, Item item, ItemOption itemOption,
+                           User user, DeliveryInfo deliveryInfo) {
         return builder()
+                .item(item)
                 .itemOption(itemOption)
                 .orderAmount(orderRequest.getOrderAmount())
                 .totalPrice(orderRequest.getTotalPrice())
                 .discountedAmount(orderRequest.getDiscountedAmount())
+                .couponDiscountAmount(orderRequest.getCouponDiscountAmount())
                 .paymentAmount(orderRequest.getPaymentAmount())
                 .orderer(user)
                 .deliveryInfo(deliveryInfo)
                 .build();
+    }
+
+    public void applyUserCoupon(UsedCouponInfo usedCouponInfo) {
+        this.usedCouponInfo = usedCouponInfo;
     }
 }

@@ -43,4 +43,8 @@ public class Coupon extends BaseEntity {
         }
         amounts--;
     }
+
+    public DiscountDetails calculateDiscount(Integer priceBeforeDiscount) {
+        return discount.calculate(priceBeforeDiscount);
+    }
 }
