@@ -67,6 +67,14 @@ server:
   tomcat:
     mbeanregistry:
       enabled: true
+    accesslog:
+      enabled: true
+      directory: /var/logs/tomcat
+      suffix: .log
+      prefix: access_log
+      file-date-format: .yyyy-MM-dd
+      pattern: '%{yyyy-MM-dd HH:mm:ss}t %s %r %{User-Agent}i %{Referer}i %a %b %T'
+    basedir: /var/logs/tomcat
 
 spring:
   datasource:
@@ -82,3 +90,5 @@ spring:
 logging:
   level:
     root: info
+  file:
+    path: /var/logs/logback
