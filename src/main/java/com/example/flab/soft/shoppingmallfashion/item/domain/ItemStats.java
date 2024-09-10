@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Getter
 public class ItemStats {
     private Long orderCount = 0L;
