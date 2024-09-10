@@ -22,27 +22,26 @@ public class ItemSearchKeywordService {
 
     @Transactional
     public ItemSearchKeywordDto initDefaultSearchKeywords(Long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
-
+        Item item = findItem(itemId);
         item.selectDefaultKeywords().stream()
                 .map(searchKeyword -> saveAsItemSearchKeyword(item, searchKeyword, true))
                 .forEach(item::addItemSearchKeyword);
         return ItemSearchKeywordDto.builder().item(item).build();
     }
 
+    private Item findItem(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+    }
+
     @Transactional
     public ItemSearchKeywordDto getAllSearchKeywords(Long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
-        return ItemSearchKeywordDto.builder().item(item).build();
+        return ItemSearchKeywordDto.builder().item(findItem(itemId)).build();
     }
 
     @Transactional
     public ItemSearchKeywordDto updateItemSearchKeyword(Long itemId, List<String> newSearchKeywords) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
-
+        Item item = findItem(itemId);
         List<String> defaultSearchKeywords = item.getItemSearchKeywords().stream()
                 .filter(ItemSearchKeyword::isDefault)
                 .map(ItemSearchKeyword::getKeyword)
