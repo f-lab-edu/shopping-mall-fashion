@@ -51,4 +51,8 @@ public class UserCoupon extends BaseEntity {
     public Boolean isNotExpired() {
         return LocalDateTime.now().isBefore(expiredAt);
     }
+
+    public String getCouponName() {
+        return coupon.getName();
+    }
 }

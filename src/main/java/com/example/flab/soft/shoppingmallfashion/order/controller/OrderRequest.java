@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class OrderRequest {
     @NotNull
+    private Long itemId;
+    @NotNull
     private Long itemOptionId;
     @NotNull
     @Min(1)
@@ -29,6 +31,10 @@ public class OrderRequest {
     private Integer discountedAmount;
     @NotNull
     @Min(0)
+    @Max(1000000)
+    private Integer couponDiscountAmount;
+    @NotNull
+    @Min(0)
     @Max(100000000)
     private Integer paymentAmount;
     @NotBlank
@@ -37,4 +43,7 @@ public class OrderRequest {
     private String roadAddress;
     @NotBlank
     private String addressDetail;
+    @NotNull
+    private Boolean isCouponUsed;
+    private Long usedCouponId;
 }

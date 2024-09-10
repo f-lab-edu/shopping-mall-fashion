@@ -8,15 +8,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
 @Embeddable
 public class Discount {
     @Enumerated(value = EnumType.STRING)
     private DiscountType discountType;
     private Integer discountAmount;
-    @Enumerated(value = EnumType.STRING)
-    private DiscountUnit discountUnit;
+
+    public DiscountDetails calculate(Integer beforePrice) {
+        return discountType.calculate(beforePrice, discountAmount);
+    }
 }
