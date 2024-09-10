@@ -51,6 +51,7 @@ jobs:
             sudo docker stop backend || true
             sudo docker rm backend || true
             sudo docker run -d --name backend -p 8080:8080 \
+              -v /home/ubuntu/logs:/var/logs \
               -e COOLSMS_API_KEY="${{ secrets.COOLSMS_KEY }}" \
               -e COOLSMS_API_SECRET="${{ secrets.COOLSMS_SECRET }}" \
               -e COOLSMS_API_NUMBER="${{ secrets.COOLSMS_NUMBER }}" \
