@@ -1,12 +1,10 @@
 package com.example.flab.soft.shoppingmallfashion.auth.authentication.filter;
 
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.TempLoginRequest;
 import com.example.flab.soft.shoppingmallfashion.auth.authentication.userDetails.AuthUser;
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.LoginRequest;
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.NewTokensDto;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.TokenProvider;
+import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TempTokenDto;
 import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenBuildDto;
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokenResponse;
-import com.example.flab.soft.shoppingmallfashion.auth.jwt.dto.TokensMapper;
-import com.example.flab.soft.shoppingmallfashion.auth.refreshToken.RefreshTokenService;
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
@@ -22,51 +20,42 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StreamUtils;
 
-public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
-    private final RefreshTokenService refreshTokenService;
+public class UserTemporaryAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     private final ObjectMapper objectMapper;
-    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/users/login",
-            "POST");
+    private final TokenProvider tokenProvider;
+    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
+            new AntPathRequestMatcher("/users/temporary-login", "POST");
 
-    public JwtAuthenticationFilter(ObjectMapper objectMapper, RefreshTokenService refreshTokenService) {
+    public UserTemporaryAuthenticationFilter(ObjectMapper objectMapper, TokenProvider tokenProvider) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
-        this.objectMapper = objectMapper;
-        this.refreshTokenService = refreshTokenService;
-    }
-
-    public JwtAuthenticationFilter(
-            RequestMatcher requiresAuthenticationRequestMatcher,
-            RefreshTokenService refreshTokenService, ObjectMapper objectMapper) {
-        super(requiresAuthenticationRequestMatcher);
-        this.refreshTokenService = refreshTokenService;
+        this.tokenProvider = tokenProvider;
         this.objectMapper = objectMapper;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        LoginRequest loginRequest = parseUsernamePassword(request);
-        AbstractAuthenticationToken token = constructAuthenticationToken(loginRequest);
+        TempLoginRequest tempLoginRequest = parsePhoneNumber(request);
+        AbstractAuthenticationToken token = constructAuthenticationToken(tempLoginRequest);
         return super.getAuthenticationManager().authenticate(token);
     }
 
-    protected AbstractAuthenticationToken constructAuthenticationToken(LoginRequest loginRequest) {
+    protected AbstractAuthenticationToken constructAuthenticationToken(TempLoginRequest tempLoginRequest) {
         return new UserAuthenticationToken(
-                loginRequest.getUsername(), loginRequest.getPassword());
+                tempLoginRequest.getPhoneNumber(), tempLoginRequest.getPhoneNumber());
     }
 
-    private LoginRequest parseUsernamePassword(HttpServletRequest request) {
-        LoginRequest loginRequest;
+    private TempLoginRequest parsePhoneNumber(HttpServletRequest request) {
+        TempLoginRequest tempLoginRequest;
         try {
             String requestString = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
-            loginRequest = objectMapper.readValue(requestString, LoginRequest.class);
+            tempLoginRequest = objectMapper.readValue(requestString, TempLoginRequest.class);
         } catch (IOException e) {
             throw new ApiException(ErrorEnum.FORBIDDEN_REQUEST);
         }
-        return loginRequest;
+        return tempLoginRequest;
     }
 
     @Override
@@ -74,11 +63,12 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
                                             Authentication authResult) throws IOException, ServletException {
         AuthUser authUser = (AuthUser) authResult.getPrincipal();
 
-        TokenBuildDto tokenBuildDto = extractTokenBuildData(authUser);
-        NewTokensDto newTokensDto = refreshTokenService.getNewToken(tokenBuildDto);
-        TokenResponse tokenResponse = TokensMapper.INSTANCE.toTokenResponseDto(newTokensDto);
         String successResult = objectMapper.writeValueAsString(
-                SuccessResult.builder().response(tokenResponse).build());
+                SuccessResult.builder()
+                        .response(TempTokenDto.builder()
+                                .accessToken(tokenProvider.createAccessToken(extractTokenBuildData(authUser)))
+                                .build())
+                        .build());
         response.getWriter().write(successResult);
     }
 

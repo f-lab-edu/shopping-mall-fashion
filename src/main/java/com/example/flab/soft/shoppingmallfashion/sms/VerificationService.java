@@ -68,4 +68,12 @@ public class VerificationService {
             throw new ApiException(ErrorEnum.INVALID_REQUEST);
         }
     }
+
+    public Boolean isPhoneNumberAuthenticated(String phoneNumber) {
+        return redisRepository.exists(REDIS_VERIFIED_PHONE_NUMBER_PREFIX + phoneNumber);
+    }
+
+    public Boolean isEmailAuthenticated(String email) {
+        return redisRepository.exists(REDIS_VERIFIED_EMAIL_PREFIX + email);
+    }
 }

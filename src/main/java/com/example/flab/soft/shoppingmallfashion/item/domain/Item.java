@@ -22,6 +22,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -60,7 +61,7 @@ public class Item extends BaseEntity {
     @Column(nullable = false)
     private Long lastlyModifiedBy;
     @OneToMany(mappedBy = "itemId", fetch = FetchType.LAZY)
-    private List<ItemSearchTag> itemSearchTags = new ArrayList<>();
+    private List<ItemSearchKeyword> itemSearchKeywords = new ArrayList<>();
 
     @Builder
     public Item(String name, Integer originalPrice, Integer salePrice, String description, Sex sex,
@@ -121,6 +122,30 @@ public class Item extends BaseEntity {
 
     public boolean isOnSale() {
         return saleState == SaleState.ON_SALE;
+    }
+
+    public Integer addItemSearchKeyword(ItemSearchKeyword itemSearchKeyword) {
+        if (itemSearchKeywords.contains(itemSearchKeyword)) {
+            throw new ApiException(ErrorEnum.DUPLICATED_ITEM_SEARCH_TAG);
+        }
+        itemSearchKeywords.add(itemSearchKeyword);
+        return itemSearchKeywords.size();
+    }
+
+    public List<String> selectDefaultKeywords() {
+        String[] keywordsInName = name.split(" ");
+        String storeName = store.getName();
+        String categoryName = category.getName();
+        String largeCategoryName = category.getLargeCategory().getName();
+
+        List<String> defaultKeywords = new ArrayList<>(keywordsInName.length + 3);
+
+        defaultKeywords.addAll(Arrays.stream(keywordsInName).toList());
+        defaultKeywords.add(storeName);
+        defaultKeywords.add(categoryName);
+        defaultKeywords.add(largeCategoryName);
+
+        return defaultKeywords.stream().distinct().toList();
     }
 
     public static Item of(Category category, Store store, ItemCreateRequest itemCreateRequest, Long userId) {

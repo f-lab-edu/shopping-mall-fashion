@@ -10,6 +10,7 @@ import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -154,5 +155,48 @@ public class ItemDomainTest {
 
         //then
         assertThatThrownBy(item::endProduction).hasMessage(ErrorEnum.ALREADY_END_OF_PRODUCTION.getMessage());
+    }
+
+    @Test
+    @DisplayName("기본 검색 키워드는 상품 이름의 각 어절, 상점명, 분류명, 대분류명을 모두 포함하며 중복을 허용하지 않는다.")
+    void defaultItemSearchKeywords() {
+        String storeName = "nike";
+        String largeCategoryName = "shoes";
+        String categoryName = "runner";
+        String itemClause = "max";
+        String itemName = "nike runner " + itemClause;
+
+        Store store = Store.builder()
+                .name(storeName)
+                .logo("logo")
+                .description("description")
+                .businessRegistrationNumber("0123456789")
+                .managerId(1L)
+                .build();
+
+        LargeCategory largeCategory = LargeCategory.builder()
+                .name(largeCategoryName)
+                .build();
+
+        Category category = Category.builder()
+                .name(categoryName)
+                .largeCategory(largeCategory)
+                .build();
+        //given
+        Item item = Item.builder()
+                .name(itemName)
+                .originalPrice(1000)
+                .salePrice(900)
+                .sex(Sex.MEN)
+                .saleState(SaleState.ON_SALE)
+                .store(store)
+                .category(category)
+                .lastlyModifiedBy(1L)
+                .build();
+        //when, then
+        List<String> defaultKeywords = item.selectDefaultKeywords();
+        List<String> expected = List.of(storeName, categoryName, largeCategoryName, itemClause);
+        assertThat(defaultKeywords.size()).isEqualTo(expected.size());
+        assertThat(defaultKeywords).containsAll(expected);
     }
 }

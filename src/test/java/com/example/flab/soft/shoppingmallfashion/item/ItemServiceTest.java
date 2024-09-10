@@ -9,11 +9,16 @@ import com.example.flab.soft.shoppingmallfashion.item.controller.ItemCreateReque
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
 import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
+import com.example.flab.soft.shoppingmallfashion.item.domain.ItemSearchKeyword;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
+import com.example.flab.soft.shoppingmallfashion.item.domain.SearchKeyword;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemOptionRepository;
+import com.example.flab.soft.shoppingmallfashion.item.repository.ItemSearchKeywordRepository;
+import com.example.flab.soft.shoppingmallfashion.item.repository.SearchKeywordRepository;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemCommandService;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordService;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
 import java.util.List;
@@ -30,6 +35,8 @@ class ItemServiceTest {
     @Autowired
     ItemCommandService itemCommandService;
     @Autowired
+    ItemSearchKeywordService itemSearchKeywordService;
+    @Autowired
     CategoryRepository categoryRepository;
     @Autowired
     StoreRepository storeRepository;
@@ -37,9 +44,13 @@ class ItemServiceTest {
     ItemRepository itemRepository;
     @Autowired
     ItemOptionRepository itemOptionRepository;
+    @Autowired
+    ItemSearchKeywordRepository itemSearchKeywordRepository;
+    @Autowired
+    SearchKeywordRepository searchKeywordRepository;
     private static final long USER_ID = 1L;
     private static final ItemCreateRequest ITEM_CREATE_REQUEST = ItemCreateRequest.builder()
-            .name("new item")
+            .name("nike wind jacket")
             .originalPrice(1000)
             .salePrice(1000)
             .sex(Sex.MEN)
@@ -102,12 +113,27 @@ class ItemServiceTest {
     @DisplayName("상품 등록")
     void addNewItem() {
         Long itemCountBefore = category.getItemCount();
-        Long itemId = itemCommandService.addItem(ITEM_CREATE_REQUEST, USER_ID);
+        Long itemId = itemCommandService.addItem(ITEM_CREATE_REQUEST, USER_ID).getItemId();
 
         assertThat(itemRepository.existsById(itemId)).isTrue();
         assertThat(itemRepository.findById(itemId).get().getItemOptions().get(0))
                 .hasFieldOrPropertyWithValue("name", "new item red");
         assertThat(category.getItemCount()).isEqualTo(itemCountBefore + 1);
+    }
+
+    @Test
+    @DisplayName("상품 등록시 상품 이름의 각 어절, 스토어명과 대분류, 분류명이 모두 기본 검색 키워드로 등록된다.")
+    void addDefaultKeywords_whenAddItem() {
+        Long itemId = itemCommandService.addItem(ITEM_CREATE_REQUEST, USER_ID).getItemId();
+
+        Item newItem = itemRepository.findById(itemId).get();
+        List<String> defaultKeywords = newItem.getItemSearchKeywords().stream()
+                .map(ItemSearchKeyword::getKeyword)
+                .toList();
+        assertThat(defaultKeywords).contains(newItem.getCategory().getName());
+        assertThat(defaultKeywords).contains(newItem.getCategory().getLargeCategory().getName());
+        assertThat(defaultKeywords).contains(newItem.getStore().getName());
+        assertThat(defaultKeywords).contains(newItem.getName().split(" "));
     }
 
     @Test
@@ -173,5 +199,68 @@ class ItemServiceTest {
         itemCommandService.addStocks(OOSItemOption.getId(), 10);
 
         assertThat(itemOptionRepository.findById(OOSItemOption.getId()).get().getStocksCount()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("상품 검색 키워드 추가")
+    void change_item_search_keywords() {
+        itemSearchKeywordService.updateItemSearchKeyword(item.getId(), List.of("pants", "jackets"));
+
+        SearchKeyword keyword1 = searchKeywordRepository.findByName("pants").get();
+        SearchKeyword keyword2  = searchKeywordRepository.findByName("jackets").get();
+        assertThat(keyword1).isNotNull();
+        assertThat(keyword2).isNotNull();
+        assertThat(item.getItemSearchKeywords()).contains(
+                itemSearchKeywordRepository.findByItemIdAndSearchKeyword(
+                        item.getId(), keyword1).get());
+        assertThat(item.getItemSearchKeywords()).contains(
+                itemSearchKeywordRepository.findByItemIdAndSearchKeyword(
+                        item.getId(), keyword2).get());
+    }
+
+    @Test
+    @DisplayName("상품 검색 키워드 변경시 기본 키워드는 변경되지 않는다")
+    void change_item_search_tags() {
+        //given
+        SearchKeyword defaultSearchKeyword = SearchKeyword.builder()
+                .name("wind jacket")
+                .build();
+
+        SearchKeyword oldSearchKeyword = SearchKeyword.builder()
+                .name("nike")
+                .build();
+
+        searchKeywordRepository.save(defaultSearchKeyword);
+        searchKeywordRepository.save(oldSearchKeyword);
+
+        ItemSearchKeyword defaultKeyword = ItemSearchKeyword.builder()
+                .itemId(item.getId())
+                .searchKeyword(defaultSearchKeyword)
+                .isDefault(true)
+                .build();
+
+        ItemSearchKeyword nonDefaultKeyword = ItemSearchKeyword.builder()
+                .itemId(item.getId())
+                .searchKeyword(oldSearchKeyword)
+                .isDefault(true)
+                .build();
+
+        itemSearchKeywordRepository.save(defaultKeyword);
+        itemSearchKeywordRepository.save(nonDefaultKeyword);
+
+        String newSearchKeyword = "addidas";
+
+        //when
+        itemSearchKeywordService.updateItemSearchKeyword(item.getId(),
+                List.of(defaultSearchKeyword.getName(), newSearchKeyword));
+
+        //then
+        List<String> itemKeywords = item.getItemSearchKeywords().stream()
+                .map(ItemSearchKeyword::getKeyword)
+                .toList();
+
+        assertThat(itemKeywords).contains(defaultKeyword.getKeyword());
+        assertThat(itemKeywords).contains(newSearchKeyword);
+        assertThat(itemKeywords).doesNotContain(oldSearchKeyword.getName());
     }
 }
