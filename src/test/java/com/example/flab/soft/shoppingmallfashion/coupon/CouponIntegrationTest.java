@@ -145,7 +145,7 @@ class CouponIntegrationTest {
     }
 
     @Test
-    @DisplayName("쿠폰 사용")
+    @DisplayName("쿠폰 사용, 유효기간이 가장 적게 남은 쿠폰 먼저 사용")
     void useCoupon() {
         //given
         Coupon coupon = couponRepository.save(Coupon.builder()
@@ -160,19 +160,29 @@ class CouponIntegrationTest {
                 .build());
         Long orderId = 1L;
         Long itemId = 2L;
+        Long userId = 1L;
+
+        UserCoupon userCouponToBeExpiredFirst = userCouponRepository.save(UserCoupon.builder()
+                .coupon(coupon)
+                .userId(userId)
+                .validation(Duration.ofDays(1))
+                .build());
 
         UserCoupon userCoupon = userCouponRepository.save(UserCoupon.builder()
                 .coupon(coupon)
-                .userId(1L)
+                .userId(userId)
                 .validation(Duration.ofDays(3))
                 .build());
         //when
-        couponService.useCoupon(userCoupon.getId(), itemId, orderId);
+        couponService.useCoupon(userCoupon.getCoupon().getId(), userId, itemId, orderId);
         //then
-        UserCoupon usedUserCoupon = userCouponRepository.findById(userCoupon.getId()).get();
+        UserCoupon usedUserCoupon = userCouponRepository.findById(userCouponToBeExpiredFirst.getId()).get();
+        UserCoupon notUsedUserCoupon = userCouponRepository.findById(userCoupon.getId()).get();
         assertThat(usedUserCoupon.isUsed()).isTrue();
         assertThat(usedUserCoupon.getUsageInfo().getUsed()).isTrue();
         assertThat(usedUserCoupon.getUsageInfo().getUsedOrderId()).isEqualTo(orderId);
         assertThat(usedUserCoupon.getUsageInfo().getUsedItemId()).isEqualTo(itemId);
+
+        assertThat(notUsedUserCoupon.isUsed()).isFalse();
     }
 }
