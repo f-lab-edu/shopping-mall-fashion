@@ -21,11 +21,11 @@ public class ItemSearchKeywordDto {
         this.keywords_count = item.getItemSearchKeywords().size();
         this.defaultSearchKeywords = item.getItemSearchKeywords().stream()
                 .filter(ItemSearchKeyword::isDefault)
-                .map(ItemSearchKeyword::getKeyword)
+                .map(ItemSearchKeyword::getSearchKeyword)
                 .toList();
         this.userDesignationSearchKeywords = item.getItemSearchKeywords().stream()
                 .filter(itemSearchKeyword -> !itemSearchKeyword.isDefault())
-                .map(ItemSearchKeyword::getKeyword)
+                .map(ItemSearchKeyword::getSearchKeyword)
                 .toList();
     }
 }

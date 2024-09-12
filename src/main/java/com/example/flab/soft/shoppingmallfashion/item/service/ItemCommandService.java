@@ -12,11 +12,8 @@ import com.example.flab.soft.shoppingmallfashion.item.repository.ItemOptionRepos
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +26,6 @@ public class ItemCommandService {
     private final StoreRepository storeRepository;
     private final ItemOptionRepository itemOptionRepository;
     private final ItemSearchKeywordService itemSearchKeywordService;
-    private final RedissonClient redissonClient;
 
     @Transactional
     public ItemBriefDto addItem(ItemCreateRequest itemCreateRequest, Long userId) {
@@ -45,26 +41,9 @@ public class ItemCommandService {
                 .forEach(item::addItemOption);
 
         category.increaseItemCount(1);
-        initDefaultSearchKeyword(item);
+        itemSearchKeywordService.initDefaultSearchKeywords(item.getId());
 
         return ItemBriefDto.builder().item(item).build();
-    }
-
-    private void initDefaultSearchKeyword(Item item) {
-        RLock lock = redissonClient.getLock("search-keyword");
-        try {
-            boolean acquireLock = lock.tryLock(10, 3, TimeUnit.SECONDS);
-            log.debug("Lock acquired by item Id: {}", item.getId());
-            if (!acquireLock) {
-                throw new ApiException(ErrorEnum.RETRY);
-            }
-            itemSearchKeywordService.initDefaultSearchKeywords(item.getId());
-        } catch (InterruptedException e) {
-            throw new ApiException(ErrorEnum.RETRY);
-        } finally {
-            lock.unlock();
-            log.debug("Lock released by item Id: {}", item.getId());
-        }
     }
 
     @Transactional
