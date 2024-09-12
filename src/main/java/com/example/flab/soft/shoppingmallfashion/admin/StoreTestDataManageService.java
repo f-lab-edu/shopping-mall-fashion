@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -18,6 +19,7 @@ public class StoreTestDataManageService {
     private final StoreRepository storeRepository;
     private final ExecutorService executorService;
     private final TransactionTemplate txTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public CreatedDataInfo createTestStores(Integer count, CreatedDataInfo createdUserDataInfo) {
         Random random = new Random(createdUserDataInfo.getCreatedCount());
@@ -43,7 +45,7 @@ public class StoreTestDataManageService {
 
     @Transactional
     public Long clearAll() {
-        storeRepository.deleteAll();
+        jdbcTemplate.execute("DELETE FROM stores");
         return storeRepository.count();
     }
 }

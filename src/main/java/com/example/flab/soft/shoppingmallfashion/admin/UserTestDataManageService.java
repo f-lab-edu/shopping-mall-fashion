@@ -4,6 +4,7 @@ import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserTestDataManageService {
     private final UserRepository userRepository;
     private final ExecutorService executorService;
+    private final JdbcTemplate jdbcTemplate;
 
     public CreatedDataInfo createTestUsers(Integer count) {
         ConcurrentUtil.collect(IntStream.range(0, count)
@@ -27,6 +29,7 @@ public class UserTestDataManageService {
 
     @Transactional
     public Long clearAll() {
+        jdbcTemplate.execute("DELETE FROM users");
         userRepository.deleteAll();
         return userRepository.count();
     }

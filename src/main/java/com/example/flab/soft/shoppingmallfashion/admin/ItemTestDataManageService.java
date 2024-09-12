@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -21,9 +22,9 @@ public class ItemTestDataManageService {
     private final ItemCommandService itemCommandService;
     private final ItemRepository itemRepository;
     private final ItemOptionRepository itemOptionRepository;
-    private final ItemSearchKeywordRepository itemSearchKeywordRepository;
     private final ExecutorService executorService;
     private final TransactionTemplate txTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public ItemCountsDto createTestItems(Integer itemCount,
                                          CreatedDataInfo userCreatedDataInfo,
@@ -50,9 +51,9 @@ public class ItemTestDataManageService {
 
     @Transactional
     public ItemCountsDto clearAll() {
-        itemSearchKeywordRepository.deleteAll();
-        itemOptionRepository.deleteAll();
-        itemRepository.deleteAll();
+        jdbcTemplate.execute("DELETE FROM item_search_keywords");
+        jdbcTemplate.execute("DELETE FROM item_options");
+        jdbcTemplate.execute("DELETE FROM items");
         return ItemCountsDto.builder()
                 .itemCount(itemRepository.count())
                 .itemOptionCount(itemOptionRepository.count())
