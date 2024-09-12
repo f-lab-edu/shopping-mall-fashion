@@ -148,6 +148,10 @@ public class Item extends BaseEntity {
         return defaultKeywords.stream().distinct().toList();
     }
 
+    public void modifyOrderCount(Long orderCount) {
+        itemStats.modifyOrderCount(orderCount);
+    }
+
     public static Item of(Category category, Store store, ItemCreateRequest itemCreateRequest, Long userId) {
         return builder()
                 .name(itemCreateRequest.getName())

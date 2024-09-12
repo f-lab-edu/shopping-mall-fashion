@@ -9,6 +9,7 @@ public enum ErrorEnum {
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     FORBIDDEN_REQUEST(HttpStatus.UNAUTHORIZED, "허용되지 않은 요청입니다."),
     FAILED_INTERNAL_SYSTEM_PROCESSING(HttpStatus.INTERNAL_SERVER_ERROR, "내부 시스템 처리 작업이 실패했습니다. 잠시 후 다시 시도해주세요."),
+    RETRY(HttpStatus.CONFLICT, "잠시후에 다시 시도하세요"),
     NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 정보 입니다."),
     // User Exception
     INACTIVATED_USER(HttpStatus.UNAUTHORIZED, "비활성화된 계정입니다."),

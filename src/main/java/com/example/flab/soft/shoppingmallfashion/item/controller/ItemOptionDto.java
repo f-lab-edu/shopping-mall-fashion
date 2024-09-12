@@ -21,6 +21,5 @@ public class ItemOptionDto {
     private String option;
     private SaleState saleState;
     @Min(1)
-    @Max(30)
     private Long stocksCount;
 }

@@ -58,4 +58,8 @@ public class Store extends BaseEntity {
     public void beOnStoppage() {
         saleState = StoreState.ON_STOPPAGE;
     }
+
+    public void startSale() {
+        saleState = StoreState.ON_SALE;
+    }
 }

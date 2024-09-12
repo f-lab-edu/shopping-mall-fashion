@@ -38,8 +38,7 @@ CREATE TABLE stores (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     sale_state ENUM('PREPARING', 'ON_SALE', 'ON_STOPPAGE', 'WITHDRAWAL') NOT NULL DEFAULT 'PREPARING',
     PRIMARY KEY (id),
-    FOREIGN KEY (manager_id) REFERENCES users (id),
-    INDEX fk_stores_user (manager_id),
+    INDEX idx_stores_user (manager_id),
     UNIQUE (name),
     UNIQUE (business_registration_number)
 );
@@ -151,8 +150,7 @@ CREATE TABLE categories (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (large_category_id) REFERENCES large_categories (id),
-    INDEX fk_large_category (large_category_id),
-    UNIQUE(name)
+    UNIQUE(large_category_id, name)
 );
 
 CREATE TABLE items (
@@ -177,14 +175,12 @@ CREATE TABLE items (
     PRIMARY KEY (id),
     FOREIGN KEY (store_id) REFERENCES stores (id),
     FOREIGN KEY (category_id) REFERENCES categories (id),
-    FOREIGN KEY (lastly_modified_by) REFERENCES crews (id),
-    INDEX fk_items_store (store_id),
-    INDEX fk_items_category (category_id)
+    INDEX idx_crew (lastly_modified_by)
 );
 
 CREATE TABLE item_options (
     id BIGINT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(45) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     size VARCHAR(10) NOT NULL,
     option_value VARCHAR(25),
     item_id BIGINT(20) NOT NULL,
