@@ -1,8 +1,8 @@
 package com.example.flab.soft.shoppingmallfashion.admin;
 
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
+import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
-import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import java.util.ArrayList;
@@ -12,12 +12,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminBatchService {
     private final JdbcTemplate jdbcTemplate;
     private final ExecutorService threads;
@@ -70,56 +74,126 @@ public class AdminBatchService {
                 + "(name, size, item_id, sale_state, stocks_count) "
                 + "VALUES (?, ?, ?, ?, ?)";
 
-        List<Object[]> itemBatchArgs = new ArrayList<>();
         Map<String, List<ItemOptionDto>> itemNameOptionsMap =
                 new HashMap<>(testItemDtos.size() * 2);
-        for (TestItemDto testItemDto : testItemDtos) {
-            itemBatchArgs.add(new Object[]{
-                    testItemDto.getName(),
-                    testItemDto.getOriginalPrice(),
-                    testItemDto.getSalePrice(),
-                    testItemDto.getDescription(),
-                    testItemDto.getSex().name(),
-                    testItemDto.getSaleState().name(),
-                    testItemDto.getStoreId(),
-                    testItemDto.getCategoryId(),
-                    testItemDto.getIsModifiedBy(),
-                    testItemDto.getOrderCount()
-            });
-            itemNameOptionsMap.put(testItemDto.getName(), testItemDto.getItemOptions());
-        }
-        jdbcTemplate.batchUpdate(itemSql, itemBatchArgs);
+
+        int groupSize = 500;
+
+        long before = System.currentTimeMillis();
+
+        IntStream.range(0, (int) Math.ceil((double) testItemDtos.size() / groupSize))
+                .mapToObj(i -> testItemDtos.subList(i * groupSize, Math.min((i + 1) * groupSize, testItemDtos.size())))
+                .parallel()
+                .forEach(itemGroup -> {
+                    List<Object[]> batchArgs = new ArrayList<>();
+                    for (TestItemDto item : itemGroup) {
+                        batchArgs.add(new Object[]{
+                                item.getName(),
+                                item.getOriginalPrice(),
+                                item.getSalePrice(),
+                                item.getDescription(),
+                                item.getSex().name(),
+                                item.getSaleState().name(),
+                                item.getStoreId(),
+                                item.getCategoryId(),
+                                item.getIsModifiedBy(),
+                                item.getOrderCount()
+                        });
+                        itemNameOptionsMap.put(item.getName(), item.getItemOptions());
+                    }
+                    jdbcTemplate.batchUpdate(itemSql, batchArgs);
+                });
+
+//        List<Object[]> itemBatchArgs = new ArrayList<>();
+
+//
+//        long before = System.currentTimeMillis();
+//
+//        for (TestItemDto testItemDto : testItemDtos) {
+//            itemBatchArgs.add(new Object[]{
+//                    testItemDto.getName(),
+//                    testItemDto.getOriginalPrice(),
+//                    testItemDto.getSalePrice(),
+//                    testItemDto.getDescription(),
+//                    testItemDto.getSex().name(),
+//                    testItemDto.getSaleState().name(),
+//                    testItemDto.getStoreId(),
+//                    testItemDto.getCategoryId(),
+//                    testItemDto.getIsModifiedBy(),
+//                    testItemDto.getOrderCount()
+//            });
+//            itemNameOptionsMap.put(testItemDto.getName(), testItemDto.getItemOptions());
+//        }
+//        log.info("아이템 배치 args 생성 완료, 걸린 시간: {}", System.currentTimeMillis() - before);
+
+//        before = System.currentTimeMillis();
+//
+//        jdbcTemplate.batchUpdate(itemSql, itemBatchArgs);
+
+        log.info("아이템 배치에 걸린 시간: {}", System.currentTimeMillis() - before);
 
         String findAllItemsSql = "SELECT id, name FROM items";
 
+        before = System.currentTimeMillis();
+
         List<ItemIdNameDto> idNameDtos = jdbcTemplate.query(findAllItemsSql, new ItemRowMapper());
-        ConcurrentLinkedQueue<Object[]> itemOptionBatchArgs = new ConcurrentLinkedQueue<>();
 
-        CountDownLatch latch = new CountDownLatch(idNameDtos.size());
+        log.info("전체 아이템 조회에 걸린 시간: {}", System.currentTimeMillis() - before);
 
-        for (ItemIdNameDto idNameDto : idNameDtos) {
-            threads.submit(() -> {
-                try {
-                    List<ItemOptionDto> itemOptions = itemNameOptionsMap.get(idNameDto.getName());
-                    itemOptions.forEach(itemOption -> itemOptionBatchArgs.add(new Object[]{
-                            itemOption.getName(),
-                            itemOption.getSize(),
-                            idNameDto.getId(),
-                            itemOption.getSaleState().name(),
-                            itemOption.getStocksCount()
-                    }));
-                } finally {
-                    latch.countDown();
-                }
-            });
-        }
+//        ConcurrentLinkedQueue<Object[]> itemOptionBatchArgs = new ConcurrentLinkedQueue<>();
+//
+//        CountDownLatch latch = new CountDownLatch(idNameDtos.size());
 
-        try {
-            latch.await();
-            jdbcTemplate.batchUpdate(itemOptionSql, new ArrayList<>(itemOptionBatchArgs));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
+        before = System.currentTimeMillis();
+
+//        for (ItemIdNameDto idNameDto : idNameDtos) {
+//            threads.submit(() -> {
+//                try {
+//                    List<ItemOptionDto> itemOptions = itemNameOptionsMap.get(idNameDto.getName());
+//                    itemOptions.forEach(itemOption -> itemOptionBatchArgs.add(new Object[]{
+//                            itemOption.getName(),
+//                            itemOption.getSize(),
+//                            idNameDto.getId(),
+//                            itemOption.getSaleState().name(),
+//                            itemOption.getStocksCount()
+//                    }));
+//                } finally {
+//                    latch.countDown();
+//                }
+//            });
+//        }
+
+        int itemOptionGroupSize = 100;
+
+        IntStream.range(0, (int) Math.ceil((double) testItemDtos.size() / itemOptionGroupSize))
+                .mapToObj(i -> idNameDtos.subList(i * itemOptionGroupSize, Math.min((i + 1) * itemOptionGroupSize, idNameDtos.size())))
+                .parallel()
+                .forEach(itemGroup -> {
+                    List<Object[]> batchArgs = new ArrayList<>();
+                    for (ItemIdNameDto idNameDto : itemGroup) {
+                        List<ItemOptionDto> itemOptions = itemNameOptionsMap.get(idNameDto.getName());
+                        itemOptions.forEach(itemOption -> batchArgs.add(new Object[]{
+                                itemOption.getName(),
+                                itemOption.getSize(),
+                                idNameDto.getId(),
+                                itemOption.getSaleState().name(),
+                                itemOption.getStocksCount()
+                        }));
+                    }
+                    jdbcTemplate.batchUpdate(itemOptionSql, batchArgs);
+                });
+
+//        log.info("아이템 옵션 인자 생성에 걸린 시간: {}", System.currentTimeMillis() - before);
+//
+//        before = System.currentTimeMillis();
+//        try {
+//            latch.await();
+//            jdbcTemplate.batchUpdate(itemOptionSql, new ArrayList<>(itemOptionBatchArgs));
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//            throw new RuntimeException(e);
+//        }
+
+        log.info("아이템 옵션 배치에 걸린 시간: {}", System.currentTimeMillis() - before);
     }
 }
