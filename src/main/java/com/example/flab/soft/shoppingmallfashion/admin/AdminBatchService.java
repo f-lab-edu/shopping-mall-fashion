@@ -1,7 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.admin;
 
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
-import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AdminBatchService {
     private final JdbcTemplate jdbcTemplate;
-    private final ItemRepository itemRepository;
     private final ExecutorService threads;
 
     public void bulkInsertUsers(List<User> users) {
@@ -92,19 +90,21 @@ public class AdminBatchService {
         }
         jdbcTemplate.batchUpdate(itemSql, itemBatchArgs);
 
-        List<Item> savedItems = itemRepository.findAll();
+        String findAllItemsSql = "SELECT id, name FROM items";
+
+        List<ItemIdNameDto> idNameDtos = jdbcTemplate.query(findAllItemsSql, new ItemRowMapper());
         ConcurrentLinkedQueue<Object[]> itemOptionBatchArgs = new ConcurrentLinkedQueue<>();
 
-        CountDownLatch latch = new CountDownLatch(savedItems.size());
+        CountDownLatch latch = new CountDownLatch(idNameDtos.size());
 
-        for (Item item : savedItems) {
+        for (ItemIdNameDto idNameDto : idNameDtos) {
             threads.submit(() -> {
                 try {
-                    List<ItemOptionDto> itemOptions = itemNameOptionsMap.get(item.getName());
+                    List<ItemOptionDto> itemOptions = itemNameOptionsMap.get(idNameDto.getName());
                     itemOptions.forEach(itemOption -> itemOptionBatchArgs.add(new Object[]{
                             itemOption.getName(),
                             itemOption.getSize(),
-                            item.getId(),
+                            idNameDto.getId(),
                             itemOption.getSaleState().name(),
                             itemOption.getStocksCount()
                     }));
