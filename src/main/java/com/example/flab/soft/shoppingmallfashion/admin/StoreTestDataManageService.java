@@ -1,5 +1,6 @@
 package com.example.flab.soft.shoppingmallfashion.admin;
 
+import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
 import java.util.List;
@@ -18,24 +19,27 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class StoreTestDataManageService {
     private final StoreRepository storeRepository;
     private final ExecutorService executorService;
-    private final TransactionTemplate txTemplate;
     private final JdbcTemplate jdbcTemplate;
+    private final AdminBatchService adminBatchService;
 
     public CreatedDataInfo createTestStores(Integer count, CreatedDataInfo createdUserDataInfo) {
         Random random = new Random(createdUserDataInfo.getCreatedCount());
-        ConcurrentUtil.collect(IntStream.range(0, count)
-                .mapToObj(storeId -> executorService.submit(() -> {
-                    long userId = random.nextLong(createdUserDataInfo.getCreatedCount())
-                            + createdUserDataInfo.getFirstElementId();
-                    txTemplate.executeWithoutResult(status ->
-                            saveAndStartSale(StoreGenerator.generateStore(storeId, userId))
-                    );
-                }))
+        List<Store> stores = ConcurrentUtil.collect(IntStream.range(0, count)
+                .mapToObj(storeId -> executorService.submit(() ->
+                        generateStore(createdUserDataInfo, storeId, random)
+                ))
                 .toList());
+        adminBatchService.bulkInsertStores(stores, SaleState.ON_SALE);
         return CreatedDataInfo.builder()
                 .createdCount(storeRepository.count())
                 .firstElementId(storeRepository.findFirstBy().getId())
                 .build();
+    }
+
+    private Store generateStore(CreatedDataInfo createdUserDataInfo, int storeId, Random random) {
+        long userId = random.nextLong(createdUserDataInfo.getCreatedCount())
+                + createdUserDataInfo.getFirstElementId();
+        return StoreGenerator.generateStore(storeId, userId);
     }
 
     private void saveAndStartSale(Store store) {

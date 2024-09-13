@@ -175,6 +175,7 @@ CREATE TABLE items (
     PRIMARY KEY (id),
     FOREIGN KEY (store_id) REFERENCES stores (id),
     FOREIGN KEY (category_id) REFERENCES categories (id),
+    INDEX idx_item_name (name),
     INDEX idx_crew (lastly_modified_by)
 );
 

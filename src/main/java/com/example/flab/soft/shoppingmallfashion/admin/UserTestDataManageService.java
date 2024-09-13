@@ -1,6 +1,8 @@
 package com.example.flab.soft.shoppingmallfashion.admin;
 
+import com.example.flab.soft.shoppingmallfashion.user.domain.User;
 import com.example.flab.soft.shoppingmallfashion.user.repository.UserRepository;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserTestDataManageService {
     private final UserRepository userRepository;
     private final ExecutorService executorService;
+    private final AdminBatchService adminBatchService;
     private final JdbcTemplate jdbcTemplate;
 
     public CreatedDataInfo createTestUsers(Integer count) {
-        ConcurrentUtil.collect(IntStream.range(0, count)
+        List<User> users = ConcurrentUtil.collect(IntStream.range(0, count)
                 .mapToObj(i -> executorService.submit(() ->
-                        userRepository.save(UserGenerator.generateUser(i))))
+                        UserGenerator.generateUser(i)))
                 .toList());
+        adminBatchService.bulkInsertUsers(users);
 
         return CreatedDataInfo.builder()
                 .createdCount(userRepository.count())
@@ -30,7 +34,6 @@ public class UserTestDataManageService {
     @Transactional
     public Long clearAll() {
         jdbcTemplate.execute("DELETE FROM users");
-        userRepository.deleteAll();
         return userRepository.count();
     }
 }

@@ -40,7 +40,7 @@ public class VerificationService {
     }
 
     public void verifyCodeWithPhoneNumber(String phoneNumber, String code) {
-        String cachedCode = redisRepository.getData(REDIS_VERIFY_CODE_KEY_PREFIX + phoneNumber);
+        String cachedCode = redisRepository.getData(REDIS_VERIFY_CODE_KEY_PREFIX + phoneNumber).toString();
         if (cachedCode == null || !cachedCode.equals(code)) {
             throw new ApiException(ErrorEnum.INVALID_REQUEST);
         }
@@ -49,7 +49,7 @@ public class VerificationService {
     }
 
     public void verifyCodeWithEamil(String email, String code) {
-        String cachedCode = redisRepository.getData(REDIS_VERIFY_CODE_KEY_PREFIX + email);
+        String cachedCode = redisRepository.getData(REDIS_VERIFY_CODE_KEY_PREFIX + email).toString();
         if (cachedCode == null || !cachedCode.equals(code)) {
             throw new ApiException(ErrorEnum.INVALID_REQUEST);
         }
