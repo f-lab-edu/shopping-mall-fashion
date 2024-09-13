@@ -1,12 +1,13 @@
-package com.example.flab.soft.shoppingmallfashion.admin;
+package com.example.flab.soft.shoppingmallfashion.admin.util;
 
+import com.example.flab.soft.shoppingmallfashion.admin.dto.CreatedDataInfo;
+import com.example.flab.soft.shoppingmallfashion.admin.dto.TestItemDto;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 
 public class ItemDtoGenerator {
     private static final Random random = new Random();

@@ -1,5 +1,6 @@
-package com.example.flab.soft.shoppingmallfashion.admin;
+package com.example.flab.soft.shoppingmallfashion.admin.util;
 
+import com.example.flab.soft.shoppingmallfashion.admin.dto.ItemIdNameDto;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;

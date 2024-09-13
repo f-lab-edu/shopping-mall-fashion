@@ -1,7 +1,10 @@
-package com.example.flab.soft.shoppingmallfashion.admin;
+package com.example.flab.soft.shoppingmallfashion.admin.service;
 
+import com.example.flab.soft.shoppingmallfashion.admin.dto.TestDataCountRequirements;
+import com.example.flab.soft.shoppingmallfashion.admin.dto.CreatedDataInfo;
+import com.example.flab.soft.shoppingmallfashion.admin.dto.CurrentTestDataCountsDto;
+import com.example.flab.soft.shoppingmallfashion.admin.dto.ItemCountsDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

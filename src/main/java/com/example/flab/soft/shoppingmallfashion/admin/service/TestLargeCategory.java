@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.admin;
+package com.example.flab.soft.shoppingmallfashion.admin.service;
 
 import lombok.Getter;
 

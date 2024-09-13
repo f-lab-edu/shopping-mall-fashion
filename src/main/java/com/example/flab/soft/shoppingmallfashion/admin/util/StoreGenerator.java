@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.admin;
+package com.example.flab.soft.shoppingmallfashion.admin.util;
 
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import java.util.Random;

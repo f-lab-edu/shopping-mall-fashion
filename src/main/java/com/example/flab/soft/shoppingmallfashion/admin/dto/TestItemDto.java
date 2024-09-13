@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.admin;
+package com.example.flab.soft.shoppingmallfashion.admin.dto;
 
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;

@@ -1,7 +1,9 @@
-package com.example.flab.soft.shoppingmallfashion.admin;
+package com.example.flab.soft.shoppingmallfashion.admin.service;
 
+import com.example.flab.soft.shoppingmallfashion.admin.dto.ItemIdNameDto;
+import com.example.flab.soft.shoppingmallfashion.admin.dto.TestItemDto;
+import com.example.flab.soft.shoppingmallfashion.admin.util.ItemRowMapper;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
-import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
@@ -9,10 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +22,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AdminBatchService {
     private final JdbcTemplate jdbcTemplate;
-    private final ExecutorService threads;
 
     public void bulkInsertUsers(List<User> users) {
         String sql = "INSERT INTO users (email, password, real_name, cellphone_number, nickname) " +
@@ -78,10 +75,11 @@ public class AdminBatchService {
                 new HashMap<>(testItemDtos.size() * 2);
 
         int groupSize = 500;
+        int numberOfItemGroups = (int) Math.ceil((double) testItemDtos.size() / groupSize);
 
         long before = System.currentTimeMillis();
 
-        IntStream.range(0, (int) Math.ceil((double) testItemDtos.size() / groupSize))
+        IntStream.range(0, numberOfItemGroups)
                 .mapToObj(i -> testItemDtos.subList(i * groupSize, Math.min((i + 1) * groupSize, testItemDtos.size())))
                 .parallel()
                 .forEach(itemGroup -> {
@@ -104,32 +102,6 @@ public class AdminBatchService {
                     jdbcTemplate.batchUpdate(itemSql, batchArgs);
                 });
 
-//        List<Object[]> itemBatchArgs = new ArrayList<>();
-
-//
-//        long before = System.currentTimeMillis();
-//
-//        for (TestItemDto testItemDto : testItemDtos) {
-//            itemBatchArgs.add(new Object[]{
-//                    testItemDto.getName(),
-//                    testItemDto.getOriginalPrice(),
-//                    testItemDto.getSalePrice(),
-//                    testItemDto.getDescription(),
-//                    testItemDto.getSex().name(),
-//                    testItemDto.getSaleState().name(),
-//                    testItemDto.getStoreId(),
-//                    testItemDto.getCategoryId(),
-//                    testItemDto.getIsModifiedBy(),
-//                    testItemDto.getOrderCount()
-//            });
-//            itemNameOptionsMap.put(testItemDto.getName(), testItemDto.getItemOptions());
-//        }
-//        log.info("아이템 배치 args 생성 완료, 걸린 시간: {}", System.currentTimeMillis() - before);
-
-//        before = System.currentTimeMillis();
-//
-//        jdbcTemplate.batchUpdate(itemSql, itemBatchArgs);
-
         log.info("아이템 배치에 걸린 시간: {}", System.currentTimeMillis() - before);
 
         String findAllItemsSql = "SELECT id, name FROM items";
@@ -140,32 +112,12 @@ public class AdminBatchService {
 
         log.info("전체 아이템 조회에 걸린 시간: {}", System.currentTimeMillis() - before);
 
-//        ConcurrentLinkedQueue<Object[]> itemOptionBatchArgs = new ConcurrentLinkedQueue<>();
-//
-//        CountDownLatch latch = new CountDownLatch(idNameDtos.size());
-
         before = System.currentTimeMillis();
 
-//        for (ItemIdNameDto idNameDto : idNameDtos) {
-//            threads.submit(() -> {
-//                try {
-//                    List<ItemOptionDto> itemOptions = itemNameOptionsMap.get(idNameDto.getName());
-//                    itemOptions.forEach(itemOption -> itemOptionBatchArgs.add(new Object[]{
-//                            itemOption.getName(),
-//                            itemOption.getSize(),
-//                            idNameDto.getId(),
-//                            itemOption.getSaleState().name(),
-//                            itemOption.getStocksCount()
-//                    }));
-//                } finally {
-//                    latch.countDown();
-//                }
-//            });
-//        }
-
         int itemOptionGroupSize = 100;
+        int numberOfGrops = (int) Math.ceil((double) testItemDtos.size() / itemOptionGroupSize);
 
-        IntStream.range(0, (int) Math.ceil((double) testItemDtos.size() / itemOptionGroupSize))
+        IntStream.range(0, numberOfGrops)
                 .mapToObj(i -> idNameDtos.subList(i * itemOptionGroupSize, Math.min((i + 1) * itemOptionGroupSize, idNameDtos.size())))
                 .parallel()
                 .forEach(itemGroup -> {
@@ -182,18 +134,6 @@ public class AdminBatchService {
                     }
                     jdbcTemplate.batchUpdate(itemOptionSql, batchArgs);
                 });
-
-//        log.info("아이템 옵션 인자 생성에 걸린 시간: {}", System.currentTimeMillis() - before);
-//
-//        before = System.currentTimeMillis();
-//        try {
-//            latch.await();
-//            jdbcTemplate.batchUpdate(itemOptionSql, new ArrayList<>(itemOptionBatchArgs));
-//        } catch (InterruptedException e) {
-//            Thread.currentThread().interrupt();
-//            throw new RuntimeException(e);
-//        }
-
         log.info("아이템 옵션 배치에 걸린 시간: {}", System.currentTimeMillis() - before);
     }
 }

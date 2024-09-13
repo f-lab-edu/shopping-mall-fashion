@@ -1,4 +1,4 @@
-package com.example.flab.soft.shoppingmallfashion.admin;
+package com.example.flab.soft.shoppingmallfashion.admin.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
