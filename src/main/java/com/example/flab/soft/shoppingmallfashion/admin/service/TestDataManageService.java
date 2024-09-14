@@ -16,6 +16,7 @@ public class TestDataManageService {
     private final CategoryManageService categoryManageService;
     private final ItemTestDataManageService itemTestDataManageService;
 
+    @Async
     public void init(TestDataCountRequirements testDataCountRequirements) {
         CreatedDataInfo createdCategoryDataInfo = categoryManageService.initCategory();
         CreatedDataInfo createdUserDataInfo = userTestDataManageService.createTestUsers(testDataCountRequirements.getUserCount());

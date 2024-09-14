@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -82,7 +81,6 @@ public class AdminBatchService {
         );
     }
 
-    @Async
     public void bulkInsertItems(List<TestItemDto> testItemDtos) {
         String itemSql = "INSERT INTO items "
                 + "(name, original_price, sale_price, description, "
