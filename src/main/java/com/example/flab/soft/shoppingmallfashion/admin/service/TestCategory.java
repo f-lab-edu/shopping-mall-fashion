@@ -137,10 +137,10 @@ public enum TestCategory {
     SPORTS_ACCESSORIES("스포츠잡화"),
     SPORTS_HAT("스포츠모자");
 
-    private final String categoryName;
+    private final String name;
 
-    TestCategory(String categoryName) {
-        this.categoryName = categoryName;
+    TestCategory(String name) {
+        this.name = name;
     }
 }
 

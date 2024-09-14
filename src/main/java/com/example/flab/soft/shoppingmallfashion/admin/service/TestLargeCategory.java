@@ -157,6 +157,16 @@ public enum TestLargeCategory {
         this.largeCategory = largeCategory;
         this.subCategories = subCategories;
     }
+
+    public static List<TestLargeCategory> getElementsInList() {
+        return Arrays.stream(TestLargeCategory.values()).toList();
+    }
+
+    public static List<TestCategory> getCategories() {
+        return Arrays.stream(TestLargeCategory.values())
+                .flatMap(testLargeCategory -> testLargeCategory.getSubCategories().stream())
+                .toList();
+    }
 }
 
 

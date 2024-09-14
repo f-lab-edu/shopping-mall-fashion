@@ -3,8 +3,8 @@ package com.example.flab.soft.shoppingmallfashion.admin.service;
 import com.example.flab.soft.shoppingmallfashion.admin.dto.TestDataCountRequirements;
 import com.example.flab.soft.shoppingmallfashion.admin.dto.CreatedDataInfo;
 import com.example.flab.soft.shoppingmallfashion.admin.dto.CurrentTestDataCountsDto;
-import com.example.flab.soft.shoppingmallfashion.admin.dto.ItemCountsDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,36 +16,32 @@ public class TestDataManageService {
     private final CategoryManageService categoryManageService;
     private final ItemTestDataManageService itemTestDataManageService;
 
-    public CurrentTestDataCountsDto init(TestDataCountRequirements testDataCountRequirements) {
+    public void init(TestDataCountRequirements testDataCountRequirements) {
         CreatedDataInfo createdCategoryDataInfo = categoryManageService.initCategory();
         CreatedDataInfo createdUserDataInfo = userTestDataManageService.createTestUsers(testDataCountRequirements.getUserCount());
         CreatedDataInfo createdStoreDataInfo = storeTestDataManageService.createTestStores(
                 testDataCountRequirements.getStoreCount(), createdUserDataInfo);
 
-        ItemCountsDto itemCountsDto = itemTestDataManageService.createTestItems(
+        itemTestDataManageService.createTestItems(
                 testDataCountRequirements.getItemCount(), createdUserDataInfo, createdStoreDataInfo, createdCategoryDataInfo);
-        return CurrentTestDataCountsDto.builder()
-                .currentUsersCount(createdUserDataInfo.getCreatedCount())
-                .currentStoresCount(createdStoreDataInfo.getCreatedCount())
-                .currentCategoriesCount(createdCategoryDataInfo.getCreatedCount())
-                .currentItemsCount(itemCountsDto.getItemCount())
-                .currentItemOptionsCount(itemCountsDto.getItemOptionCount())
-                .build();
     }
 
     @Transactional
-    public CurrentTestDataCountsDto clearAll() {
-        ItemCountsDto itemCountsDto = itemTestDataManageService.clearAll();
-        Long categoryCount = categoryManageService.clearAll();
-        Long storeCount = storeTestDataManageService.clearAll();
-        Long userCount = userTestDataManageService.clearAll();
+    @Async
+    public void clearAll() {
+        itemTestDataManageService.clearAll();
+        categoryManageService.clearAll();
+        storeTestDataManageService.clearAll();
+        userTestDataManageService.clearAll();
+    }
 
+    public CurrentTestDataCountsDto count() {
         return CurrentTestDataCountsDto.builder()
-                .currentUsersCount(userCount)
-                .currentStoresCount(storeCount)
-                .currentCategoriesCount(categoryCount)
-                .currentItemsCount(itemCountsDto.getItemCount())
-                .currentItemOptionsCount(itemCountsDto.getItemOptionCount())
+                .currentUsersCount(userTestDataManageService.count())
+                .currentStoresCount(storeTestDataManageService.count())
+                .currentCategoriesCount(categoryManageService.count())
+                .currentItemsCount(itemTestDataManageService.countItems())
+                .currentItemOptionsCount(itemTestDataManageService.countItemOptions())
                 .build();
     }
 }

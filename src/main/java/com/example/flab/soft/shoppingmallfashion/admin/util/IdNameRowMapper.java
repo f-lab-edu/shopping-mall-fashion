@@ -1,14 +1,14 @@
 package com.example.flab.soft.shoppingmallfashion.admin.util;
 
-import com.example.flab.soft.shoppingmallfashion.admin.dto.ItemIdNameDto;
+import com.example.flab.soft.shoppingmallfashion.admin.dto.IdNameDto;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 
-public class ItemRowMapper implements RowMapper<ItemIdNameDto> {
+public class IdNameRowMapper implements RowMapper<IdNameDto> {
     @Override
-    public ItemIdNameDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ItemIdNameDto item = new ItemIdNameDto();
+    public IdNameDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+        IdNameDto item = new IdNameDto();
         item.setId(rs.getLong("id"));
         item.setName(rs.getString("name"));
         return item;

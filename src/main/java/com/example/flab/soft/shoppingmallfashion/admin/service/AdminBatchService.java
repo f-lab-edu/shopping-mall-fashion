@@ -1,8 +1,8 @@
 package com.example.flab.soft.shoppingmallfashion.admin.service;
 
-import com.example.flab.soft.shoppingmallfashion.admin.dto.ItemIdNameDto;
+import com.example.flab.soft.shoppingmallfashion.admin.dto.IdNameDto;
 import com.example.flab.soft.shoppingmallfashion.admin.dto.TestItemDto;
-import com.example.flab.soft.shoppingmallfashion.admin.util.ItemRowMapper;
+import com.example.flab.soft.shoppingmallfashion.admin.util.IdNameRowMapper;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
@@ -15,6 +15,7 @@ import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,44 +24,65 @@ import org.springframework.stereotype.Service;
 public class AdminBatchService {
     private final JdbcTemplate jdbcTemplate;
 
+    public void bulkInsertCategories() {
+        String largeCategorySql = "INSERT INTO large_categories (name) VALUES (?)";
+        String categorySql = "INSERT INTO categories (name, large_category_id) VALUES (?, ?)";
+        List<Object[]> largeCategorBatchArgs = new ArrayList<>();
+        List<Object[]> categoryBatchArgs = new ArrayList<>();
+        TestLargeCategory.getElementsInList().forEach(largeCategory ->
+                largeCategorBatchArgs.add(new Object[]{largeCategory.name()}));
+
+        jdbcTemplate.batchUpdate(largeCategorySql, largeCategorBatchArgs);
+
+        String findAllLaregeCategoriesSql = "SELECT id, name FROM large_categories";
+
+        List<IdNameDto> idNameDtos = jdbcTemplate.query(findAllLaregeCategoriesSql, new IdNameRowMapper());
+
+        Map<String, Long> nameIdMap = new HashMap<>(idNameDtos.size() * 2);
+        idNameDtos.forEach(idNameDto -> nameIdMap.put(idNameDto.getName(), idNameDto.getId()));
+
+        TestLargeCategory.getElementsInList().forEach(testLargeCategory ->
+                testLargeCategory.getSubCategories().forEach(subCategory ->
+                        categoryBatchArgs.add(new Object[]{
+                                subCategory.getName(),
+                                nameIdMap.get(testLargeCategory.name())
+                        })));
+        jdbcTemplate.batchUpdate(categorySql, categoryBatchArgs);
+    }
+
     public void bulkInsertUsers(List<User> users) {
         String sql = "INSERT INTO users (email, password, real_name, cellphone_number, nickname) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
-        List<Object[]> batchArgs = new ArrayList<>();
-        for (User user : users) {
-            batchArgs.add(new Object[]{
-                    user.getEmail(),
-                    user.getPassword(),
-                    user.getRealName(),
-                    user.getCellphoneNumber(),
-                    user.getNickname()
-            });
-        }
-
-        jdbcTemplate.batchUpdate(sql, batchArgs);
+        jdbcTemplate.batchUpdate(sql, users, 500,
+                (ps, user) -> {
+                    ps.setString(1, user.getEmail());
+                    ps.setString(2, user.getPassword());
+                    ps.setString(3, user.getRealName());
+                    ps.setString(4, user.getCellphoneNumber());
+                    ps.setString(5, user.getNickname());
+                }
+        );
     }
 
     public void bulkInsertStores(List<Store> stores, SaleState saleState) {
         String sql = "INSERT INTO stores "
-                + "(name, logo, description, business_registration_number, manager_id, sale_state) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+                + "(name, logo, description, business_registration_number, manager_id, sale_state) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
-        List<Object[]> batchArgs = new ArrayList<>();
-        for (Store store : stores) {
-            batchArgs.add(new Object[]{
-                    store.getName(),
-                    store.getLogo(),
-                    store.getDescription(),
-                    store.getBusinessRegistrationNumber(),
-                    store.getManagerId(),
-                    saleState.name()
-            });
-        }
-
-        jdbcTemplate.batchUpdate(sql, batchArgs);
+        jdbcTemplate.batchUpdate(sql, stores, 500,
+                (ps, store) -> {
+                    ps.setString(1, store.getName());
+                    ps.setString(2, store.getLogo());
+                    ps.setString(3, store.getDescription());
+                    ps.setString(4, store.getBusinessRegistrationNumber());
+                    ps.setLong(5, store.getManagerId());
+                    ps.setString(6, saleState.name());
+                }
+        );
     }
 
+    @Async
     public void bulkInsertItems(List<TestItemDto> testItemDtos) {
         String itemSql = "INSERT INTO items "
                 + "(name, original_price, sale_price, description, "
@@ -108,7 +130,7 @@ public class AdminBatchService {
 
         before = System.currentTimeMillis();
 
-        List<ItemIdNameDto> idNameDtos = jdbcTemplate.query(findAllItemsSql, new ItemRowMapper());
+        List<IdNameDto> idNameDtos = jdbcTemplate.query(findAllItemsSql, new IdNameRowMapper());
 
         log.info("전체 아이템 조회에 걸린 시간: {}", System.currentTimeMillis() - before);
 
@@ -122,7 +144,7 @@ public class AdminBatchService {
                 .parallel()
                 .forEach(itemGroup -> {
                     List<Object[]> batchArgs = new ArrayList<>();
-                    for (ItemIdNameDto idNameDto : itemGroup) {
+                    for (IdNameDto idNameDto : itemGroup) {
                         List<ItemOptionDto> itemOptions = itemNameOptionsMap.get(idNameDto.getName());
                         itemOptions.forEach(itemOption -> batchArgs.add(new Object[]{
                                 itemOption.getName(),
