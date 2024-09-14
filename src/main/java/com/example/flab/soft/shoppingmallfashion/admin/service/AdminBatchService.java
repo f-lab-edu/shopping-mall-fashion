@@ -15,6 +15,7 @@ import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AdminBatchService {
     private final JdbcTemplate jdbcTemplate;
+    private final PasswordEncoder passwordEncoder;
 
     public void bulkInsertCategories() {
         String largeCategorySql = "INSERT INTO large_categories (name) VALUES (?)";
@@ -155,5 +157,14 @@ public class AdminBatchService {
                     jdbcTemplate.batchUpdate(itemOptionSql, batchArgs);
                 });
         log.info("아이템 옵션 배치에 걸린 시간: {}", System.currentTimeMillis() - before);
+    }
+
+    public void encryptPassword() {
+        String testPassword = "Password1#";
+        String encodedPassword = passwordEncoder.encode(testPassword);
+
+        String sql = "UPDATE users SET password = ?";
+
+        jdbcTemplate.update(sql, encodedPassword);
     }
 }

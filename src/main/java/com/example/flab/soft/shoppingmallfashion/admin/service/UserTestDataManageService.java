@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,11 @@ public class UserTestDataManageService {
                 .createdCount(userRepository.count())
                 .firstElementId(userRepository.findFirstBy().getId())
                 .build();
+    }
+
+    @Async
+    public void encryptPassword() {
+        adminBatchService.encryptPassword();
     }
 
     @Transactional
