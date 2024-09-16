@@ -14,10 +14,10 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("SELECT i FROM items i JOIN FETCH i.store s " +
             "JOIN FETCH i.category c JOIN FETCH c.largeCategory lc "
             + "WHERE " +
+            "(:storeId IS NULL OR i.store.id = :storeId) AND " +
+            "(:categoryId IS NULL OR i.category.id = :categoryId) AND " +
             "(:minPrice IS NULL OR i.salePrice >= :minPrice) AND " +
             "(:maxPrice IS NULL OR i.salePrice <= :maxPrice) AND " +
-            "(:categoryId IS NULL OR i.category.id = :categoryId) AND " +
-            "(:storeId IS NULL OR i.store.id = :storeId) AND " +
             "(:sex IS NULL OR i.sex = :sex) AND " +
             "i.saleState IN ('ON_SALE', 'TEMPORARILY_SOLD_OUT')")
     List<Item> findAllByFilters(@Param("minPrice") Integer minPrice,
