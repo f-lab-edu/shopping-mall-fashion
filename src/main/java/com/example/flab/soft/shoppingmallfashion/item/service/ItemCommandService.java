@@ -13,11 +13,13 @@ import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ItemCommandService {
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
@@ -40,6 +42,7 @@ public class ItemCommandService {
 
         category.increaseItemCount(1);
         itemSearchKeywordService.initDefaultSearchKeywords(item.getId());
+
         return ItemBriefDto.builder().item(item).build();
     }
 
@@ -84,5 +87,12 @@ public class ItemCommandService {
         if (!hasSucceed) {
             throw new ApiException(ErrorEnum.OUT_OF_STOCK);
         }
+    }
+
+    @Transactional
+    public void modifyOrderCount(Long itemId, Long orderCount) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+        item.modifyOrderCount(orderCount);
     }
 }

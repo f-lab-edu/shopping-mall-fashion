@@ -20,13 +20,11 @@ public class ItemSearchKeyword {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long itemId;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "search_keyword_id")
-    private SearchKeyword searchKeyword;
+    private String searchKeyword;
     private Boolean isDefault;
 
     @Builder
-    public ItemSearchKeyword(Long itemId, SearchKeyword searchKeyword, Boolean isDefault) {
+    public ItemSearchKeyword(Long itemId, String searchKeyword, Boolean isDefault) {
         this.itemId = itemId;
         this.searchKeyword = searchKeyword;
         this.isDefault = isDefault;
@@ -38,9 +36,5 @@ public class ItemSearchKeyword {
 
     public Boolean isDefault() {
         return isDefault;
-    }
-
-    public String getKeyword() {
-        return searchKeyword.getName();
     }
 }

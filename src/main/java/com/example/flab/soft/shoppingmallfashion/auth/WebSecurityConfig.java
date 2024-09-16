@@ -86,6 +86,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/v1/store/**").hasAuthority("STORE_MANAGEMENT")
                                 .requestMatchers("/api/v1/item/management/**").hasAuthority("ITEM_MANAGEMENT")
                                 .requestMatchers("/actuator/**").permitAll()
+                                .requestMatchers("/api/v1/admin/test-data").permitAll()
                                 .anyRequest().authenticated())
 
                 .exceptionHandling((exceptionHandling) ->

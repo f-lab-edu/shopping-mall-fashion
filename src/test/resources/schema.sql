@@ -38,8 +38,7 @@ CREATE TABLE stores (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     sale_state ENUM('PREPARING', 'ON_SALE', 'ON_STOPPAGE', 'WITHDRAWAL') NOT NULL DEFAULT 'PREPARING',
     PRIMARY KEY (id),
-    FOREIGN KEY (manager_id) REFERENCES users (id),
-    INDEX fk_stores_user (manager_id),
+    INDEX idx_stores_user (manager_id),
     UNIQUE (name),
     UNIQUE (business_registration_number)
 );
@@ -151,8 +150,7 @@ CREATE TABLE categories (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (large_category_id) REFERENCES large_categories (id),
-    INDEX fk_large_category (large_category_id),
-    UNIQUE(name)
+    UNIQUE(large_category_id, name)
 );
 
 CREATE TABLE items (
@@ -177,14 +175,13 @@ CREATE TABLE items (
     PRIMARY KEY (id),
     FOREIGN KEY (store_id) REFERENCES stores (id),
     FOREIGN KEY (category_id) REFERENCES categories (id),
-    FOREIGN KEY (lastly_modified_by) REFERENCES crews (id),
-    INDEX fk_items_store (store_id),
-    INDEX fk_items_category (category_id)
+    INDEX idx_item_name (name),
+    INDEX idx_crew (lastly_modified_by)
 );
 
 CREATE TABLE item_options (
     id BIGINT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(45) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     size VARCHAR(10) NOT NULL,
     option_value VARCHAR(25),
     item_id BIGINT(20) NOT NULL,
@@ -312,25 +309,15 @@ CREATE TABLE new_store_register_requests (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-
-CREATE TABLE search_keywords (
-    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(45) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (name)
-);
-
 CREATE TABLE item_search_keywords (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    search_keyword_id BIGINT NOT NULL,
+    search_keyword VARCHAR(45) NOT NULL,
     item_id BIGINT NOT NULL,
     is_default BOOLEAN,
-    FOREIGN KEY (search_keyword_id) REFERENCES search_keywords (id),
     FOREIGN KEY (item_id) REFERENCES items (id),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (item_id, search_keyword_id)
+    UNIQUE (search_keyword, item_id)
 );
 
 CREATE TABLE item_relations (
@@ -535,6 +522,4 @@ INSERT INTO item_options (name, size, option_value, item_id, sale_state, stocks_
     ('Option 43', 'M', 'Color: Green', 10, 'ON_SALE', 80, 8, '2024-07-25 15:17:21', '2024-07-25 15:17:21', '2024-07-25 15:17:21'),
     ('Option 44', 'XL', 'Color: Green', 10, 'SOLD_OUT', 51, 3, '2024-07-25 15:17:21', '2024-07-25 15:17:21', '2024-07-25 15:17:21');
 
-INSERT INTO search_keywords (name) VALUES ('Shirts'), ('Pants'), ('Jeans'), ('Jackets');
-
-INSERT INTO item_search_keywords (search_keyword_id, item_id)VALUES (1, 2),(2, 6),(3, 8),(4, 3),(4, 4);
+INSERT INTO item_search_keywords (search_keyword, item_id)VALUES ('Shirts', 2),('Pants', 6),('Jeans', 8),('Jackets', 3),('Jackets', 4);
