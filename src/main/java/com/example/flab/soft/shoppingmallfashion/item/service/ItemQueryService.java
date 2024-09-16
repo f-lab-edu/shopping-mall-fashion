@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,16 @@ public class ItemQueryService {
     @Transactional(readOnly = true)
     public Page<ItemBriefDto> getItems(Integer minPrice, Integer maxPrice,
                                        Long categoryId, Long storeId, Sex sex, Pageable pageable) {
-        return itemRepository.findAllByFilters(minPrice, maxPrice, categoryId, storeId, sex, pageable)
-                .map(ItemBriefDto::new);
+        return new PageImpl<>(itemRepository.findAllByFilters(minPrice, maxPrice, categoryId, storeId, sex, pageable)
+                .stream().map(ItemBriefDto::new).toList(), pageable, 10);
+    }
+
+    @Transactional(readOnly = true)
+    public ItemsCountDto getItemCounts(Integer minPrice, Integer maxPrice,
+                                       Long categoryId, Long storeId, Sex sex) {
+        return ItemsCountDto.builder()
+                .count(itemRepository.countByFilters(minPrice, maxPrice, categoryId, storeId, sex))
+                .build();
     }
 
     @Transactional(readOnly = true)

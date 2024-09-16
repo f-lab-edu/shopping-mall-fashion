@@ -20,12 +20,25 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "(:storeId IS NULL OR i.store.id = :storeId) AND " +
             "(:sex IS NULL OR i.sex = :sex) AND " +
             "i.saleState IN ('ON_SALE', 'TEMPORARILY_SOLD_OUT')")
-    Page<Item> findAllByFilters(@Param("minPrice") Integer minPrice,
+    List<Item> findAllByFilters(@Param("minPrice") Integer minPrice,
                                 @Param("maxPrice") Integer maxPrice,
                                 @Param("categoryId") Long categoryId,
                                 @Param("storeId") Long storeId,
                                 @Param("sex") Sex sex,
                                 Pageable pageable);
+
+    @Query("SELECT COUNT (i) FROM items i WHERE " +
+            "(:minPrice IS NULL OR i.salePrice >= :minPrice) AND " +
+            "(:maxPrice IS NULL OR i.salePrice <= :maxPrice) AND " +
+            "(:categoryId IS NULL OR i.category.id = :categoryId) AND " +
+            "(:storeId IS NULL OR i.store.id = :storeId) AND " +
+            "(:sex IS NULL OR i.sex = :sex) AND " +
+            "i.saleState IN ('ON_SALE', 'TEMPORARILY_SOLD_OUT')")
+    Long countByFilters(@Param("minPrice") Integer minPrice,
+                                @Param("maxPrice") Integer maxPrice,
+                                @Param("categoryId") Long categoryId,
+                                @Param("storeId") Long storeId,
+                                @Param("sex") Sex sex);
 
     @Query("SELECT i FROM items i JOIN FETCH i.store s "
             + "JOIN FETCH i.category c JOIN FETCH c.largeCategory lc "

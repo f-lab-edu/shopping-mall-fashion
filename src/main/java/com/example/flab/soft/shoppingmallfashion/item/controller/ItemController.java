@@ -4,8 +4,7 @@ import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemDetailsDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemQueryService;
-import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordDto;
-import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordService;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemsCountDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemQueryService itemService;
-    private final ItemSearchKeywordService itemSearchKeywordService;
 
     @GetMapping
     public SuccessResult<Page<ItemBriefDto>> getItems(
@@ -35,6 +33,17 @@ public class ItemController {
                 itemListRequest.getCategoryId(), itemListRequest.getStoreId(),
                 itemListRequest.getSex(), pageable);
         return SuccessResult.<Page<ItemBriefDto>>builder().response(items).build();
+    }
+
+    @GetMapping("/count")
+    public SuccessResult<ItemsCountDto> getItemsCount(
+            ItemListRequest itemListRequest) {
+        return SuccessResult.<ItemsCountDto>builder()
+                .response(itemService.getItemCounts(
+                            itemListRequest.getMinPrice(), itemListRequest.getMaxPrice(),
+                            itemListRequest.getCategoryId(), itemListRequest.getStoreId(),
+                            itemListRequest.getSex()))
+                .build();
     }
 
     @GetMapping("/items-with-keyword")
