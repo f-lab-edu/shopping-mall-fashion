@@ -177,9 +177,8 @@ CREATE TABLE items (
     FOREIGN KEY (category_id) REFERENCES categories (id),
     INDEX idx_item_name (name),
     INDEX idx_crew (lastly_modified_by),
-    INDEX idx_order_count (order_count) DESC,
-    INDEX idx_sale_price (sale_price),
-
+    INDEX idx_order_count (order_count desc),
+    INDEX idx_sale_price (sale_price)
 );
 
 CREATE TABLE item_options (
