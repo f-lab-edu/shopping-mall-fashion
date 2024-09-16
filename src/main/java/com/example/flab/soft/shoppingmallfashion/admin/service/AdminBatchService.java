@@ -39,7 +39,7 @@ public class AdminBatchService {
 
         List<IdNameDto> idNameDtos = jdbcTemplate.query(findAllLaregeCategoriesSql, new IdNameRowMapper());
 
-        Map<String, Long> nameIdMap = new HashMap<>(idNameDtos.size() * 2);
+        Map<String, Long> nameIdMap = new HashMap<>((int) (idNameDtos.size() * 1.4));
         idNameDtos.forEach(idNameDto -> nameIdMap.put(idNameDto.getName(), idNameDto.getId()));
 
         TestLargeCategory.getElementsInList().forEach(testLargeCategory ->

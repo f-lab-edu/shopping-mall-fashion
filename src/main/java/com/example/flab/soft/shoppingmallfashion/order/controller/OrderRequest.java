@@ -15,8 +15,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class OrderRequest {
     @NotNull
-    private Long itemId;
-    @NotNull
     private Long itemOptionId;
     @NotNull
     @Min(1)

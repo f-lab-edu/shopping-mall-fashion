@@ -2,6 +2,7 @@ package com.example.flab.soft.shoppingmallfashion.item.controller;
 
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDto;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemDetailsDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemQueryService;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordService;
@@ -48,13 +49,12 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public SuccessResult<ItemDto> getItemDetails(
-            @PathVariable Long itemId,
-            @RequestParam Long storeId,
-            @RequestParam Long categoryId) {
+            @PathVariable Long itemId) {
+        ItemDetailsDto itemDetails = itemService.getItemDetails(itemId);
         ItemDto itemDto = ItemDto.builder()
-                .itemDetailsDto(itemService.getItemDetails(itemId))
-                .sameStoreItems(itemService.getSameStoreItems(storeId))
-                .sameCategoryItems(itemService.getSameCategoryItems(categoryId))
+                .itemDetailsDto(itemDetails)
+                .sameStoreItems(itemService.getSameStoreItems(itemDetails.getItemBriefDto().getStoreId()))
+                .sameCategoryItems(itemService.getSameCategoryItems(itemDetails.getItemBriefDto().getCategoryId()))
                 .relatedItems(itemService.getRelatedItems(itemId))
                 .build();
         return SuccessResult.<ItemDto>builder().response(itemDto).build();

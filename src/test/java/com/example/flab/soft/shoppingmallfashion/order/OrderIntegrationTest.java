@@ -101,7 +101,6 @@ class OrderIntegrationTest {
     @DisplayName("상품 주문시 재고 이상으로 주문시 예외, 주문은 생성되지 않으며 재고수는 감소하지 않는다")
     void whenOrderAmountIsBiggerThanStocks_thenThrowException() {
         OrderRequest orderRequest = OrderRequest.builder()
-                .itemId(item.getId())
                 .itemOptionId(itemOption.getId())
                 .orderAmount(2)
                 .recipientName("name")
@@ -120,7 +119,6 @@ class OrderIntegrationTest {
     @DisplayName("상품 주문시 주문 수량만큼 재고수 감소")
     void reduceStocksCountAsMuchAsOrderAmounts() {
         OrderRequest orderRequest = OrderRequest.builder()
-                .itemId(item.getId())
                 .itemOptionId(itemOption.getId())
                 .orderAmount(1)
                 .totalPrice(10000)
@@ -160,7 +158,6 @@ class OrderIntegrationTest {
                 .build());
 
         OrderRequest orderRequest = OrderRequest.builder()
-                .itemId(item.getId())
                 .itemOptionId(itemOption.getId())
                 .orderAmount(1)
                 .totalPrice(10000)
@@ -187,7 +184,6 @@ class OrderIntegrationTest {
     @DisplayName("상품 주문시 계산 금액 = 총 금액 - 할인 금액 - 쿠폰 할인 금액")
     void paymentAmountsNeedsToBeEqualToTotalPriceMinusDiscountedAmounts() {
         OrderRequest orderRequest = OrderRequest.builder()
-                .itemId(item.getId())
                 .itemOptionId(itemOption.getId())
                 .orderAmount(1)
                 .totalPrice(10000)

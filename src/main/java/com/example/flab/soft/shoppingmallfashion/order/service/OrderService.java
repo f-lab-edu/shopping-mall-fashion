@@ -46,7 +46,7 @@ public class OrderService {
 
         if (isCouponUsed) {
             UsedCouponInfo usedCouponInfo = couponService.useCoupon(
-                    orderRequest.getUsedCouponId(), userId, orderRequest.getItemId(), order.getId());
+                    orderRequest.getUsedCouponId(), userId, itemOption.getItem().getId(), order.getId());
             order.applyUserCoupon(usedCouponInfo);
         }
         //TODO 결제 로직 추가
