@@ -53,7 +53,7 @@ public class ItemQueryService {
     }
 
     @Transactional(readOnly = true)
-    public List<ItemBriefDto> getSameStoreItems(Long storeId) {
+    public List<ItemBriefDto> getTopItemsByStore(Long storeId) {
         Pageable pageable = PageRequest.of(0, 20);
         return itemRepository.findTopItemsByStoreId(storeId, pageable)
                 .stream()
@@ -62,7 +62,7 @@ public class ItemQueryService {
     }
 
     @Transactional(readOnly = true)
-    public List<ItemBriefDto> getSameCategoryItems(Long categoryId) {
+    public List<ItemBriefDto> getTopItemsByCategory(Long categoryId) {
         Pageable pageable = PageRequest.of(0, 20);
         return itemRepository.findTopItemsByCategoryId(categoryId, pageable)
                 .stream()

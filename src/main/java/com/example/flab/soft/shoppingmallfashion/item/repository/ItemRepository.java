@@ -46,11 +46,15 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             + "WHERE i.id = :id")
     Optional<Item> findItemJoinFetchById(Long id);
 
-    @Query("SELECT i FROM items i WHERE i.category.id = :categoryId "
+    @Query("SELECT i FROM items i JOIN FETCH i.store s "
+            + "JOIN FETCH i.category c JOIN FETCH c.largeCategory lc "
+            + "WHERE i.category.id = :categoryId "
             + "ORDER BY i.itemStats.orderCount DESC")
     List<Item> findTopItemsByCategoryId(Long categoryId, Pageable pageable);
 
-    @Query("SELECT i FROM items i WHERE i.store.id = :storeId "
+    @Query("SELECT i FROM items i JOIN FETCH i.store s "
+            + "JOIN FETCH i.category c JOIN FETCH c.largeCategory lc "
+            + "WHERE i.store.id = :storeId "
             + "ORDER BY i.itemStats.orderCount DESC")
     List<Item> findTopItemsByStoreId(Long storeId, Pageable pageable);
 

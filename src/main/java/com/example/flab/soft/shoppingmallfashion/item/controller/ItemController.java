@@ -5,6 +5,7 @@ import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemDetailsDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemQueryService;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemsCountDto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,15 +58,34 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public SuccessResult<ItemDto> getItemDetails(
+    public SuccessResult<ItemDetailsDto> getItemDetails(
             @PathVariable Long itemId) {
-        ItemDetailsDto itemDetails = itemService.getItemDetails(itemId);
-        ItemDto itemDto = ItemDto.builder()
-                .itemDetailsDto(itemDetails)
-                .sameStoreItems(itemService.getSameStoreItems(itemDetails.getItemBriefDto().getStoreId()))
-                .sameCategoryItems(itemService.getSameCategoryItems(itemDetails.getItemBriefDto().getCategoryId()))
-                .relatedItems(itemService.getRelatedItems(itemId))
+        return SuccessResult.<ItemDetailsDto>builder()
+                .response(itemService.getItemDetails(itemId))
                 .build();
-        return SuccessResult.<ItemDto>builder().response(itemDto).build();
+    }
+
+    @GetMapping("/top-items-by-store")
+    public SuccessResult<List<ItemBriefDto>> getTopItemsByStore(
+            @RequestParam Long storeId) {
+        return SuccessResult.<List<ItemBriefDto>>builder()
+                .response(itemService.getTopItemsByStore(storeId))
+                .build();
+    }
+
+    @GetMapping("/top-items-by-category")
+    public SuccessResult<List<ItemBriefDto>> getTopItemsByCategory(
+            @RequestParam Long categoryId) {
+        return SuccessResult.<List<ItemBriefDto>>builder()
+                .response(itemService.getTopItemsByCategory(categoryId))
+                .build();
+    }
+
+    @GetMapping("/{itemId}/top-related-items")
+    public SuccessResult<List<ItemBriefDto>> getRelatedItems(
+            @PathVariable Long itemId) {
+        return SuccessResult.<List<ItemBriefDto>>builder()
+                .response(itemService.getRelatedItems(itemId))
+                .build();
     }
 }
