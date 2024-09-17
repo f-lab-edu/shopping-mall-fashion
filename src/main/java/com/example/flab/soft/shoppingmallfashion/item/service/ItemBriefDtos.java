@@ -1,14 +1,15 @@
 package com.example.flab.soft.shoppingmallfashion.item.service;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class ItemsCountDto {
-    private Long count;
+public class ItemBriefDtos {
+    private List<ItemBriefDto> items;
 }

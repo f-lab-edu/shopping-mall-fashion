@@ -10,6 +10,7 @@ import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,15 +24,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class ItemQueryService {
     private final ItemRepository itemRepository;
     private final ItemRelationRepository itemRelationRepository;
+    private final ItemCacheService itemCacheService;
 
     @Transactional(readOnly = true)
     public Page<ItemBriefDto> getItems(Integer minPrice, Integer maxPrice,
                                        Long categoryId, Long storeId, Sex sex, Pageable pageable) {
-        return new PageImpl<>(itemRepository.findAllByFilters(minPrice, maxPrice, categoryId, storeId, sex, pageable)
-                .stream().map(ItemBriefDto::new).toList(), pageable, 10);
+        return new PageImpl<>(
+                itemCacheService.getItems(minPrice, maxPrice, categoryId, storeId, sex, pageable).getItems(),
+                pageable, 10);
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "ITEM_LIST_COUNT",
+            key = "#categoryId + ':' + #storeId",
+            cacheManager = "cacheManager")
     public ItemsCountDto getItemCounts(Integer minPrice, Integer maxPrice,
                                        Long categoryId, Long storeId, Sex sex) {
         return ItemsCountDto.builder()
@@ -45,6 +51,9 @@ public class ItemQueryService {
                 .map(ItemBriefDto::new);
     }
 
+    @Cacheable(cacheNames = "ITEM_DETAILS",
+            key = "#itemId",
+            cacheManager = "cacheManager")
     @Transactional(readOnly = true)
     public ItemDetailsDto getItemDetails(Long itemId) {
         Item item = itemRepository.findItemJoinFetchById(itemId)
@@ -52,22 +61,32 @@ public class ItemQueryService {
         return ItemDetailsDto.builder().item(item).build();
     }
 
+    @Cacheable(cacheNames = "TOP_ITEMS_STORE",
+            key = "#storeId",
+            cacheManager = "cacheManager")
     @Transactional(readOnly = true)
-    public List<ItemBriefDto> getTopItemsByStore(Long storeId) {
+    public ItemBriefDtos getTopItemsByStore(Long storeId) {
         Pageable pageable = PageRequest.of(0, 20);
-        return itemRepository.findTopItemsByStoreId(storeId, pageable)
-                .stream()
-                .map(ItemBriefDto::new)
-                .toList();
+        return ItemBriefDtos.builder()
+                .items(itemRepository.findTopItemsByStoreId(storeId, pageable)
+                        .stream()
+                        .map(ItemBriefDto::new)
+                        .toList())
+                .build();
     }
 
+    @Cacheable(cacheNames = "TOP_ITEMS_CATEGORY",
+            key = "'top-items:category:' + #categoryId",
+            cacheManager = "cacheManager")
     @Transactional(readOnly = true)
-    public List<ItemBriefDto> getTopItemsByCategory(Long categoryId) {
+    public ItemBriefDtos getTopItemsByCategory(Long categoryId) {
         Pageable pageable = PageRequest.of(0, 20);
-        return itemRepository.findTopItemsByCategoryId(categoryId, pageable)
-                .stream()
-                .map(ItemBriefDto::new)
-                .toList();
+        return ItemBriefDtos.builder()
+                .items(itemRepository.findTopItemsByCategoryId(categoryId, pageable)
+                        .stream()
+                        .map(ItemBriefDto::new)
+                        .toList())
+                .build();
     }
 
     @Transactional(readOnly = true)

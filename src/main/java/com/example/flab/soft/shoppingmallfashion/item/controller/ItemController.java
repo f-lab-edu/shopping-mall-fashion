@@ -2,6 +2,7 @@ package com.example.flab.soft.shoppingmallfashion.item.controller;
 
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDto;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDtos;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemDetailsDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemQueryService;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemsCountDto;
@@ -66,17 +67,17 @@ public class ItemController {
     }
 
     @GetMapping("/top-items-by-store")
-    public SuccessResult<List<ItemBriefDto>> getTopItemsByStore(
+    public SuccessResult<ItemBriefDtos> getTopItemsByStore(
             @RequestParam Long storeId) {
-        return SuccessResult.<List<ItemBriefDto>>builder()
+        return SuccessResult.<ItemBriefDtos>builder()
                 .response(itemService.getTopItemsByStore(storeId))
                 .build();
     }
 
     @GetMapping("/top-items-by-category")
-    public SuccessResult<List<ItemBriefDto>> getTopItemsByCategory(
+    public SuccessResult<ItemBriefDtos> getTopItemsByCategory(
             @RequestParam Long categoryId) {
-        return SuccessResult.<List<ItemBriefDto>>builder()
+        return SuccessResult.<ItemBriefDtos>builder()
                 .response(itemService.getTopItemsByCategory(categoryId))
                 .build();
     }
