@@ -13,7 +13,6 @@ public class ItemOptionBriefDto {
     private String name;
     private String option;
     private SaleState saleState;
-    private Long stocksCount;
 
     @Builder
     public ItemOptionBriefDto(ItemOption itemOption) {
@@ -21,6 +20,5 @@ public class ItemOptionBriefDto {
         this.name = itemOption.getName();
         this.option = itemOption.getOptionValue();
         this.saleState = itemOption.getSaleState();
-        this.stocksCount = itemOption.getStocksCount();
     }
 }

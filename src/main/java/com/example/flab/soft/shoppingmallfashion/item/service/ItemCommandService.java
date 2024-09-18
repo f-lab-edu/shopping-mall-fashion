@@ -27,6 +27,7 @@ public class ItemCommandService {
     private final StoreRepository storeRepository;
     private final ItemOptionRepository itemOptionRepository;
     private final ItemSearchKeywordService itemSearchKeywordService;
+    private final ItemCacheService itemCacheService;
 
     @Transactional
     public ItemBriefDto addItem(ItemCreateRequest itemCreateRequest, Long userId) {
@@ -99,12 +100,14 @@ public class ItemCommandService {
     }
 
     @Transactional
-    @CacheEvict(cacheNames = "STOCKS", key = "#itemOptionId")
-    public Long reduceStock(Long itemOptionId, Integer amount) {
+    public void reduceStock(Long itemOptionId, Integer amount) {
         ItemOption itemOption = itemOptionRepository.findById(itemOptionId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
         Long stocksAfter = itemOption.reduceStocksCount(amount);
-        itemOption.getItem().renewSaleState();
-        return stocksAfter;
+        Item item = itemOption.getItem();
+        item.renewSaleState();
+        if (stocksAfter == 0) {
+            itemCacheService.deleteItemDetails(item.getId());
+        }
     }
 }

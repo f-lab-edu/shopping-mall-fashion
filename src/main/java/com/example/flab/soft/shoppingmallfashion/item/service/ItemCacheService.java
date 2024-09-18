@@ -3,8 +3,10 @@ package com.example.flab.soft.shoppingmallfashion.item.service;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,5 +28,12 @@ public class ItemCacheService {
                         .map(ItemBriefDto::new)
                         .toList())
                 .build();
+    }
+
+    @CacheEvict(cacheNames = "ITEM_DETAILS",
+            key = "#itemId",
+            cacheManager = "cacheManager")
+    @Transactional
+    public void deleteItemDetails(Long itemId) {
     }
 }
