@@ -14,6 +14,7 @@ import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepositor
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +62,7 @@ public class ItemCommandService {
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
         itemOption.beSoldOut(isTemporarily);
+        itemOption.getItem().renewSaleState();
     }
 
     @Transactional
@@ -94,5 +96,15 @@ public class ItemCommandService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
         item.modifyOrderCount(orderCount);
+    }
+
+    @Transactional
+    @CacheEvict(cacheNames = "STOCKS", key = "#itemOptionId")
+    public Long reduceStock(Long itemOptionId, Integer amount) {
+        ItemOption itemOption = itemOptionRepository.findById(itemOptionId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+        Long stocksAfter = itemOption.reduceStocksCount(amount);
+        itemOption.getItem().renewSaleState();
+        return stocksAfter;
     }
 }

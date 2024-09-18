@@ -199,6 +199,14 @@ class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("상품 옵션 완판시 상품 판매 상태가 SOLD OUT으로 변경되어야 한다.")
+    void when_all_item_options_sold_out_item_sale_state_changes_to_sold_out() {
+        itemCommandService.reduceStock(itemOption.getId(), 10);
+
+        assertThat(item.getSaleState()).isEqualTo(SaleState.SOLD_OUT);
+    }
+
+    @Test
     @DisplayName("상품 검색 키워드 추가")
     void change_item_search_keywords() {
         String keyword1 = "pants";

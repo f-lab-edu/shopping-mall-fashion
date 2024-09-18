@@ -5,6 +5,7 @@ import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemOptionRepository;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemCommandService;
 import com.example.flab.soft.shoppingmallfashion.order.controller.DeliveryInfoUpdateRequest;
 import com.example.flab.soft.shoppingmallfashion.order.controller.OrderRequest;
 import com.example.flab.soft.shoppingmallfashion.order.domain.Order;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderService {
     private final CouponService couponService;
+    private final ItemCommandService itemCommandService;
     private final OrderRepository orderRepository;
     private final ItemOptionRepository itemOptionRepository;
     private final UserRepository userRepository;
@@ -33,7 +35,7 @@ public class OrderService {
         ItemOption itemOption = itemOptionRepository.findByIdForUpdate(orderRequest.getItemOptionId())
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
-        itemOption.reduceStocksCount(orderRequest.getOrderAmount());
+        itemCommandService.reduceStock(itemOption.getId(), orderRequest.getOrderAmount());
 
         Order order = orderRepository.save(Order.of(orderRequest, itemOption.getItem(), itemOption,
                 user, DeliveryInfoMapper.INSTANCE.toDeliveryInfo(orderRequest)));
