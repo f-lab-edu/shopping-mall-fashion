@@ -39,10 +39,30 @@ jobs:
           push: true
           tags: wedowhatwedo/mall-qa:latest
 
-      - name: Deploy
+      - name: Deploy to server 1
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT }}
+          script: |
+            sudo docker pull wedowhatwedo/mall-qa:latest
+            sudo docker stop backend || true
+            sudo docker rm backend || true
+            sudo docker run -d --name backend -p 8080:8080 \
+              -v /home/ubuntu/logs:/var/logs \
+              -e COOLSMS_API_KEY="${{ secrets.COOLSMS_KEY }}" \
+              -e COOLSMS_API_SECRET="${{ secrets.COOLSMS_SECRET }}" \
+              -e COOLSMS_API_NUMBER="${{ secrets.COOLSMS_NUMBER }}" \
+              -e SPRING_MAIL_USERNAME="${{ secrets.GMAIL_USERNAME }}" \
+              -e SPRING_MAIL_PASSWORD="${{ secrets.GMAIL_PASSWORD }}" \
+              wedowhatwedo/mall-qa:latest
+
+      - name: Deploy to server 2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST2 }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_SSH_PORT }}
