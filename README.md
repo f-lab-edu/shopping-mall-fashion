@@ -95,7 +95,6 @@ Ngrinder를 통해 요구사항에 맞는 트래픽을 발생시킨 결과, 주�
 또한 현재 캐시 서버에서 판매 상태와 재고를 각각 다른 키로 관리하고 있었기 때문에 상품이 품절되지 않았음에도 재고가 0개가 되어 주문이 되지 않는 등 데이터 무결성과 정합성이 유지되지 않는 문제가 발생할 수 있었습니다.
 이를 해결하기 위해 **Redis Transaction을 이용**하여 상품의 판매 상태와 재고 **변경이 아토믹하게 적용**되도록 설계했습니다.
 
-
 #### 6. 결과
 위의 요구사항을 기준으로 **그라파나를 통해 확인**한 결과 조회 응답속도 평균은 300ms → 130ms로 **각각 2.5배 정도의 성능 개선**을 확인할 수 있었습니다. 
 
@@ -104,9 +103,89 @@ Ngrinder를 통해 요구사항에 맞는 트래픽을 발생시킨 결과, 주�
 <img width="1404" alt="image" src="https://github.com/user-attachments/assets/278d1897-fe8e-447e-9679-816ace5c85be">
 <img width="526" alt="image" src="https://github.com/user-attachments/assets/db2e40b9-64e2-4daf-b128-4cc4b46839b6">
 
-## 대량의 상품 데이터 삽입
+## 대량의 상품 데이터 삽입
 
+### 1. 대량의 상품 및 옵션 데이터 배치
+십만 건의 상품 데이터와 오십만 건의 상품 옵션 데이터를 대량으로 배치하는 기능을 구현했습니다. (상품별 옵션 5개씩 배치)
 
+### 2. 인메모리 해시맵 사용
+상품 옵션 삽입 시, 상품 레코드의 PK 값이 필요해 추가적인 쓰기 및 조회 쿼리가 필요했습니다. 이를 해결하기 위해, 상품과 옵션 간의 관계 정보를 인메모리 해시맵에 임시로 저장하는 방식을 선택했습니다.
+
+싱글 인스턴스와 적은 키 개수(약 1만 개)를 고려해 Redis 등 캐시 서버 대신 인메모리 캐시를 사용했습니다. 해시맵을 사용한 이유는 키로 사용되는 상품명이 고유하며, 이를 기반으로 상수 시간에 조회가 가능하기 때문입니다.
+
+```java
+Map<String, List<ItemOptionDto>> itemNameOptionsMap = new HashMap<>(testItemDtos.size() * 2);
+```
+
+### 3. JdbcTemplate 사용
+전체 데이터 중 상품 및 옵션 데이터가 90% 이상을 차지하므로, JdbcTemplate을 이용한 벌크 연산으로 삽입을 구현했습니다.
+JPA가 제공하는 bulk insert는 키 자동 생성 전략으로 인해 사용할 수 없었습니다. 이를 통해 삽입, 삭제에서는 90% 이상의 성능 개선을 얻었습니다.
+
+### 4. 멀티 쓰레드 사용
+```java
+List<TestItemDto> itemDtos = ConcurrentUtil.collect(IntStream.range(0, itemCount)
+                .mapToObj(i -> {
+                    return executorService.submit(() ->
+                            ItemDtoGenerator.generateItemTestDtos(userCreatedDataInfo,
+                                    storeCreatedDataInfo, categoryCreatedDataInfo));
+                })
+                .toList());
+
+```
+### 5. 병렬 스트림 사용
+병렬 스트림을 이용해 약 300%의 성능 개선을 얻었습니다. 기존에는 모든 데이터를 한꺼번에 삽입했으나, 개선된 방식에서는 500개 단위로 그룹화해 병렬 처리를 적용했습니다. 그룹 사이즈는 실험적으로 결정되었으며, 대량의 데이터를 나누어 비동기적으로 처리함으로써 성능 이점을 얻을 수 있었습니다.
+
+<기존 코드>
+```java
+List<Object[]> itemBatchArgs = new ArrayList<>();
+        Map<String, List<ItemOptionDto>> itemNameOptionsMap =
+                new HashMap<>(testItemDtos.size() * 2);
+        for (TestItemDto testItemDto : testItemDtos) {
+            itemBatchArgs.add(new Object[]{
+                    testItemDto.getName(),
+                    testItemDto.getOriginalPrice(),
+                    testItemDto.getSalePrice(),
+                    testItemDto.getDescription(),
+                    testItemDto.getSex().name(),
+                    testItemDto.getSaleState().name(),
+                    testItemDto.getStoreId(),
+                    testItemDto.getCategoryId(),
+                    testItemDto.getIsModifiedBy(),
+                    testItemDto.getOrderCount()
+            });
+            itemNameOptionsMap.put(testItemDto.getName(), testItemDto.getItemOptions());
+        }
+        jdbcTemplate.batchUpdate(itemSql, itemBatchArgs);
+```
+<변경된 코드>
+```java
+IntStream.range(0, numberOfItemGroups)
+                .mapToObj(i -> testItemDtos.subList(i * groupSize, Math.min((i + 1) * groupSize, testItemDtos.size())))
+                .parallel()
+                .forEach(itemGroup -> {
+                    List<Object[]> batchArgs = new ArrayList<>();
+                    for (TestItemDto item : itemGroup) {
+                        batchArgs.add(new Object[]{
+                                item.getName(),
+                                item.getOriginalPrice(),
+                                item.getSalePrice(),
+                                item.getDescription(),
+                                item.getSex().name(),
+                                item.getSaleState().name(),
+                                item.getStoreId(),
+                                item.getCategoryId(),
+                                item.getIsModifiedBy(),
+                                item.getOrderCount()
+                        });
+                        itemNameOptionsMap.put(item.getName(), item.getItemOptions());
+                    }
+                    jdbcTemplate.batchUpdate(itemSql, batchArgs);
+                });
+```
+
+jdbcTemplate.batchUpdate(itemSql, batchArgs); 부분을 비동기 처리하려 했지만, 성능이 오히려 저하되었습니다.
+
+기존 HashMap<>을 사용해 상수 시간 조회를 보장했고, 테스트 데이터의 정합성이 중요해진다면 ConcurrentHashMap<>으로 전환할 계획입니다.
 <br>
 
 # 💻 모니터링 환경
