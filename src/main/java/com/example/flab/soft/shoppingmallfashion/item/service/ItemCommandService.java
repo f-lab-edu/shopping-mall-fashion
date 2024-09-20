@@ -109,5 +109,6 @@ public class ItemCommandService {
         if (stocksAfter == 0) {
             itemCacheService.deleteItemDetails(item.getId());
         }
+        itemCacheService.deleteItemOptionStocks(itemOptionId);
     }
 }

@@ -36,4 +36,11 @@ public class ItemCacheService {
     @Transactional
     public void deleteItemDetails(Long itemId) {
     }
+
+    @CacheEvict(cacheNames = "STOCKS",
+            key = "#itemOptionId",
+            cacheManager = "cacheManager")
+    @Transactional
+    public void deleteItemOptionStocks(Long itemOptionId) {
+    }
 }

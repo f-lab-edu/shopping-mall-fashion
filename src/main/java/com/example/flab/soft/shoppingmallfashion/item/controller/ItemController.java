@@ -4,6 +4,7 @@ import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDtos;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemDetailsDto;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemOptionStocksDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemQueryService;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemsCountDto;
 import java.util.List;
@@ -63,6 +64,14 @@ public class ItemController {
             @PathVariable Long itemId) {
         return SuccessResult.<ItemDetailsDto>builder()
                 .response(itemService.getItemDetails(itemId))
+                .build();
+    }
+
+    @GetMapping("/{itemId}/{itemOptionId}/stocks")
+    public SuccessResult<ItemOptionStocksDto> getStocks(
+            @PathVariable Long itemOptionId) {
+        return SuccessResult.<ItemOptionStocksDto>builder()
+                .response(itemService.getStocks(itemOptionId))
                 .build();
     }
 

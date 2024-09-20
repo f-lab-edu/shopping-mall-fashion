@@ -15,6 +15,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 public class RedisConfig {
@@ -43,6 +45,8 @@ public class RedisConfig {
 
         redisTemplate.setDefaultSerializer(new StringRedisSerializer());
 
+        redisTemplate.setEnableTransactionSupport(true);
+
         return redisTemplate;
     }
 
@@ -58,9 +62,15 @@ public class RedisConfig {
         redisCacheConfigMap.put("ITEM_LIST_COUNT", defaultConfig.entryTtl(Duration.ofDays(1)));
         redisCacheConfigMap.put("TOP_ITEMS_STORE", defaultConfig.entryTtl(Duration.ofMinutes(10)));
         redisCacheConfigMap.put("TOP_ITEMS_CATEGORY", defaultConfig.entryTtl(Duration.ofMinutes(10)));
+        redisCacheConfigMap.put("STOCKS", defaultConfig.entryTtl(Duration.ofMinutes(10)));
 
         return RedisCacheManager.builder(redisConnectionFactory())
                 .withInitialCacheConfigurations(redisCacheConfigMap)
                 .build();
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new JpaTransactionManager();
     }
 }

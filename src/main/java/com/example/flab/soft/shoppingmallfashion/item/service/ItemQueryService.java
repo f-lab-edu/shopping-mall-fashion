@@ -3,8 +3,10 @@ package com.example.flab.soft.shoppingmallfashion.item.service;
 import com.example.flab.soft.shoppingmallfashion.exception.ApiException;
 import com.example.flab.soft.shoppingmallfashion.exception.ErrorEnum;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Item;
+import com.example.flab.soft.shoppingmallfashion.item.domain.ItemOption;
 import com.example.flab.soft.shoppingmallfashion.item.domain.ItemRelation;
 import com.example.flab.soft.shoppingmallfashion.item.domain.Sex;
+import com.example.flab.soft.shoppingmallfashion.item.repository.ItemOptionRepository;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRelationRepository;
 import com.example.flab.soft.shoppingmallfashion.item.repository.ItemRepository;
 import java.util.List;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class ItemQueryService {
     private final ItemRepository itemRepository;
+    private final ItemOptionRepository itemOptionRepository;
     private final ItemRelationRepository itemRelationRepository;
     private final ItemCacheService itemCacheService;
 
@@ -32,6 +35,19 @@ public class ItemQueryService {
         return new PageImpl<>(
                 itemCacheService.getItems(minPrice, maxPrice, categoryId, storeId, sex, pageable).getItems(),
                 pageable, 10);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "STOCKS",
+            key = "#itemOptionId",
+            cacheManager = "cacheManager")
+    public ItemOptionStocksDto getStocks(Long itemOptionId) {
+        ItemOption itemOption = itemOptionRepository.findById(itemOptionId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+        return ItemOptionStocksDto.builder()
+                .id(itemOption.getId())
+                .stocks(itemOption.getStocksCount())
+                .build();
     }
 
     @Transactional(readOnly = true)
