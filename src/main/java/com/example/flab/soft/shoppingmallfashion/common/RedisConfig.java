@@ -57,12 +57,12 @@ public class RedisConfig {
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
 
         Map<String, RedisCacheConfiguration> redisCacheConfigMap = new HashMap<>();
-        redisCacheConfigMap.put("ITEM_LIST", defaultConfig.entryTtl(Duration.ofMinutes(10)));
+        redisCacheConfigMap.put("ITEM_LIST", defaultConfig.entryTtl(Duration.ofMinutes(5)));
         redisCacheConfigMap.put("ITEM_DETAILS", defaultConfig.entryTtl(Duration.ofDays(1)));
         redisCacheConfigMap.put("ITEM_LIST_COUNT", defaultConfig.entryTtl(Duration.ofDays(1)));
-        redisCacheConfigMap.put("TOP_ITEMS_STORE", defaultConfig.entryTtl(Duration.ofMinutes(10)));
-        redisCacheConfigMap.put("TOP_ITEMS_CATEGORY", defaultConfig.entryTtl(Duration.ofMinutes(10)));
-        redisCacheConfigMap.put("STOCKS", defaultConfig.entryTtl(Duration.ofMinutes(10)));
+        redisCacheConfigMap.put("TOP_ITEMS_STORE", defaultConfig.entryTtl(Duration.ofMinutes(5)));
+        redisCacheConfigMap.put("TOP_ITEMS_CATEGORY", defaultConfig.entryTtl(Duration.ofMinutes(5)));
+        redisCacheConfigMap.put("STOCKS", defaultConfig.entryTtl(Duration.ofMinutes(5)));
 
         return RedisCacheManager.builder(redisConnectionFactory())
                 .withInitialCacheConfigurations(redisCacheConfigMap)
