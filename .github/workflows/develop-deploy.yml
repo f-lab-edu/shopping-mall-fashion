@@ -52,6 +52,7 @@ jobs:
             sudo docker rm backend || true
             sudo docker run -d --name backend -p 8080:8080 \
               -v /home/ubuntu/logs:/var/logs \
+              -v /home/ubuntu/dumps:/var/dumps \
               -e COOLSMS_API_KEY="${{ secrets.COOLSMS_KEY }}" \
               -e COOLSMS_API_SECRET="${{ secrets.COOLSMS_SECRET }}" \
               -e COOLSMS_API_NUMBER="${{ secrets.COOLSMS_NUMBER }}" \
@@ -72,6 +73,7 @@ jobs:
             sudo docker rm backend || true
             sudo docker run -d --name backend -p 8080:8080 \
               -v /home/ubuntu/logs:/var/logs \
+              -v /home/ubuntu/dumps:/var/dumps \
               -e COOLSMS_API_KEY="${{ secrets.COOLSMS_KEY }}" \
               -e COOLSMS_API_SECRET="${{ secrets.COOLSMS_SECRET }}" \
               -e COOLSMS_API_NUMBER="${{ secrets.COOLSMS_NUMBER }}" \
