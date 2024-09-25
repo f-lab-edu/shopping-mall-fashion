@@ -1,4 +1,4 @@
-name: Automized Deployment to QA server
+name: Automized Deployment to Develop server
 
 on:
   push:
