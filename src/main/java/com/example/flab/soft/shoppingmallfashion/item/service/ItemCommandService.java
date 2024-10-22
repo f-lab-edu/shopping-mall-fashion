@@ -14,6 +14,7 @@ import com.example.flab.soft.shoppingmallfashion.store.repository.StoreRepositor
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class ItemCommandService {
     private final StoreRepository storeRepository;
     private final ItemOptionRepository itemOptionRepository;
     private final ItemSearchKeywordService itemSearchKeywordService;
+    private final ItemCacheService itemCacheService;
 
     @Transactional
     public ItemBriefDto addItem(ItemCreateRequest itemCreateRequest, Long userId) {
@@ -61,6 +63,7 @@ public class ItemCommandService {
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
 
         itemOption.beSoldOut(isTemporarily);
+        itemOption.getItem().renewSaleState();
     }
 
     @Transactional
@@ -94,5 +97,18 @@ public class ItemCommandService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
         item.modifyOrderCount(orderCount);
+    }
+
+    @Transactional
+    public void reduceStock(Long itemOptionId, Integer amount) {
+        ItemOption itemOption = itemOptionRepository.findById(itemOptionId)
+                .orElseThrow(() -> new ApiException(ErrorEnum.INVALID_REQUEST));
+        Long stocksAfter = itemOption.reduceStocksCount(amount);
+        Item item = itemOption.getItem();
+        item.renewSaleState();
+        if (stocksAfter == 0) {
+            itemCacheService.deleteItemDetails(item.getId());
+        }
+        itemCacheService.deleteItemOptionStocks(itemOptionId);
     }
 }

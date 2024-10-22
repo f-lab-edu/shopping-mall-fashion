@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 
 @Entity(name = "item_options")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -53,13 +54,18 @@ public class ItemOption extends BaseEntity {
         this.stocksCount = requireNotNull(stocksCount);
     }
 
-    public Long reduceStocksCount(Integer amount) {
+    public Long reduceStocksCount(long amount) {
         if (amount > stocksCount) {
             throw new ApiException(ErrorEnum.OUT_OF_STOCK);
         }
-        return stocksCount -= amount;
+        stocksCount -= amount;
+        if (isOutOfStock()) {
+            beSoldOut(false);
+        }
+        return stocksCount;
     }
 
+    @CacheEvict(value = "ITEM_DETAILS", key = "#")
     public void beSoldOut(Boolean isTemporarily) {
         if (isSoldOut()) {
             throw new ApiException(ErrorEnum.ALREADY_SOLD_OUT);
@@ -68,10 +74,6 @@ public class ItemOption extends BaseEntity {
             saleState = SaleState.TEMPORARILY_SOLD_OUT;
         } else {
             saleState = SaleState.SOLD_OUT;
-        }
-
-        if (item.isAllOptionsSoldOut()) {
-            item.changeSaleState(SaleState.SOLD_OUT);
         }
     }
 

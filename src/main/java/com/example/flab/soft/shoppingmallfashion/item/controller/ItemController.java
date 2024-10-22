@@ -2,10 +2,12 @@ package com.example.flab.soft.shoppingmallfashion.item.controller;
 
 import com.example.flab.soft.shoppingmallfashion.common.SuccessResult;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDto;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemBriefDtos;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemDetailsDto;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemOptionStocksDto;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemQueryService;
-import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordDto;
-import com.example.flab.soft.shoppingmallfashion.item.service.ItemSearchKeywordService;
+import com.example.flab.soft.shoppingmallfashion.item.service.ItemsCountDto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemQueryService itemService;
-    private final ItemSearchKeywordService itemSearchKeywordService;
 
     @GetMapping
     public SuccessResult<Page<ItemBriefDto>> getItems(
@@ -37,6 +38,17 @@ public class ItemController {
         return SuccessResult.<Page<ItemBriefDto>>builder().response(items).build();
     }
 
+    @GetMapping("/count")
+    public SuccessResult<ItemsCountDto> getItemsCount(
+            ItemListRequest itemListRequest) {
+        return SuccessResult.<ItemsCountDto>builder()
+                .response(itemService.getItemCounts(
+                            itemListRequest.getMinPrice(), itemListRequest.getMaxPrice(),
+                            itemListRequest.getCategoryId(), itemListRequest.getStoreId(),
+                            itemListRequest.getSex()))
+                .build();
+    }
+
     @GetMapping("/items-with-keyword")
     public SuccessResult<Page<ItemBriefDto>> getItemsWithKeyword(
             @PageableDefault(
@@ -48,15 +60,42 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public SuccessResult<ItemDto> getItemDetails(
+    public SuccessResult<ItemDetailsDto> getItemDetails(
             @PathVariable Long itemId) {
-        ItemDetailsDto itemDetails = itemService.getItemDetails(itemId);
-        ItemDto itemDto = ItemDto.builder()
-                .itemDetailsDto(itemDetails)
-                .sameStoreItems(itemService.getSameStoreItems(itemDetails.getItemBriefDto().getStoreId()))
-                .sameCategoryItems(itemService.getSameCategoryItems(itemDetails.getItemBriefDto().getCategoryId()))
-                .relatedItems(itemService.getRelatedItems(itemId))
+        return SuccessResult.<ItemDetailsDto>builder()
+                .response(itemService.getItemDetails(itemId))
                 .build();
-        return SuccessResult.<ItemDto>builder().response(itemDto).build();
+    }
+
+    @GetMapping("/{itemId}/{itemOptionId}/stocks")
+    public SuccessResult<ItemOptionStocksDto> getStocks(
+            @PathVariable Long itemOptionId) {
+        return SuccessResult.<ItemOptionStocksDto>builder()
+                .response(itemService.getStocks(itemOptionId))
+                .build();
+    }
+
+    @GetMapping("/top-items-by-store")
+    public SuccessResult<ItemBriefDtos> getTopItemsByStore(
+            @RequestParam Long storeId) {
+        return SuccessResult.<ItemBriefDtos>builder()
+                .response(itemService.getTopItemsByStore(storeId))
+                .build();
+    }
+
+    @GetMapping("/top-items-by-category")
+    public SuccessResult<ItemBriefDtos> getTopItemsByCategory(
+            @RequestParam Long categoryId) {
+        return SuccessResult.<ItemBriefDtos>builder()
+                .response(itemService.getTopItemsByCategory(categoryId))
+                .build();
+    }
+
+    @GetMapping("/{itemId}/top-related-items")
+    public SuccessResult<List<ItemBriefDto>> getRelatedItems(
+            @PathVariable Long itemId) {
+        return SuccessResult.<List<ItemBriefDto>>builder()
+                .response(itemService.getRelatedItems(itemId))
+                .build();
     }
 }

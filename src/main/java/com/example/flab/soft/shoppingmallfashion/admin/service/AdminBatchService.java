@@ -1,12 +1,17 @@
 package com.example.flab.soft.shoppingmallfashion.admin.service;
 
+import com.example.flab.soft.shoppingmallfashion.admin.dto.CreatedDataInfo;
 import com.example.flab.soft.shoppingmallfashion.admin.dto.IdNameDto;
 import com.example.flab.soft.shoppingmallfashion.admin.dto.TestItemDto;
 import com.example.flab.soft.shoppingmallfashion.admin.util.IdNameRowMapper;
+import com.example.flab.soft.shoppingmallfashion.admin.util.ItemDtoGenerator;
 import com.example.flab.soft.shoppingmallfashion.item.controller.ItemOptionDto;
 import com.example.flab.soft.shoppingmallfashion.item.domain.SaleState;
 import com.example.flab.soft.shoppingmallfashion.store.repository.Store;
 import com.example.flab.soft.shoppingmallfashion.user.domain.User;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +19,11 @@ import java.util.Map;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -83,80 +92,78 @@ public class AdminBatchService {
         );
     }
 
-    public void bulkInsertItems(List<TestItemDto> testItemDtos) {
+    public void bulkInsertItems(Integer itemCount, CreatedDataInfo userCreatedDataInfo,
+                                CreatedDataInfo storeCreatedDataInfo,
+                                CreatedDataInfo categoryCreatedDataInfo) {
         String itemSql = "INSERT INTO items "
                 + "(name, original_price, sale_price, description, "
-                + "sex, sale_state, store_id, category_id, lastly_modified_by, order_count)" +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "sex, sale_state, store_id, category_id, lastly_modified_by, order_count) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         String itemOptionSql = "INSERT INTO item_options "
                 + "(name, size, item_id, sale_state, stocks_count) "
                 + "VALUES (?, ?, ?, ?, ?)";
 
-        Map<String, List<ItemOptionDto>> itemNameOptionsMap =
-                new HashMap<>(testItemDtos.size() * 2);
-
-        int groupSize = 500;
-        int numberOfItemGroups = (int) Math.ceil((double) testItemDtos.size() / groupSize);
+        int groupSize = 200;
+        int numberOfItemGroups = (int) Math.ceil((double) itemCount / groupSize);
 
         long before = System.currentTimeMillis();
 
         IntStream.range(0, numberOfItemGroups)
-                .mapToObj(i -> testItemDtos.subList(i * groupSize, Math.min((i + 1) * groupSize, testItemDtos.size())))
                 .parallel()
+                .mapToObj(group -> IntStream.range(0, groupSize)
+                        .mapToObj(i -> ItemDtoGenerator.generateItemTestDtos(userCreatedDataInfo,
+                                storeCreatedDataInfo, categoryCreatedDataInfo))
+                        .toList())
                 .forEach(itemGroup -> {
-                    List<Object[]> batchArgs = new ArrayList<>();
-                    for (TestItemDto item : itemGroup) {
-                        batchArgs.add(new Object[]{
-                                item.getName(),
-                                item.getOriginalPrice(),
-                                item.getSalePrice(),
-                                item.getDescription(),
-                                item.getSex().name(),
-                                item.getSaleState().name(),
-                                item.getStoreId(),
-                                item.getCategoryId(),
-                                item.getIsModifiedBy(),
-                                item.getOrderCount()
-                        });
-                        itemNameOptionsMap.put(item.getName(), item.getItemOptions());
+                    KeyHolder keyHolder = new GeneratedKeyHolder();
+                    PreparedStatementCreator psc = connection ->
+                            connection.prepareStatement(itemSql, Statement.RETURN_GENERATED_KEYS);
+                    jdbcTemplate.batchUpdate(psc, new BatchPreparedStatementSetter() {
+                        @Override
+                        public void setValues(PreparedStatement ps, int i) throws SQLException {
+                            TestItemDto item = itemGroup.get(i);
+                            ps.setString(1, item.getName());
+                            ps.setInt(2, item.getOriginalPrice());
+                            ps.setInt(3, item.getSalePrice());
+                            ps.setString(4, item.getDescription());
+                            ps.setString(5, item.getSex().name());
+                            ps.setString(6, item.getSaleState().name());
+                            ps.setLong(7, item.getStoreId());
+                            ps.setLong(8, item.getCategoryId());
+                            ps.setLong(9, item.getIsModifiedBy());
+                            ps.setInt(10, item.getOrderCount());
+                        }
+
+                        @Override
+                        public int getBatchSize() {
+                            return itemGroup.size();
+                        }
+                    }, keyHolder);
+
+                    List<Map<String, Object>> generatedKeys = keyHolder.getKeyList();
+
+                    List<Object[]> optionBatchArgs = new ArrayList<>();
+                    for (int i = 0; i < generatedKeys.size(); i++) {
+                        Long generatedItemId = ((Number) generatedKeys.get(i).get("GENERATED_KEY")).longValue();
+                        TestItemDto item = itemGroup.get(i);
+                        List<ItemOptionDto> options = item.getItemOptions();
+
+                        for (ItemOptionDto option : options) {
+                            optionBatchArgs.add(new Object[]{
+                                    option.getName(),
+                                    option.getSize(),
+                                    generatedItemId,
+                                    option.getSaleState().name(),
+                                    option.getStocksCount()
+                            });
+                        }
                     }
-                    jdbcTemplate.batchUpdate(itemSql, batchArgs);
+
+                    jdbcTemplate.batchUpdate(itemOptionSql, optionBatchArgs);
                 });
 
         log.info("아이템 배치에 걸린 시간: {}", System.currentTimeMillis() - before);
-
-        String findAllItemsSql = "SELECT id, name FROM items";
-
-        before = System.currentTimeMillis();
-
-        List<IdNameDto> idNameDtos = jdbcTemplate.query(findAllItemsSql, new IdNameRowMapper());
-
-        log.info("전체 아이템 조회에 걸린 시간: {}", System.currentTimeMillis() - before);
-
-        before = System.currentTimeMillis();
-
-        int itemOptionGroupSize = 100;
-        int numberOfGrops = (int) Math.ceil((double) testItemDtos.size() / itemOptionGroupSize);
-
-        IntStream.range(0, numberOfGrops)
-                .mapToObj(i -> idNameDtos.subList(i * itemOptionGroupSize, Math.min((i + 1) * itemOptionGroupSize, idNameDtos.size())))
-                .parallel()
-                .forEach(itemGroup -> {
-                    List<Object[]> batchArgs = new ArrayList<>();
-                    for (IdNameDto idNameDto : itemGroup) {
-                        List<ItemOptionDto> itemOptions = itemNameOptionsMap.get(idNameDto.getName());
-                        itemOptions.forEach(itemOption -> batchArgs.add(new Object[]{
-                                itemOption.getName(),
-                                itemOption.getSize(),
-                                idNameDto.getId(),
-                                itemOption.getSaleState().name(),
-                                itemOption.getStocksCount()
-                        }));
-                    }
-                    jdbcTemplate.batchUpdate(itemOptionSql, batchArgs);
-                });
-        log.info("아이템 옵션 배치에 걸린 시간: {}", System.currentTimeMillis() - before);
     }
 
     public void encryptPassword() {

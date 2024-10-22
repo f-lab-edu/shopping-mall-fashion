@@ -26,11 +26,7 @@ public class ItemTestDataManageService {
                                          CreatedDataInfo userCreatedDataInfo,
                                          CreatedDataInfo storeCreatedDataInfo,
                                          CreatedDataInfo categoryCreatedDataInfo) {
-        List<TestItemDto> itemDtos = IntStream.range(0, itemCount)
-                .mapToObj(i -> ItemDtoGenerator.generateItemTestDtos(userCreatedDataInfo,
-                        storeCreatedDataInfo, categoryCreatedDataInfo))
-                .toList();
-        adminBatchService.bulkInsertItems(itemDtos);
+        adminBatchService.bulkInsertItems(itemCount, userCreatedDataInfo, storeCreatedDataInfo, categoryCreatedDataInfo);
     }
 
     @Transactional
