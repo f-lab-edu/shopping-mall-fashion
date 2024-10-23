@@ -44,6 +44,9 @@ dependencies {
 	//mysql
 	runtimeOnly("com.mysql:mysql-connector-j")
 
+	//hackle
+	implementation 'io.hackle:hackle-server-sdk:2.24.0'
+
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'

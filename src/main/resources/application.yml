@@ -39,7 +39,7 @@ spring:
     url: jdbc:mysql://localhost:3306/mall
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: rootuser
+    password:
   jpa:
     defer-datasource-initialization: true
     properties:
@@ -51,8 +51,17 @@ spring:
     redis:
       host: localhost
       port: 6379
+  mail:
+    username: user@gmail.com
+    password: gmail_password
   config:
     import: classpath:application-local-secrets.yml
+
+coolsms:
+  api:
+    key: coolsms_key
+    secret: coolsms_secret
+    number: coolsms_number
 
 logging:
   level:

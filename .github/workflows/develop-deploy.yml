@@ -58,6 +58,7 @@ jobs:
               -e COOLSMS_API_NUMBER="${{ secrets.COOLSMS_NUMBER }}" \
               -e SPRING_MAIL_USERNAME="${{ secrets.GMAIL_USERNAME }}" \
               -e SPRING_MAIL_PASSWORD="${{ secrets.GMAIL_PASSWORD }}" \
+              -e HACKLE_KEY="${{ secrets.HACKLE_KEY }}" \
               wedowhatwedo/mall-qa:latest
 
       - name: Deploy to server 2
@@ -79,4 +80,5 @@ jobs:
               -e COOLSMS_API_NUMBER="${{ secrets.COOLSMS_NUMBER }}" \
               -e SPRING_MAIL_USERNAME="${{ secrets.GMAIL_USERNAME }}" \
               -e SPRING_MAIL_PASSWORD="${{ secrets.GMAIL_PASSWORD }}" \
+              -e HACKLE_KEY="${{ secrets.HACKLE_KEY }}" \
               wedowhatwedo/mall-qa:latest

@@ -8,6 +8,11 @@ import com.example.flab.soft.shoppingmallfashion.item.service.ItemOptionStocksDt
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemQueryService;
 import com.example.flab.soft.shoppingmallfashion.item.service.ItemsCountDto;
 import java.util.List;
+
+import io.hackle.sdk.HackleClient;
+import io.hackle.sdk.common.Event;
+import io.hackle.sdk.common.User;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,17 +29,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemQueryService itemService;
+    private final HackleClient hackleClient;
 
     @GetMapping
     public SuccessResult<Page<ItemBriefDto>> getItems(
             @PageableDefault(
                     size = 50, sort = "itemStats.orderCount",
                     direction = Direction.DESC) Pageable pageable,
-            ItemListRequest itemListRequest) {
+            ItemListRequest itemListRequest, HttpSession httpSession) {
         Page<ItemBriefDto> items = itemService.getItems(
                 itemListRequest.getMinPrice(), itemListRequest.getMaxPrice(),
                 itemListRequest.getCategoryId(), itemListRequest.getStoreId(),
                 itemListRequest.getSex(), pageable);
+
+        User user = User.builder()
+                .userId(httpSession.getId())
+                .build();
+
+        Event event = Event.builder("searched_item_list")
+                .property("category_id", itemListRequest.getCategoryId())
+                .property("store_id", itemListRequest.getStoreId())
+                .property("page", pageable.getPageNumber())
+                .build();
+
+        hackleClient.track("$page_view", user);
+        hackleClient.track(event, user);
+
         return SuccessResult.<Page<ItemBriefDto>>builder().response(items).build();
     }
 
@@ -61,9 +81,23 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public SuccessResult<ItemDetailsDto> getItemDetails(
-            @PathVariable Long itemId) {
+            @PathVariable Long itemId, HttpSession httpSession) {
+        ItemDetailsDto itemDetails = itemService.getItemDetails(itemId);
+        User user = User.builder()
+                .userId(httpSession.getId())
+                .build();
+
+        Event event = Event.builder("searched_item")
+                .property("item_id", String.valueOf(itemId))
+                .property("category_id", itemDetails.getItemBriefDto().getCategoryId())
+                .property("store_id", itemDetails.getItemBriefDto().getStoreId())
+                .property("sale_price", itemDetails.getItemBriefDto().getSalePrice())
+                .build();
+
+        hackleClient.track(event, user);
+        hackleClient.track("$page_view", user);
         return SuccessResult.<ItemDetailsDto>builder()
-                .response(itemService.getItemDetails(itemId))
+                .response(itemDetails)
                 .build();
     }
 
