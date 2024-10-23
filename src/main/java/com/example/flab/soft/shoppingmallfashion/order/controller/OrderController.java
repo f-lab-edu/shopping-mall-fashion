@@ -7,6 +7,8 @@ import com.example.flab.soft.shoppingmallfashion.order.service.OrderService;
 import io.hackle.sdk.HackleClient;
 import io.hackle.sdk.common.Event;
 import io.hackle.sdk.common.User;
+import io.hackle.sdk.common.Variation;
+import io.hackle.sdk.common.decision.Decision;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,7 +43,6 @@ public class OrderController {
                 .build();
 
         hackleClient.track(event, user);
-
         return SuccessResult.<OrderInfoDto>builder().response(orderInfoDto).build();
     }
 

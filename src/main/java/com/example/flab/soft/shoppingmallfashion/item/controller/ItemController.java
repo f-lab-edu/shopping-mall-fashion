@@ -12,6 +12,7 @@ import java.util.List;
 import io.hackle.sdk.HackleClient;
 import io.hackle.sdk.common.Event;
 import io.hackle.sdk.common.User;
+import io.hackle.sdk.common.Variation;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -93,6 +94,14 @@ public class ItemController {
                 .property("store_id", itemDetails.getItemBriefDto().getStoreId())
                 .property("sale_price", itemDetails.getItemBriefDto().getSalePrice())
                 .build();
+
+        Variation variation = hackleClient.variation(5, user);
+
+        if (variation == Variation.A) {
+            // DO A
+        } else {
+            // DO B
+        }
 
         hackleClient.track(event, user);
         hackleClient.track("$page_view", user);
