@@ -1,46 +1,18 @@
-# 👚👕  MallFashion
-`MallFashion`은 **패션상품의 판매와 구매가 가능한 이커머스 플랫폼으로 사용자가 사용하기 편한 User Experience를 제공함을 목표로 합니다.**
+# 프로젝트 배경
+학습 목적으로 트래픽이 많은 쇼핑몰 서비스를 가정하여 개발한 개인 프로젝트입니다.
 
-<br>
+# 프로젝트 목적
 
-# 📗 프로젝트 아키텍쳐
+1. **DB 인덱싱부터 원격 캐시 서버까지 점진적으로 조회 성능을 개선**해나가며 **조회 시스템에 대해 이해**하고자 했습니다.
+2. **대량의 데이터를 조회 및 삽입하는 상황**에서 **데이터 접근 기술에 대한 이해**도를 높이고자 했습니다.
+3. **선착순 쿠폰과 같은 기능을 개발**하여 **동시성 처리에 대한 이해**도를 높이고자 했습니다.
+4. **단위 테스트, 슬라이스 테스트, 통합 테스트 작성**을 통해 **테스트 관련 이해**도를 높이고자 했습니다.
+5. **모니터링 시스템 등 인프라 및 자동화된 CI/CD 구축**을 통해 **AWS, Docker 등 플랫폼 시스템에 대한 이해**도를 높이고자 했습니다.
 
-![image](https://github.com/user-attachments/assets/83220af8-2d35-42b7-90f0-02e57ce01921)
+# 트러블 슈팅
 
-<br>
-
-<br>
-
-# 🧩 사용 기술
-
-- Java 17
-- SpringBoot 3.2.5
-- Spring Security 6.2.4
-- Spring Data JPA
-- MySql
-- Redis
-- JUnit5
-- Mockito
-- AWS EC2
-- AWS RDS
-- Docker
-- Github Actions
-- NGrinder
-- Prometheus
-- Grafana
-- ELK
-
-<br>
-
-# 💻 인프라
-
-- 메인 스프링부트 서버: t3.medium 1대(2코어 4GB), t2.micro 1대(1코어 1GB)
-- MySQL 서버: db.t3.micro 1대
-- Redis 서버: t2.micro 1대
-- Prometheus + Grafana 서버: t2.micro 1대
-- ELK 서버: t3.medium 1대
-
-<br>
+1. 조회 트래픽 관리
+2. 상품 데이터 벌크 삽입
 
 # 💻 프로젝트 중점사항
 
@@ -186,66 +158,35 @@ IntStream.range(0, numberOfItemGroups)
 jdbcTemplate.batchUpdate(itemSql, batchArgs); 부분을 비동기 처리하려 했지만, 성능이 오히려 저하되었습니다.
 
 기존 HashMap<>을 사용해 상수 시간 조회를 보장했고, 테스트 데이터의 정합성이 중요해진다면 ConcurrentHashMap<>으로 전환할 계획입니다.
-<br>
-
-# 💻 모니터링 환경
-
-## Grafana 대시보드
-### 메인 서버
-CPU, 메모리, 커넥션 풀, HTTP 통계, 활성 쓰레드 개수 등을 모니터링합니다.
-
-<img width="1725" alt="image" src="https://github.com/user-attachments/assets/47090ee5-2ef9-4525-93a2-ea2ec1e82a03">
-
-### Redis 서버
-![image](https://github.com/user-attachments/assets/6f5ef2bd-578e-49f5-81eb-633041032522)
 
 
-## ELK 로그 모니터링
-* 사용자 행동에 대한 로그와 톰캣 로그를 수집합니다.
-* 데이터 분석을 위해 Elastic Search가 제공하는 기능들을 이용해 원하는 데이터를 집계합니다.(ex. Cardinality Aggregation)
-<img width="1726" alt="image" src="https://github.com/user-attachments/assets/2271268e-8943-487e-8138-1574a0f164dc">
+# 📗 프로젝트 아키텍쳐
 
+![image](https://github.com/user-attachments/assets/83220af8-2d35-42b7-90f0-02e57ce01921)
 
-<br>
+# 🧩 사용 기술
 
-# 🛠️ 프로젝트 개선사항
+- Java 17
+- SpringBoot 3.2.5
+- Spring Security 6.2.4
+- Spring Data JPA
+- MySql
+- Redis
+- JUnit5
+- Mockito
+- AWS EC2
+- AWS RDS
+- Docker
+- Github Actions
+- NGrinder
+- Prometheus
+- Grafana
+- ELK
 
-- [재사용 가능한 공통 응답 API 구현](https://doohyunhwang97.github.io/develop/mall-fashion/mall1/)
-- [전역 예외처리기 도입](https://doohyunhwang97.github.io/develop/mall-fashion/mall2/)
-- [CI를 통한 지속적인 통합 환경 구축](https://doohyunhwang97.github.io/develop/mall-fashion/mall3/)
-- [Continuous Delivery를 통한 자동화된 QA환경 구축](https://doohyunhwang97.github.io/develop/mall-fashion/mall4/)
+# 💻 인프라
 
-
-# 📚 데이터 모델
-
-## ERD
-<img width="1431" alt="image" src="https://github.com/user-attachments/assets/e3b790a0-b392-4b62-9eac-dafc0cd7fd10">
-
-# 🥁 Git 브랜치 전략
-
-프로젝트의 버전 관리 및 협업을 위해 Git-Flow 전략을 채택하였습니다.
-
-## MallFashion이 Git-Flow을 사용하는 방법
-- develop 브랜치에서 feature을 생성해 신규 기능을 개발합니다.
-- 기능 개발 완료시 develop 브랜치에 병합합니다. 이때 CI를 이용해 기존 코드와 충돌을 예방합니다.
-- 사용자에게 서비스하기 전에 release 브랜치를 생성하여 부하테스트 및 성능테스트를 거칩니다. 이때 release 브랜치는 생성과 동시에 QA 서버에 자동 배포됩니다.
-- 모든 테스트가 완료된 release 브랜치는 main 브랜치로 병합됩니다. 이때 변경 사항은 운영서버에 자동으로 배포됩니다.
-
-<br>
-
-# 👬 MallFashion이 협업하는 방식
-## Github Project를 이용한 스프린트 단위 계획 수립과 공유
-- Jira처럼 Github Project를 이용하여 백로그에 issue 들을 등록하고 시작 날짜, 종료 날짜, 예상 시간 등을 입력해서 스프린트로 옮겨서 업무를 진행하고 팀원과 공유하고 있습니다.
-- 스프린트 단위는 일주일로 정해서 스프린트 단위로 계획 수립, 프로젝트를 진행하고 있습니다.
-
-<img width="1723" alt="image" src="https://github.com/user-attachments/assets/cae9ef2d-cb27-4acd-9af2-ef1cee3036de">
-
-![image](https://github.com/user-attachments/assets/726f2f6b-0206-4ee6-adfe-cf004078bde6)
-
-## 다이어그램을 이용한 적극적인 소통
-- MallFashion 팀은 한명은 개발, 다른 한명은 코드 리뷰를 담당하고 있습니다.
-- 개발자가 기획까지 담당하기 때문에 적극적으로 소통하지 않으면 서로가 생각하는 기획의 방향성이 다를 수 있습니다.
-- 이러한 상황이 발생할 때마다 다이어그램을 통한 적극적인 의사소통을 해결합니다.
-
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/e3ba4340-7c75-4d03-97b2-1fffa6b5f991">
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/ea40e834-ba1a-4718-96c6-99ae74ec8f77">
+- 메인 스프링부트 서버: t3.medium 1대(2코어 4GB), t2.micro 1대(1코어 1GB)
+- MySQL 서버: db.t3.micro 1대
+- Redis 서버: t2.micro 1대
+- Prometheus + Grafana 서버: t2.micro 1대
+- ELK 서버: t3.medium 1대
